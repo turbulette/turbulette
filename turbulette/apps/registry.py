@@ -1,0 +1,221 @@
+from importlib import import_module
+from inspect import ismodule
+from types import ModuleType
+from typing import List
+
+from graphql.type import GraphQLSchema
+from simple_settings import LazySettings
+from simple_settings.strategies import SettingsLoadStrategyPython
+
+from turbulette import conf
+from turbulette.apps.base import mutation as root_mutation
+from turbulette.apps.base import query as root_query
+from turbulette.apps.base.resolvers.scalars.scalar_types import base_scalars_resolvers
+from turbulette.conf.constants import (
+    SETTINGS_INSTALLED_APPS,
+    SETTINGS_LOGS,
+    SETTINGS_RULES,
+    TURBULETTE_CORE_APPS,
+)
+
+from .app import TurbuletteApp
+from .config import get_project_settings_by_env
+from .constants import MODULE_SETTINGS
+from .exceptions import RegistryError
+
+
+class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
+    """A custom strategy to collect all settings rules before processing them
+    """
+
+    @staticmethod
+    def is_valid_file(file_name):
+        try:
+            import_module(file_name)
+            return True
+        except (ModuleNotFoundError):
+            return False
+
+    @classmethod
+    def load_settings_file(cls, settings_file):
+        result = {}
+        module = import_module(settings_file)
+        # All settings starting with `_` are ignored
+        for setting in (s for s in dir(module) if not s.startswith("_")):
+            setting_value = getattr(module, setting)
+            if setting == SETTINGS_RULES:
+                for key, value in setting_value.items():
+                    conf.SIMPLE_SETTINGS[key].update(value)
+            elif setting == SETTINGS_LOGS:
+                conf.SIMPLE_SETTINGS[SETTINGS_LOGS] = setting_value
+            if not ismodule(setting_value):
+                result[setting] = setting_value
+        return result
+
+
+class Registry:
+    """A class storing the Turbulette applications in use
+
+        It mostly serve as a proxy to execute common actions on all apps
+        plus some configuration stuff (loading settings etc)
+    """
+
+    def __init__(
+        self,
+        path_list: List[str] = None,
+        project_settings: str = None,
+        project_settings_module: ModuleType = None,
+        app_settings_module: str = MODULE_SETTINGS,
+    ):
+        self.apps = {}
+        self.ready = False
+        self._settings_initialized = False
+
+        if project_settings:
+            project_settings_module = import_module(project_settings)
+
+        project_settings_module = (
+            get_project_settings_by_env()
+            if project_settings_module is None
+            else project_settings_module
+        )
+
+        self.project_settings_path = project_settings_module.__name__
+        path_list = (
+            getattr(project_settings_module, SETTINGS_INSTALLED_APPS)
+            + TURBULETTE_CORE_APPS
+        )
+
+        if path_list:
+            for path in path_list:
+                g_app = TurbuletteApp(path)
+                self.apps.update({g_app.label: g_app})
+
+        self.settings_module = app_settings_module
+
+        self.schema = None
+
+    def get_app_by_label(self, label: str) -> TurbuletteApp:
+        """Retrieve the Turbulette app given its label
+
+        Args:
+            label (str): App label
+
+        Returns:
+            TurbuletteApp: The Turbulette application
+        """
+        try:
+            return self.apps[label]
+        except KeyError:
+            raise RegistryError(
+                f'App with label "{label}" cannot be found in the registry'
+            )
+
+    def get_app_by_package(self, package_name: str) -> TurbuletteApp:
+        """Retrieve a Turbulette application given its package path
+
+        Args:
+            path (str): The module path of the app (dotted path)
+
+        Returns:
+            GraphLQApp: The Turbulette application
+        """
+        try:
+            return self.apps[package_name.rsplit(".", maxsplit=1)[-1]]
+        except KeyError:
+            raise RegistryError(
+                f'App with package name "{package_name}" cannot be found in the registry'
+            )
+
+    def setup(self) -> GraphQLSchema:
+        """Load GraphQL resources and settings for each app and return the global executable schema
+
+        Returns:
+            GraphQLSchema: The aggregated schema
+        """
+        settings = self.load_settings()
+        if settings.APOLLO_FEDERATION:
+            make_schema = import_module(
+                "ariadne.contrib.federation"
+            ).make_federated_schema
+        else:
+            make_schema = import_module("ariadne").make_executable_schema
+        schema, directives = [], {}
+        for app in self.apps.values():
+            app.load_graphql_ressources()
+            app.load_models()
+            if app.schema:
+                schema.extend([*app.schema])
+            directives.update(app.directives)
+
+        if not schema:
+            raise RegistryError("None of the Turbulette apps have a schema")
+
+        self.schema = make_schema(
+            [*schema],
+            root_mutation,
+            root_query,
+            base_scalars_resolvers,
+            directives=None if directives == {} else directives,
+        )
+        return self.schema
+
+    def load_models(self):
+        """Import GINO models of each app
+        """
+        for app in self.apps.values():
+            app.load_models()
+
+    def load_settings(self) -> LazySettings:
+        """Put Turbulette app settings together in a LazySettings object
+
+        The LazySettings object is from ``simple_settings`` library, which accepts
+        multiple modules path during instantiation.
+
+        Returns:
+            LazySettings: LazySettings initialized with all settings module found
+        """
+        if not self._settings_initialized:
+            all_settings = []
+
+            self._settings_initialized = True
+            for app in self.apps.values():
+                if (app.package_path / f"{self.settings_module}.py").is_file():
+                    all_settings.append(f"{app.package_name}.{self.settings_module}")
+
+            # Add project settings at last position to let user
+            # defined settings overwrite default ones
+            all_settings.append(self.project_settings_path)
+
+            settings = LazySettings(*all_settings)
+            settings._dict["SIMPLE_SETTINGS"] = conf.SIMPLE_SETTINGS
+            settings.strategies = (TurbuletteSettingsLoadStrategy,)
+            # Make settings variable availble in the `turbulette.conf` package
+            conf.settings = settings
+
+            return settings
+        return conf.settings
+
+    def register(self, app: TurbuletteApp):
+        if app.label in self.apps:
+            raise RegistryError(f'App "{app}" is already registered')
+        self.apps[app.label] = app
+
+    @property
+    def ready(self) -> bool:
+        """The registry is ready if all of its apps are ready
+        """
+        if not self._ready:
+            self._ready = all(self.apps.values())
+            return self._ready
+        return self._ready
+
+    @ready.setter
+    def ready(self, value: bool):
+        """Once the registry is ready, we cannot make it unready anymore
+        """
+        if not hasattr(self, "_ready"):
+            self._ready = value
+        if self._ready and value is not self._ready:
+            raise ValueError("Registry cannot be unready as it's already ready")
+        self._ready = value
