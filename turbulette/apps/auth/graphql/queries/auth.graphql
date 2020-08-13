@@ -1,0 +1,4 @@
+extend type Query {
+  getJWT(username: String!, password: String!): JsonWebToken
+  refreshJWT(token: String!): JsonWebToken
+}

@@ -1,0 +1,8 @@
+directive @scope(permissions: [String!]) on FIELD_DEFINITION
+directive @login_required on FIELD_DEFINITION
+directive @staff_member_required on FIELD_DEFINITION
+
+type JsonWebToken {
+  token: String
+  errors: [String]
+}
