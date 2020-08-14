@@ -1,18 +1,16 @@
 from importlib import import_module
-from typing import Dict, Union
 
 from sqlalchemy.engine.url import URL
-from starlette.config import Config
 
 from turbulette import conf
 from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
-
+from turbulette.type import DatabaseSettings
 from .exceptions import ASGIFrameworkError, GinoExtensionError
 
 
-def gino_starlette(settings: Dict[str, Union[Config, str]], dsn: URL):
+def gino_starlette(settings: DatabaseSettings, dsn: URL):
     try:
         from gino_starlette import Gino
     except ModuleNotFoundError:
