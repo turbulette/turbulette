@@ -70,7 +70,6 @@ async def gino_engine(project_settings, create_db):
         settings_file = Path(find_spec(project_settings.__name__).origin)
         alembic_config = (settings_file.parent / "alembic.ini").as_posix()
         script_location = (settings_file.parent / "alembic").as_posix()
-        pre_config = ConfigParser()
 
         config = Config(file_=alembic_config)
         config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
