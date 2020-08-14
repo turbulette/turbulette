@@ -91,8 +91,8 @@ async def create_db(db_name, project_settings, request):
         project_settings.DB_DSN.database = db_name
         yield
         # Drop the test db if needed
-        # if not request.config.getoption("--keep-db", default=False):
-        #     await engine.status(f'DROP DATABASE "{db_name}"')
+        if not request.config.getoption("--keep-db", default=False):
+            await engine.status(f'DROP DATABASE "{db_name}"')
     await engine.close()
 
 
