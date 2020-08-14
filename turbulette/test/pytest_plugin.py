@@ -1,5 +1,4 @@
 import asyncio
-from configparser import ConfigParser
 from datetime import datetime
 from importlib import import_module, reload
 from importlib.util import find_spec
