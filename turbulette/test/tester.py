@@ -19,7 +19,7 @@ class Tester:
 
     async def assert_query_success(
         self, query: str, variables: dict = None, op_name: str = None
-    ):
+    ) -> GraphQLResult:
         response = await self.query(query, variables, op_name)
         self.assert_status_200(response)
         self.assert_no_errors(response)
@@ -27,7 +27,7 @@ class Tester:
 
     async def assert_query_failed(
         self, query: str, variables: dict = None, op_name: str = None
-    ):
+    ) -> GraphQLResult:
         response = await self.query(query, variables, op_name)
         self.assert_status_200(response)
         self.assert_errors(response)
