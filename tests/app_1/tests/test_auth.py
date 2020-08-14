@@ -18,10 +18,8 @@ async def test_create_user(gino_engine, tester):
 
     group = await Group.create(name="customer")
     permission = await Permission.create(key="buy:product", name="Can buy a product")
-    group_permission = await GroupPermission.create(
-        group=group.id, permission=permission.id
-    )
-    new_user = await create_user(
+    await GroupPermission.create(group=group.id, permission=permission.id)
+    await create_user(
         username="test_user",
         first_name="test",
         last_name="user",
@@ -31,7 +29,7 @@ async def test_create_user(gino_engine, tester):
         permission_group="customer",
     )
 
-    await tester.assert_query_success(
+    response = await tester.assert_query_success(
         query="""
             query {
                 getJWT(username: "test_user", password: "1234"){
@@ -40,4 +38,20 @@ async def test_create_user(gino_engine, tester):
                 }
             }
         """
+    )
+
+    assert response[1]["data"]["getJWT"]["token"]
+    token = response[1]["data"]["getJWT"]["token"]
+
+    await tester.assert_query_success(
+        query="""
+            query refreshJWT($token: String!) {
+                refreshJWT(token: $token){
+                    token
+                    errors
+                }
+            }
+        """,
+        variables={"token": token},
+        headers={"authorization": f"JWT {token}"},
     )
