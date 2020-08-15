@@ -1,8 +1,9 @@
-from typing import Callable, Any, Dict, TypeVar
+from typing import Callable, Any, Tuple, TypeVar
 from turbulette.core.errors import BaseError, PermissionDenied
 from .exceptions import JSONWebTokenError
 from .core import TokenType, decode_jwt, login
 from .permissions import has_permission
+
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -116,8 +117,8 @@ def access_token_required(func: F) -> F:
 
     async def wrapper(obj, info, **kwargs):
         try:
-            info.context["access_token_payload"] = _jwt_required(info, TokenType.ACCESS)
-            return await func(obj, info, **kwargs)
+            jwt_claims = _jwt_required(info, TokenType.ACCESS)
+            return await func(obj, info, jwt_claims, **kwargs)
         except JSONWebTokenError as error:
             return BaseError(error.message).dict()
 
@@ -141,19 +142,19 @@ def refresh_token_required(func: F) -> F:
 
     async def wrapper(obj, info, **kwargs):
         try:
-            refresh_token = _jwt_required(info, TokenType.REFRESH)
-            return await func(obj, info, refresh_token, **kwargs)
+            jwt_claims = _jwt_required(info, TokenType.REFRESH)
+            return await func(obj, info, jwt_claims, **kwargs)
         except JSONWebTokenError as error:
             return BaseError(error.message).dict()
 
     return wrapper
 
 
-def _jwt_required(info, token_type: TokenType) -> Dict[str, Any]:
+def _jwt_required(info, token_type: TokenType) -> Tuple:
     token = info.context["request"].headers["authorization"].split()[1]
-    payload = decode_jwt(token)
-    if TokenType(payload["type"]) is not token_type:
+    claims = decode_jwt(token)[1]
+    if TokenType(claims["type"]) is not token_type:
         raise PermissionError(
             f"The provided token is not a {token_type.value} token"
         )
-    return payload
+    return claims
