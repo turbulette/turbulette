@@ -10,7 +10,6 @@ from turbulette.test.pytest_plugin import (
     tester,
 )
 
-
 @pytest.mark.asyncio
 async def test_create_user(gino_engine, tester):
     from turbulette.apps.auth.models import Group, GroupPermission, Permission
@@ -72,3 +71,22 @@ async def test_create_user(gino_engine, tester):
         """,
         headers={"authorization": f"JWT {access_token}"},
     )
+
+
+@pytest.mark.asyncio
+async def test_invalid_token(gino_engine, tester):
+    from turbulette.apps.auth.exceptions import JSONWebTokenError
+
+    response = await tester.assert_query_success(
+        query="""
+            query refreshJWT {
+                refreshJWT{
+                    accessToken
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": "JWT eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.tyh-VfuzIxCyGYDlkBA7DfyjrqmSHu6pQ2hoZuFqUSLPNY2N0mpHb3nk5K17HWP_3cYHBw7AhHale5wky6-sVA___wrong___"},
+    )
+
+    assert "errors" in response[1]["data"]["refreshJWT"]

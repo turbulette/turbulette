@@ -1,4 +1,3 @@
-from api.settings import SECRET_KEY
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
 from turbulette.conf import get_config_from_paths
@@ -43,12 +42,11 @@ HASH_ALGORITHM = "bcrypt"
 
 
 # Used to encode the JSON Web token
-SECRET_KEY = "tj(1^-)18_44+g8a%8p5fu7j1o%!4_v13rig3=7j)g2qz*3vlv"
 
 JWT_REFRESH_ENABLED = True
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
-
+JWT_ALGORITHM = "ES256"
 
 ###########################
 # DATABASE

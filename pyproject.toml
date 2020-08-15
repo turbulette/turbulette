@@ -15,11 +15,11 @@ alembic = "^1.4.2"
 psycopg2-binary = "^2.8.5"
 gino = {extras = ["starlette"], version = "^1.0.1"}
 passlib = {extras = ["bcrypt"], version = "^1.7.2"}
-pyjwt = "^1.7.1"
 requests = "^2.24.0"
 starlette = "^0.13.4"
 simple-settings = "^0.19.1"
 gino-enum-tables = "^1.0.6"
+python-jwt = "^3.2.6"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"

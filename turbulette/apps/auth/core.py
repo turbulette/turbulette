@@ -1,17 +1,18 @@
 from calendar import timegm
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from importlib import import_module
-from uuid import uuid4
-
+from typing import Tuple
+from jwcrypto.jwk import JWK
+from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from gino.declarative import Model
-from jwt import DecodeError, ExpiredSignatureError, InvalidTokenError, decode, encode
+from python_jwt import generate_jwt, verify_jwt, process_jwt
 from passlib.context import CryptContext
 
 from turbulette.conf import settings
 
 from .exceptions import JSONWebTokenError, JSONWebTokenExpired
-from .type import TokenPayload
+
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -21,8 +22,10 @@ user_model: Model = getattr(
     import_module(settings.AUTH_USER_MODEL[0]), settings.AUTH_USER_MODEL[1]
 )
 
-JWT_REFRESH_TOKEN_TYPE = "refresh"
-JWT_ACCESS_TOKEN_TYPE = "access"
+# Generate the secret key with the right KTY params
+_secret_key = JWK.generate(
+    kty=settings.JWK_KTY, **getattr(settings, f"JWK_{settings.JWK_KTY}_PARAMS")
+)
 
 
 class TokenType(Enum):
@@ -55,39 +58,32 @@ def jwt_payload_from_id(user_id: str) -> dict:
     return _jwt_payload(user_model.USERNAME_FIELD, user_id)
 
 
-def get_payload(token: str) -> dict:
-    try:
-        payload = decode_jwt(token)
-    except ExpiredSignatureError:
-        raise JSONWebTokenExpired()
-    except DecodeError:
-        raise JSONWebTokenError("Error decoding signature")
-    except InvalidTokenError:
-        raise JSONWebTokenError("Invalid token")
-    return payload
-
-
 def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
-    payload["exp"] = (
-        datetime.utcnow() + settings.JWT_EXPIRATION_DELTA
+    exp = (
+        settings.JWT_EXPIRATION_DELTA
         if token_type is TokenType.ACCESS
-        else datetime.utcnow() + settings.JWT_REFRESH_EXPIRATION_DELTA
+        else settings.JWT_REFRESH_EXPIRATION_DELTA
     )
 
-    if (
-        settings.JWT_BLACKLIST_ENABLED
+    jti_size = (
+        settings.JWT_JTI_SIZE
+        if settings.JWT_BLACKLIST_ENABLED
         and token_type.value in settings.JWT_BLACKLIST_TOKEN_CHECKS
-    ):
-        payload["jti"] = str(uuid4())
+        else 0
+    )
 
     payload["type"] = token_type.value
-    return encode(
-        payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM
-    ).decode("utf-8")
+    return generate_jwt(
+        payload,
+        _secret_key,
+        algorithm=settings.JWT_ALGORITHM,
+        lifetime=exp,
+        jti_size=jti_size,
+    )
 
 
-def decode_jwt(jwt_token: str) -> TokenPayload:
+def decode_jwt(jwt: str) -> Tuple:
     """Decode JSON web token
 
     Args:
@@ -99,22 +95,20 @@ def decode_jwt(jwt_token: str) -> TokenPayload:
     Returns:
         int: The user id
     """
+    if not settings.JWT_VERIFY:
+        return process_jwt(jwt)
     try:
-        payload = decode(
-            jwt_token,
-            settings.SECRET_KEY,
-            settings.JWT_VERIFY,
-            options={"verify_exp": settings.JWT_VERIFY_EXPIRATION,},
-            leeway=settings.JWT_LEEWAY,
-            audience=settings.JWT_AUDIENCE,
-            issuer=settings.JWT_ISSUER,
-            algorithms=[settings.JWT_ALGORITHM],
+        return verify_jwt(
+            jwt,
+            _secret_key,
+            checks_optional=settings.JWT_VERIFY_EXPIRATION,
+            iat_skew=settings.JWT_LEEWAY,
+            allowed_algs=[settings.JWT_ALGORITHM],
         )
-        return payload
-    except ExpiredSignatureError:
-        raise JSONWebTokenError("Signature expired. Please log in again.")
-    except InvalidTokenError:
+    except InvalidJWSObject:
         raise JSONWebTokenError("Invalid token. Please log in again.")
+    except InvalidJWSSignature:
+        raise JSONWebTokenError("Invalid signature or token expired. Please log in again.")
 
 
 def get_token_from_user(user: user_model) -> str:
@@ -126,7 +120,7 @@ def get_token_from_user(user: user_model) -> str:
     Returns:
         str: The JWT token
     """
-    return encode_access_token(jwt_payload(user))
+    return encode_jwt(jwt_payload(user), TokenType.ACCESS)
 
 
 def refresh_has_expired(orig_iat) -> bool:
