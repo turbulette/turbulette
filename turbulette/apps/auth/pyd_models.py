@@ -4,7 +4,12 @@ from pydantic import BaseModel, EmailStr, root_validator
 
 
 class Token(BaseModel):
-    token: str
+    access_token: str
+    refresh_token: str = None
+
+
+class AccessToken(BaseModel):
+    access_token: str = None
 
 
 class TokenData(BaseModel):

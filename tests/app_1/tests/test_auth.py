@@ -33,25 +33,42 @@ async def test_create_user(gino_engine, tester):
         query="""
             query {
                 getJWT(username: "test_user", password: "1234"){
-                    token
+                    accessToken
+                    refreshToken
                     errors
                 }
             }
         """
     )
 
-    assert response[1]["data"]["getJWT"]["token"]
-    token = response[1]["data"]["getJWT"]["token"]
+    assert response[1]["data"]["getJWT"]["accessToken"]
+    assert response[1]["data"]["getJWT"]["refreshToken"]
 
-    await tester.assert_query_success(
+    access_token = response[1]["data"]["getJWT"]["accessToken"]
+    refresh_token = response[1]["data"]["getJWT"]["refreshToken"]
+
+    response = await tester.assert_query_success(
         query="""
-            query refreshJWT($token: String!) {
-                refreshJWT(token: $token){
-                    token
+            query refreshJWT {
+                refreshJWT{
+                    accessToken
                     errors
                 }
             }
         """,
-        variables={"token": token},
-        headers={"authorization": f"JWT {token}"},
+        headers={"authorization": f"JWT {refresh_token}"},
+    )
+
+    assert response[1]["data"]["refreshJWT"]["accessToken"]
+
+    await tester.assert_query_failed(
+        query="""
+            query refreshJWT {
+                refreshJWT{
+                    accessToken
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": f"JWT {access_token}"},
     )

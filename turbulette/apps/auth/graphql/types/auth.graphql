@@ -3,6 +3,12 @@ directive @login_required on FIELD_DEFINITION
 directive @staff_member_required on FIELD_DEFINITION
 
 type JsonWebToken {
-  token: String
+  accessToken: String
+  refreshToken: String
+  errors: [String]
+}
+
+type AccessToken {
+  accessToken: String
   errors: [String]
 }

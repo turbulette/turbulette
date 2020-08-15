@@ -1,22 +1,17 @@
 from calendar import timegm
 from datetime import datetime, timedelta
+from enum import Enum
 from importlib import import_module
+from uuid import uuid4
+
 from gino.declarative import Model
-from jwt import (
-    ExpiredSignatureError,
-    InvalidTokenError,
-    decode,
-    encode,
-    DecodeError,
-)
+from jwt import DecodeError, ExpiredSignatureError, InvalidTokenError, decode, encode
 from passlib.context import CryptContext
 
 from turbulette.conf import settings
 
 from .exceptions import JSONWebTokenError, JSONWebTokenExpired
-
-
-jwt_settings = settings.GRAPHQL_JWT
+from .type import TokenPayload
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -26,31 +21,41 @@ user_model: Model = getattr(
     import_module(settings.AUTH_USER_MODEL[0]), settings.AUTH_USER_MODEL[1]
 )
 
+JWT_REFRESH_TOKEN_TYPE = "refresh"
+JWT_ACCESS_TOKEN_TYPE = "access"
 
-def jwt_payload(user: user_model, context=None) -> dict:
+
+class TokenType(Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"
+
+
+def _jwt_payload(kwarg_name: str, user_id: str) -> dict:
+    payload = {kwarg_name: user_id}
+
+    if settings.JWT_AUDIENCE is not None:
+        payload["aud"] = settings.JWT_AUDIENCE
+
+    if settings.JWT_ISSUER is not None:
+        payload["iss"] = settings.JWT_ISSUER
+
+    return payload
+
+
+def jwt_payload(user: user_model) -> dict:
     username = user.get_username()
 
     if hasattr(username, "pk"):
         username = username.pk
 
-    payload = {
-        user.USERNAME_FIELD: username,
-        "exp": datetime.utcnow() + jwt_settings["JWT_EXPIRATION_DELTA"],
-    }
-
-    if jwt_settings["JWT_ALLOW_REFRESH"]:
-        payload["origIat"] = timegm(datetime.utcnow().utctimetuple())
-
-    if jwt_settings["JWT_AUDIENCE"] is not None:
-        payload["aud"] = jwt_settings["JWT_AUDIENCE"]
-
-    if jwt_settings["JWT_ISSUER"] is not None:
-        payload["iss"] = jwt_settings["JWT_ISSUER"]
-
-    return payload
+    return _jwt_payload(user.USERNAME_FIELD, username)
 
 
-def get_payload(token: str, context=None) -> dict:
+def jwt_payload_from_id(user_id: str) -> dict:
+    return _jwt_payload(user_model.USERNAME_FIELD, user_id)
+
+
+def get_payload(token: str) -> dict:
     try:
         payload = decode_jwt(token)
     except ExpiredSignatureError:
@@ -62,22 +67,27 @@ def get_payload(token: str, context=None) -> dict:
     return payload
 
 
-def encode_jwt(user: user_model) -> str:
-    """Encode a JSON web token
+def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
-    Args:
-        user (user_model): user_model instance
+    payload["exp"] = (
+        datetime.utcnow() + settings.JWT_EXPIRATION_DELTA
+        if token_type is TokenType.ACCESS
+        else datetime.utcnow() + settings.JWT_REFRESH_EXPIRATION_DELTA
+    )
 
-    Returns:
-        str: The JSON web token
-    """
+    if (
+        settings.JWT_BLACKLIST_ENABLED
+        and token_type.value in settings.JWT_BLACKLIST_TOKEN_CHECKS
+    ):
+        payload["jti"] = str(uuid4())
 
+    payload["type"] = token_type.value
     return encode(
-        jwt_payload(user), settings.SECRET_KEY, algorithm=jwt_settings["JWT_ALGORITHM"]
+        payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     ).decode("utf-8")
 
 
-def decode_jwt(jwt_token: str) -> int:
+def decode_jwt(jwt_token: str) -> TokenPayload:
     """Decode JSON web token
 
     Args:
@@ -93,12 +103,12 @@ def decode_jwt(jwt_token: str) -> int:
         payload = decode(
             jwt_token,
             settings.SECRET_KEY,
-            jwt_settings["JWT_VERIFY"],
-            options={"verify_exp": jwt_settings["JWT_VERIFY_EXPIRATION"],},
-            leeway=jwt_settings["JWT_LEEWAY"],
-            audience=jwt_settings["JWT_AUDIENCE"],
-            issuer=jwt_settings["JWT_ISSUER"],
-            algorithms=[jwt_settings["JWT_ALGORITHM"]],
+            settings.JWT_VERIFY,
+            options={"verify_exp": settings.JWT_VERIFY_EXPIRATION,},
+            leeway=settings.JWT_LEEWAY,
+            audience=settings.JWT_AUDIENCE,
+            issuer=settings.JWT_ISSUER,
+            algorithms=[settings.JWT_ALGORITHM],
         )
         return payload
     except ExpiredSignatureError:
@@ -107,8 +117,20 @@ def decode_jwt(jwt_token: str) -> int:
         raise JSONWebTokenError("Invalid token. Please log in again.")
 
 
-def refresh_has_expired(orig_iat, context=None) -> bool:
-    exp = orig_iat + jwt_settings["JWT_REFRESH_EXPIRATION_DELTA"].total_seconds()
+def get_token_from_user(user: user_model) -> str:
+    """A shortcut to get the token directly from a user model instance
+
+    Args:
+        user (user_model): GINO model instance of AUTH_USER_MODEL
+
+    Returns:
+        str: The JWT token
+    """
+    return encode_access_token(jwt_payload(user))
+
+
+def refresh_has_expired(orig_iat) -> bool:
+    exp = orig_iat + settings.JWT_REFRESH_EXPIRATION_DELTA.total_seconds()
     return timegm(datetime.utcnow().utctimetuple()) > exp
 
 
@@ -152,10 +174,10 @@ async def login(jwt_token: str) -> user_model:
     if not jwt_token:
         raise JSONWebTokenError("JWT token not found")
     prefix = jwt_token.split()[0]
-    if prefix != jwt_settings["JWT_PREFIX"]:
+    if prefix != settings.JWT_PREFIX:
         raise JSONWebTokenError(
             f"Wrong token prefix in authorization header"
-            f"(expecting {jwt_settings['JWT_PREFIX']} got {prefix})"
+            f"(expecting {settings.JWT_PREFIX} got {prefix})"
         )
     # Get the user's id from the JWT
     payload = decode_jwt(jwt_token.split()[1])
@@ -166,10 +188,10 @@ async def get_user_by_payload(payload):
     username = payload.get(user_model.USERNAME_FIELD)
 
     if not username:
-        raise JSONWebTokenError('Invalid payload')
+        raise JSONWebTokenError("Invalid payload")
 
     user = await user_model.get_by_username(username)
 
-    if user is not None and not getattr(user, 'is_active', True):
-        raise JSONWebTokenError('User is disabled')
+    if user is not None and not getattr(user, "is_active", True):
+        raise JSONWebTokenError("User is disabled")
     return user
