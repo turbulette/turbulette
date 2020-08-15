@@ -1,0 +1,37 @@
+extend type Mutation {
+  createUser(input: CreateUser!): CreateUserPayload
+  #   updateFan(input: UpdateFan!): Fan
+  #   deleteFan: Boolean
+}
+
+type User {
+  id: ID!
+  email: String!
+  active: Boolean!
+  username: String!
+  firstName: String!
+  lastName: String!
+  birth: DateTime
+  dateJoined: DateTime!
+  lastLogin: DateTime
+}
+
+type CreateUserPayload {
+  user: User
+  token: String
+  errors: [String]
+}
+
+type UserPayload {
+  user: User
+  errors: [String]
+}
+
+input CreateUser {
+  username: String!
+  email: String!
+  passwordOne: String!
+  passwordTwo: String!
+  firstName: String
+  lastName: String
+}

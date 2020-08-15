@@ -2,7 +2,7 @@ from importlib import import_module
 from inspect import ismodule
 from types import ModuleType
 from typing import List
-
+from ariadne import snake_case_fallback_resolvers
 from graphql.type import GraphQLSchema
 from simple_settings import LazySettings
 from simple_settings.strategies import SettingsLoadStrategyPython
@@ -156,6 +156,7 @@ class Registry:
             root_mutation,
             root_query,
             base_scalars_resolvers,
+            snake_case_fallback_resolvers,
             directives=None if directives == {} else directives,
         )
         return self.schema
