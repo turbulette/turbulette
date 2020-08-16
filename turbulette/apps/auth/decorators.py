@@ -31,6 +31,7 @@ def login_required(func: F) -> F:
             return BaseError(error.message).dict()
         except UserDoesNotExists:
             return BaseError("User does not exists").dict()
+
     return wrapper
 
 
@@ -108,9 +109,9 @@ def access_token_required(func: F) -> F:
         FunctionType: The wrapped resolver
     """
 
-    async def wrapper(obj, info, **kwargs):
-        jwt_claims = _jwt_required(info, TokenType.ACCESS)
-        return await func(obj, info, jwt_claims, **kwargs)
+    @_jwt_required(TokenType.ACCESS)
+    async def wrapper(obj, info, claims, **kwargs):
+        return await func(obj, info, claims, **kwargs)
 
     return wrapper
 
@@ -130,19 +131,27 @@ def refresh_token_required(func: F) -> F:
         FunctionType: The wrapped resolver
     """
 
-    async def wrapper(obj, info, **kwargs):
-        jwt_claims = _jwt_required(info, TokenType.REFRESH)
-        return await func(obj, info, jwt_claims, **kwargs)
+    @_jwt_required(TokenType.REFRESH)
+    async def wrapper(obj, info, claims, **kwargs):
+        return await func(obj, info, claims, **kwargs)
 
     return wrapper
 
 
-def _jwt_required(info, token_type: TokenType) -> Tuple:
-    token = info.context["request"].headers["authorization"].split()[1]
-    try:
-        claims = decode_jwt(token)[1]
-    except InvalidJWTSignatureError as error:
-        return BaseError(error.message).dict()
-    if TokenType(claims["type"]) is not token_type:
-        raise PermissionError(f"The provided token is not a {token_type.value} token")
-    return claims
+def _jwt_required(token_type: TokenType) -> Tuple:
+    def wrap(func: F) -> F:
+        async def wrapped_func(obj, info, **kwargs):
+            token = info.context["request"].headers["authorization"].split()[1]
+            try:
+                claims = decode_jwt(token)[1]
+                if TokenType(claims["type"]) is not token_type:
+                    raise PermissionError(
+                        f"The provided token is not a {token_type.value} token"
+                    )
+                return await func(obj, info, claims, **kwargs)
+            except InvalidJWTSignatureError as error:
+                return BaseError(error.message).dict()
+
+        return wrapped_func
+
+    return wrap
