@@ -124,7 +124,7 @@ async def test_login_required(turbulette_setup, create_user, get_tokens, tester)
     assert response[1]["data"]["books"]["books"]
 
 
-async def test_jwt_not_properly_formatted(turbulette_setup, tester, false_access_jwt):
+async def test_wrong_signature(turbulette_setup, tester, false_access_jwt):
     response = await tester.assert_query_success(
         query="""
             query {
@@ -144,7 +144,7 @@ async def test_jwt_not_properly_formatted(turbulette_setup, tester, false_access
     assert not response[1]["data"]["books"]["books"]
 
 
-async def test_wrong_signature(turbulette_setup, tester, false_access_jwt):
+async def test_jwt_not_properly_formatted(turbulette_setup, tester, false_access_jwt):
     response = await tester.assert_query_success(
         query="""
             query {
