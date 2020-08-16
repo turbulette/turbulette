@@ -20,7 +20,8 @@ class Tester:
         return await graphql(
             self.schema,
             data={"query": query, "variables": variables, "operationName": op_name},
-            context_value={"request": TestRequest(headers)}
+            context_value={"request": TestRequest(headers)},
+            debug=True
         )
 
     async def assert_query_success(

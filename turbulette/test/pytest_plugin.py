@@ -60,10 +60,10 @@ def conf_module():
 
 
 @pytest.fixture(scope="session")
-async def gino_engine(project_settings, create_db):
+async def turbulette_setup(project_settings, create_db):
     database = Gino()
     async with database.with_bind(bind=project_settings.DB_DSN) as engine:
-        reload(import_module("turbulette.conf"))
+        conf_module_ = reload(import_module("turbulette.conf"))
         setup(project_settings.__name__)
         conf.db.bind = engine
         settings_file = Path(find_spec(project_settings.__name__).origin)
@@ -74,7 +74,7 @@ async def gino_engine(project_settings, create_db):
         config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
         config.set_main_option("script_location", script_location)
         upgrade(config, "heads")
-        yield
+        yield conf_module_
     await engine.close()
 
 
