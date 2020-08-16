@@ -2,17 +2,19 @@ from calendar import timegm
 from datetime import datetime
 from enum import Enum
 from importlib import import_module
+from re import error
 from typing import Tuple
-from jwcrypto.jwk import JWK
-from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
+
 from gino.declarative import Model
-from python_jwt import generate_jwt, verify_jwt, process_jwt
+from jwcrypto.jwk import JWK
+from jwcrypto.jws import InvalidJWSSignature
 from passlib.context import CryptContext
+from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
+from turbulette.core.errors import BaseError
 
-from .exceptions import JSONWebTokenError, InvalidJWTError, InvalidJWTSignatureError
-
+from .exceptions import InvalidJWTSignatureError, JSONWebTokenError, UserDoesNotExists
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
