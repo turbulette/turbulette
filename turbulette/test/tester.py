@@ -2,7 +2,6 @@ from typing import Dict, Any
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
 
-
 class Tester:
     """Helper class to test GraphQL queries against a schema
     """
@@ -16,15 +15,20 @@ class Tester:
         variables: dict = None,
         op_name: str = None,
         headers: dict = None,
+        jwt: str = None
     ) -> GraphQLResult:
         class TestRequest:
-            def __init__(self, headers: dict = None):
-                self.headers = headers
+            def __init__(self, headers: dict = None, jwt: str = None):
+                # Need to import here to make sure that settings are initialized
+                from turbulette.conf import settings
+                self.headers = {} if not headers else headers
+                if jwt:
+                    self.headers["authorization"] = f"{settings.JWT_PREFIX} {jwt}"
 
         return await graphql(
             self.schema,
             data={"query": query, "variables": variables, "operationName": op_name},
-            context_value={"request": TestRequest(headers)},
+            context_value={"request": TestRequest(headers, jwt)},
             debug=True,
         )
 
@@ -34,8 +38,9 @@ class Tester:
         variables: dict = None,
         op_name: str = None,
         headers: dict = None,
+        jwt: str = None
     ) -> GraphQLResult:
-        response = await self.query(query, variables, op_name, headers)
+        response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_no_errors(response)
         return response
@@ -46,8 +51,9 @@ class Tester:
         variables: dict = None,
         op_name: str = None,
         headers: dict = None,
+        jwt: str = None
     ) -> GraphQLResult:
-        response = await self.query(query, variables, op_name, headers)
+        response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_errors(response)
         return response
