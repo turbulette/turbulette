@@ -1,11 +1,12 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
-  #   updateFan(input: UpdateFan!): Fan
-  #   deleteFan: Boolean
+  addBook: BookActionsPayload @staff_member_required
+  borrowBook: BookActionsPayload @scope(permissions:"book:borrow")
 }
 
 extend type Query {
-  books: BooksPayload
+  books: BooksPayload @login_required
+  exclusiveBooks: BooksPayload
 }
 
 type User {
@@ -33,6 +34,11 @@ type Book {
 
 type BooksPayload {
   books: [Book]
+  errors: [String]
+}
+
+type BookActionsPayload {
+  success: Boolean
   errors: [String]
 }
 
