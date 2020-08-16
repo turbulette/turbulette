@@ -30,6 +30,6 @@ class BaseUserCreate(BaseModel):
     @root_validator(pre=True)
     def check_passwords_match(cls, values):
         pw1, pw2 = values.get('password_one'), values.get('password_two')
-        if pw1 is not None and pw2 is not None and pw1 != pw2:
+        if pw1 and pw2 and pw1 != pw2:
             raise ValueError('Passwords do not match')
         return values
