@@ -82,8 +82,7 @@ def permission_required(permissions: list) -> F:
         async def wrapped_func(obj, info, user, **kwargs):
             authorized = False
             if permissions:
-                if user.permission_group:
-                    authorized = await has_permission(user, permissions)
+                authorized = await has_permission(user, permissions)
             if authorized:
                 info.context["user"] = user
                 return await func(obj, info, user, **kwargs)
