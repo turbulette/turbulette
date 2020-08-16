@@ -10,5 +10,5 @@ async def create_user(permission_group=None, **user_data):
     return await user_model.create(
         **user_data,
         hashed_password=get_password_hash(password),
-        permission_group=user_group.id
+        permission_group=(user_group.id if user_group else None)
     )
