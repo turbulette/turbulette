@@ -117,7 +117,7 @@ class TurbuletteApp:
         """
         if (
             not self.directives
-            and (self.package_path / f"{self.directives_module}.py").is_dir()
+            and (self.package_path / f"{self.directives_module}.py").is_file()
         ):
             # Relative import
             app_directives_module = import_module(
