@@ -4,6 +4,10 @@ extend type Mutation {
   #   deleteFan: Boolean
 }
 
+extend type Query {
+  books: BooksPayload
+}
+
 type User {
   id: ID!
   email: String!
@@ -22,8 +26,13 @@ type CreateUserPayload {
   errors: [String]
 }
 
-type UserPayload {
-  user: User
+type Book {
+  title: String!
+  author: String!
+}
+
+type BooksPayload {
+  books: [Book]
   errors: [String]
 }
 
@@ -34,4 +43,9 @@ input CreateUser {
   passwordTwo: String!
   firstName: String
   lastName: String
+}
+
+input Login {
+  username: String!
+  password: String!
 }
