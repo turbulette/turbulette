@@ -33,8 +33,8 @@ class TokenType(Enum):
     REFRESH = "refresh"
 
 
-def _jwt_payload(kwarg_name: str, user_id: str) -> dict:
-    payload = {kwarg_name: user_id}
+def _jwt_payload(user_id: str) -> dict:
+    payload = {"sub": user_id}
 
     if settings.JWT_AUDIENCE is not None:
         payload["aud"] = settings.JWT_AUDIENCE
@@ -46,16 +46,11 @@ def _jwt_payload(kwarg_name: str, user_id: str) -> dict:
 
 
 def jwt_payload(user: user_model) -> dict:
-    username = user.get_username()
-
-    if hasattr(username, "pk"):
-        username = username.pk
-
-    return _jwt_payload(user.USERNAME_FIELD, username)
+    return _jwt_payload(user.get_username())
 
 
 def jwt_payload_from_id(user_id: str) -> dict:
-    return _jwt_payload(user_model.USERNAME_FIELD, user_id)
+    return _jwt_payload(user_id)
 
 
 def encode_jwt(payload: dict, token_type: TokenType) -> str:
@@ -174,8 +169,8 @@ async def login(jwt_token: str) -> user_model:
             f"(expecting {settings.JWT_PREFIX} got {prefix})"
         )
     # Get the user's id from the JWT
-    payload = decode_jwt(jwt_token.split()[1])
-    return await user_model.get_by_username(payload.get(user_model.USERNAME_FIELD))
+    claims = decode_jwt(jwt_token.split()[1])[1]
+    return await user_model.get_by_username(claims.get("sub"))
 
 
 async def get_user_by_payload(payload):
