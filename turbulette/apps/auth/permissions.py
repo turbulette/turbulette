@@ -12,7 +12,7 @@ async def has_permission(user: user_model, permissions: list) -> bool:
     Returns:
         bool: ``True`` if the user has all of the required permissions, ``False`` otherwise
     """
-    query = GroupPermission.load(permission=Permission).query.where(
+    query = GroupPermission.load(permission=Permission, group=Group).query.where(
         Group.id == user.permission_group
     )
     group_permissions = await query.gino.all()
