@@ -14,7 +14,6 @@ from turbulette.test.pytest_plugin import (
     tester,
 )
 
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -106,7 +105,7 @@ async def test_refresh_jwt(turbulette_setup, create_user, get_tokens, tester):
     assert "accessToken" not in response[1]["data"]
 
 
-async def test_login_required(turbulette_setup, create_user, get_tokens, tester):
+async def test_login_required(turbulette_setup, create_user, get_tokens, false_access_jwt, tester):
     response = await tester.assert_query_success(
         query="""
             query {
@@ -124,7 +123,7 @@ async def test_login_required(turbulette_setup, create_user, get_tokens, tester)
 
     assert response[1]["data"]["books"]["books"]
 
-    response = await tester.assert_query_failed(
+    response = await tester.assert_query_success(
         query="""
             query {
                 books {
@@ -139,7 +138,7 @@ async def test_login_required(turbulette_setup, create_user, get_tokens, tester)
         headers={"authorization": f"JWT {false_access_jwt}"},
     )
 
-    assert not response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
 
 
 async def test_wrong_signature(turbulette_setup, tester, get_tokens):
