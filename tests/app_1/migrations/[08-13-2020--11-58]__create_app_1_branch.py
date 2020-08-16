@@ -1,13 +1,12 @@
 """create app_1 branch
 
 Revision ID: 69604d4ceebf
-Revises: 
+Revises:
 Create Date: 2020-08-13 11:58:06.530681
 
 """
 from alembic import op
 import sqlalchemy as sa
-import enumtables
 
 
 # revision identifiers, used by Alembic.

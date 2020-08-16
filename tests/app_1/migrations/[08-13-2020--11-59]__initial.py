@@ -7,7 +7,6 @@ Create Date: 2020-08-13 11:59:59.984908
 """
 from alembic import op
 import sqlalchemy as sa
-import enumtables
 
 
 # revision identifiers, used by Alembic.
