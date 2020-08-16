@@ -175,14 +175,11 @@ async def login(jwt: str) -> user_model:
     return await user_model.get_by_username(claims.get("sub"))
 
 
-async def get_user_by_payload(payload):
-    username = payload.get(user_model.USERNAME_FIELD)
+async def get_user_by_payload(claims):
+    username = claims.get("sub")
 
     if not username:
         raise JSONWebTokenError("Invalid payload")
 
     user = await user_model.get_by_username(username)
-
-    if user is not None and not getattr(user, "is_active", True):
-        raise JSONWebTokenError("User is disabled")
     return user
