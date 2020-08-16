@@ -34,7 +34,7 @@ APOLLO_FEDERATION = False
 
 # User model used for authentication.
 # Tuple must respect the following format : (module path, model class)
-AUTH_USER_MODEL = ("tests.app_1.models", "BaseUser")
+AUTH_USER_MODEL = ("tests.app_1.models", "CustomUser")
 
 # A valid hash algorithm that can be passed to CryptContext
 # see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
@@ -47,6 +47,9 @@ JWT_REFRESH_ENABLED = True
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 JWT_ALGORITHM = "ES256"
+
+JWT_AUDIENCE = "http://api.io/booking"
+JWT_ISSUER = "http://api.io/auth/"
 
 ###########################
 # DATABASE
