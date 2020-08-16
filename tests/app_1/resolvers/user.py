@@ -1,10 +1,11 @@
 from ariadne import convert_kwargs_to_snake_case
-from turbulette import mutation
+from turbulette import mutation, query
 from turbulette.apps.auth import user_model, get_token_from_user
 from turbulette.apps.auth.pyd_models import BaseUserCreate
 from turbulette.apps.auth.utils import create_user
 from turbulette.core.errors import BaseError
 from turbulette.core.validation.decorators import validate
+from turbulette.apps.auth.decorators import login_required
 
 
 @mutation.field("createUser")
@@ -25,4 +26,15 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
     return {
         "user": {**new_user.to_dict()},
         "token": auth_token,
+    }
+
+
+@query.field("books")
+@login_required
+async def resolve_books(_, info, user, **kwargs):
+    return {
+        "books": [
+            {"title": "Harry Potter", "author": "J.K Rowling"},
+            {"title": "The Lord of Rings", "author": "J.R.R Tolkien"},
+        ]
     }

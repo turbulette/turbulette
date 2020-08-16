@@ -27,15 +27,13 @@ def false_access_jwt():
 @pytest.fixture
 def false_refresh_jwt():
     from turbulette.apps.auth.core import jwt_payload_from_id, encode_jwt, TokenType
-
     return encode_jwt(jwt_payload_from_id("unknown_id"), TokenType.REFRESH)
 
 
-async def test_create_user(turbulette_setup, tester):
+@pytest.fixture(scope="module")
+async def create_user(turbulette_setup):
     from turbulette.apps.auth.models import Group, GroupPermission, Permission
     from turbulette.apps.auth.utils import create_user
-    from turbulette.apps.auth import core
-    from turbulette.apps import auth
 
     group = await Group.create(name="customer")
     permission = await Permission.create(key="buy:product", name="Can buy a product")
@@ -50,6 +48,9 @@ async def test_create_user(turbulette_setup, tester):
         permission_group="customer",
     )
 
+
+@pytest.fixture
+async def get_tokens(turbulette_setup, tester):
     response = await tester.assert_query_success(
         query="""
             query {
@@ -65,8 +66,14 @@ async def test_create_user(turbulette_setup, tester):
     assert response[1]["data"]["getJWT"]["accessToken"]
     assert response[1]["data"]["getJWT"]["refreshToken"]
 
-    access_token = response[1]["data"]["getJWT"]["accessToken"]
-    refresh_token = response[1]["data"]["getJWT"]["refreshToken"]
+    return (
+        response[1]["data"]["getJWT"]["accessToken"],
+        response[1]["data"]["getJWT"]["refreshToken"],
+    )
+
+
+async def test_refresh_jwt(turbulette_setup, create_user, get_tokens, tester):
+    access_token, refresh_token = get_tokens
 
     response = await tester.assert_query_success(
         query="""
@@ -82,7 +89,7 @@ async def test_create_user(turbulette_setup, tester):
 
     assert response[1]["data"]["refreshJWT"]["accessToken"]
 
-    await tester.assert_query_failed(
+    response = await tester.assert_query_failed(
         query="""
             query refreshJWT {
                 refreshJWT{
@@ -94,46 +101,128 @@ async def test_create_user(turbulette_setup, tester):
         headers={"authorization": f"JWT {access_token}"},
     )
 
+    assert "accessToken" not in response[1]["data"]
 
-async def test_wrong_signature(turbulette_setup, tester, false_refresh_jwt):
+
+async def test_login_required(turbulette_setup, create_user, get_tokens, tester):
     response = await tester.assert_query_success(
         query="""
-            query refreshJWT {
-                refreshJWT{
-                    accessToken
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
                     errors
                 }
             }
         """,
-        headers={"authorization": f"JWT {false_refresh_jwt}___wrong___"},
+        headers={"authorization": f"JWT {get_tokens[0]}"},
     )
 
-    assert "errors" in response[1]["data"]["refreshJWT"]
+    assert response[1]["data"]["books"]["books"]
 
 
-async def test_not_a_refresh_token(turbulette_setup, tester, false_access_jwt):
-    # TODO Make `pytest.raises()` working here
-    response = await tester.assert_query_failed(
+async def test_jwt_not_properly_formatted(turbulette_setup, tester, false_access_jwt):
+    response = await tester.assert_query_success(
         query="""
-            query refreshJWT {
-                refreshJWT{
-                    accessToken
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": f"JWT {false_access_jwt}___wrong___"},
+    )
+
+    assert "errors" in response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
+
+
+async def test_wrong_signature(turbulette_setup, tester, false_access_jwt):
+    response = await tester.assert_query_success(
+        query="""
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
                     errors
                 }
             }
         """,
         headers={"authorization": f"JWT {false_access_jwt}"},
     )
-    # We ensure that there is a GraphQL error and that the
-    # access token hasn't be produced
-    assert not response[1]["data"]["refreshJWT"]
+
+    assert "errors" in response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
+
+    response = await tester.assert_query_success(
+        query="""
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": f"JWT "},
+    )
+
+    assert "errors" in response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
+
+    response = await tester.assert_query_success(
+        query="""
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": f"{false_access_jwt}"},
+    )
+
+    assert "errors" in response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
+
+    response = await tester.assert_query_success(
+        query="""
+            query {
+                books {
+                    books {
+                        title
+                        author
+                    }
+                    errors
+                }
+            }
+        """,
+        headers={"authorization": ""},
+    )
+
+    assert "errors" in response[1]["data"]["books"]
+    assert not response[1]["data"]["books"]["books"]
+
 
 
 async def test_no_verify(turbulette_setup, tester, false_refresh_jwt):
     turbulette_setup.settings.configure(JWT_VERIFY=False)
     response = await tester.assert_query_success(
         query="""
-            query refreshJWT {
+            query {
                 refreshJWT{
                     accessToken
                     errors
@@ -143,3 +232,4 @@ async def test_no_verify(turbulette_setup, tester, false_refresh_jwt):
         headers={"authorization": f"JWT {false_refresh_jwt}"},
     )
     assert not response[1]["data"]["refreshJWT"]["errors"]
+    assert response[1]["data"]["refreshJWT"]["accessToken"]

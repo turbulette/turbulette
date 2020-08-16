@@ -43,7 +43,6 @@ JWT_REFRESH_ENABLED = True
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 JWT_ALGORITHM = "ES256"
-
 JWT_AUDIENCE = "http://api.io/booking"
 JWT_ISSUER = "http://api.io/auth/"
 
