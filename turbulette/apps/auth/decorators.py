@@ -57,8 +57,8 @@ def staff_member_required(func: F) -> F:
         try:
             user = await login(info.context["request"].headers["authorization"])
             if user.is_staff:
-                info.context["user"] = user
-                return await func(obj, info, **kwargs)
+                staff_user = user
+                return await func(obj, info, staff_user, **kwargs)
             return PermissionDenied().dict()
         except JSONWebTokenError as exception:
             return BaseError(exception.message).dict()
