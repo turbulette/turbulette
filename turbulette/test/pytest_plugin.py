@@ -54,16 +54,11 @@ def db_name():
     return f"test_{datetime.now().replace(microsecond=0).isoformat()}"
 
 
-@pytest.fixture
-def conf_module():
-    return import_module("turbulette.conf")
-
-
 @pytest.fixture(scope="session")
 async def turbulette_setup(project_settings, create_db):
     database = Gino()
     async with database.with_bind(bind=project_settings.DB_DSN) as engine:
-        conf_module_ = reload(import_module("turbulette.conf"))
+        conf_module = reload(import_module("turbulette.conf"))
         setup(project_settings.__name__)
         conf.db.bind = engine
         settings_file = Path(find_spec(project_settings.__name__).origin)
@@ -74,7 +69,7 @@ async def turbulette_setup(project_settings, create_db):
         config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
         config.set_main_option("script_location", script_location)
         upgrade(config, "heads")
-        yield conf_module_
+        yield conf_module
     await engine.close()
 
 
