@@ -343,6 +343,9 @@ async def test_create_user(turbulette_setup, tester, create_user_data):
                     user {
                         id
                         username
+                        firstName
+                        lastName
+                        email
                     }
                     token
                     errors
@@ -352,3 +355,5 @@ async def test_create_user(turbulette_setup, tester, create_user_data):
         op_name="createUser",
         variables={**create_user_data}
     )
+
+    tester.assert_data_in_response(response, "createUser", create_user_data)
