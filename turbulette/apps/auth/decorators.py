@@ -1,6 +1,6 @@
 from typing import Callable, Any, Tuple, TypeVar
 from turbulette.core.errors import BaseError, PermissionDenied
-from .exceptions import JSONWebTokenError, UserDoesNotExists
+from .exceptions import JSONWebTokenError, UserDoesNotExists, InvalidJWTError
 from .core import TokenType, decode_jwt, login
 from .permissions import has_permission
 
@@ -29,7 +29,7 @@ def login_required(func: F) -> F:
                 info.context["request"].headers["authorization"]
             )
             return await func(obj, info, user, **kwargs)
-        except JSONWebTokenError as exception:
+        except InvalidJWTError as exception:
             return BaseError(exception.message).dict()
         except UserDoesNotExists:
             return BaseError("User does not exists").dict()
@@ -87,7 +87,7 @@ def permission_required(permissions: list) -> F:
             authorized = False
             try:
                 user = await login(info.context["request"].headers["authorization"])
-            except JSONWebTokenError as exception:
+            except InvalidJWTError as exception:
                 return BaseError(exception.message).dict()
             if permissions:
                 if user.permission_group:
@@ -121,7 +121,7 @@ def access_token_required(func: F) -> F:
         try:
             jwt_claims = _jwt_required(info, TokenType.ACCESS)
             return await func(obj, info, jwt_claims, **kwargs)
-        except JSONWebTokenError as error:
+        except InvalidJWTError as error:
             return BaseError(error.message).dict()
 
     return wrapper
@@ -146,7 +146,7 @@ def refresh_token_required(func: F) -> F:
         try:
             jwt_claims = _jwt_required(info, TokenType.REFRESH)
             return await func(obj, info, jwt_claims, **kwargs)
-        except JSONWebTokenError as error:
+        except InvalidJWTError as error:
             return BaseError(error.message).dict()
 
     return wrapper
