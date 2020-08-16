@@ -1,5 +1,5 @@
 import pytest
-
+from typing import Dict, Any
 # Needed to make fixtures available
 from turbulette.test.pytest_plugin import (
     conf_module,
@@ -68,6 +68,18 @@ async def get_tokens(turbulette_setup, tester):
         response[1]["data"]["getJWT"]["accessToken"],
         response[1]["data"]["getJWT"]["refreshToken"],
     )
+
+
+@pytest.fixture
+async def create_user_data() -> Dict[str, Any]:
+    return {
+        "username": "john",
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "passwordOne": "1234",
+        "passwordTwo": "1234",
+    }
 
 
 async def test_refresh_jwt(turbulette_setup, create_user, get_tokens, tester):
@@ -307,3 +319,36 @@ async def test_get_user_by_payload(
     claims = decode_jwt(false_access_jwt)[1]
     with pytest.raises(UserDoesNotExists):
         user = await get_user_by_payload(claims)
+
+
+async def test_create_user(turbulette_setup, tester, create_user_data):
+    response = await tester.assert_query_success(
+        query="""
+            mutation createUser(
+                $username: String!
+                $firstName: String!
+                $lastName: String!
+                $email:  String!
+                $passwordOne: String!
+                $passwordTwo: String!
+            ) {
+                createUser(input: {
+                    username: $username
+                    firstName: $firstName
+                    lastName: $lastName
+                    email: $email
+                    passwordOne: $passwordOne
+                    passwordTwo: $passwordTwo
+                }) {
+                    user {
+                        id
+                        username
+                    }
+                    token
+                    errors
+                }
+            }
+        """,
+        op_name="createUser",
+        variables={**create_user_data}
+    )
