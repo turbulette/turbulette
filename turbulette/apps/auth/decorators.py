@@ -25,10 +25,10 @@ def login_required(func: F) -> F:
 
     async def wrapper(obj, info, **kwargs):
         try:
-            info.context["user"] = await login(
+            user = await login(
                 info.context["request"].headers["authorization"]
             )
-            return await func(obj, info, **kwargs)
+            return await func(obj, info, user, **kwargs)
         except JSONWebTokenError as exception:
             return BaseError(exception.message).dict()
 
