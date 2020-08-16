@@ -19,13 +19,8 @@ class JSONWebTokenError(Exception):
         super().__init__(message)
 
 
-class InvalidJWTError(JSONWebTokenError):
-    default_message = "Token is expired and/or invalid"
-
-
-
 class InvalidJWTSignatureError(JSONWebTokenError):
-    default_message = "JWT signature is invalid"
+    default_message = "JWT signature cannot be validated"
 
 
 

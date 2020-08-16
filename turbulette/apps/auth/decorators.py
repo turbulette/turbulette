@@ -1,6 +1,6 @@
 from typing import Callable, Any, Tuple, TypeVar
 from turbulette.core.errors import BaseError, PermissionDenied
-from .exceptions import JSONWebTokenError, UserDoesNotExists, InvalidJWTError
+from .exceptions import UserDoesNotExists, InvalidJWTSignatureError
 from .core import TokenType, decode_jwt, login
 from .permissions import has_permission
 
@@ -25,15 +25,12 @@ def login_required(func: F) -> F:
 
     async def wrapper(obj, info, **kwargs):
         try:
-            user = await login(
-                info.context["request"].headers["authorization"]
-            )
+            user = await login(info.context["request"].headers["authorization"])
             return await func(obj, info, user, **kwargs)
-        except InvalidJWTError as exception:
-            return BaseError(exception.message).dict()
+        except InvalidJWTSignatureError as error:
+            return BaseError(error.message).dict()
         except UserDoesNotExists:
             return BaseError("User does not exists").dict()
-
     return wrapper
 
 
@@ -53,15 +50,12 @@ def staff_member_required(func: F) -> F:
         FunctionType: The wrapped resolver
     """
 
-    async def wrapper(obj, info, **kwargs):
-        try:
-            user = await login(info.context["request"].headers["authorization"])
-            if user.is_staff:
-                staff_user = user
-                return await func(obj, info, staff_user, **kwargs)
-            return PermissionDenied().dict()
-        except JSONWebTokenError as exception:
-            return BaseError(exception.message).dict()
+    @login_required
+    async def wrapper(obj, info, user, **kwargs):
+        if user.is_staff:
+            staff_user = user
+            return await func(obj, info, staff_user, **kwargs)
+        return PermissionDenied().dict()
 
     return wrapper
 
@@ -85,10 +79,7 @@ def permission_required(permissions: list) -> F:
     def wrap(func):
         async def wrapped_func(obj, info, **kwargs):
             authorized = False
-            try:
-                user = await login(info.context["request"].headers["authorization"])
-            except InvalidJWTError as exception:
-                return BaseError(exception.message).dict()
+            user = await login(info.context["request"].headers["authorization"])
             if permissions:
                 if user.permission_group:
                     authorized = await has_permission(user, permissions)
@@ -118,11 +109,8 @@ def access_token_required(func: F) -> F:
     """
 
     async def wrapper(obj, info, **kwargs):
-        try:
-            jwt_claims = _jwt_required(info, TokenType.ACCESS)
-            return await func(obj, info, jwt_claims, **kwargs)
-        except InvalidJWTError as error:
-            return BaseError(error.message).dict()
+        jwt_claims = _jwt_required(info, TokenType.ACCESS)
+        return await func(obj, info, jwt_claims, **kwargs)
 
     return wrapper
 
@@ -143,20 +131,18 @@ def refresh_token_required(func: F) -> F:
     """
 
     async def wrapper(obj, info, **kwargs):
-        try:
-            jwt_claims = _jwt_required(info, TokenType.REFRESH)
-            return await func(obj, info, jwt_claims, **kwargs)
-        except InvalidJWTError as error:
-            return BaseError(error.message).dict()
+        jwt_claims = _jwt_required(info, TokenType.REFRESH)
+        return await func(obj, info, jwt_claims, **kwargs)
 
     return wrapper
 
 
 def _jwt_required(info, token_type: TokenType) -> Tuple:
     token = info.context["request"].headers["authorization"].split()[1]
-    claims = decode_jwt(token)[1]
+    try:
+        claims = decode_jwt(token)[1]
+    except InvalidJWTSignatureError as error:
+        return BaseError(error.message).dict()
     if TokenType(claims["type"]) is not token_type:
-        raise PermissionError(
-            f"The provided token is not a {token_type.value} token"
-        )
+        raise PermissionError(f"The provided token is not a {token_type.value} token")
     return claims
