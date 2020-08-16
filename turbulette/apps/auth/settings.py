@@ -2,14 +2,9 @@ from datetime import timedelta
 
 
 SETTINGS_RULES = {
-    "REQUIRED_SETTINGS": ["AUTH_USER_MODEL", "JWK_KTY"],
+    "REQUIRED_SETTINGS": ["AUTH_USER_MODEL", "SECRET_KEY"],
     "REQUIRED_SETTINGS_TYPES": {
         "JWT_ALGORITHM": "str",
-        "JWK_KTY": "str",
-        "JWK_EC_PARAMS": "json.loads",
-        "JWK_RSA_PARAMS": "json.loads",
-        "JWK_OKP_PARAMS": "json.loads",
-        "JWK_OCT_PARAMS": "json.loads",
         "JWT_AUDIENCE": "str",
         "JWT_ISSUER": "str",
         "JWT_PREFIX": "str",
@@ -39,14 +34,6 @@ JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 JWT_JTI_SIZE = 16
 
 JWT_ALGORITHM = "ES256"
-
-# Must be one of (EC, RSA, OKP, oct)
-JWK_KTY = "EC"
-
-JWK_EC_PARAMS = {"crv": "P-256"}
-JWK_RSA_PARAMS = {"size": 2048}
-JWK_OKP_PARAMS = {"crv": "Ed25519"}
-JWK_oct_PARAMS = {"size": 256}
 
 # JWT_ACCESS_LOCATION = "headers"
 # JWT_REFRESH_LOCATION = "headers"

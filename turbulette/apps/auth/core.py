@@ -22,10 +22,7 @@ user_model: Model = getattr(
     import_module(settings.AUTH_USER_MODEL[0]), settings.AUTH_USER_MODEL[1]
 )
 
-# Generate the secret key with the right KTY params
-_secret_key = JWK.generate(
-    kty=settings.JWK_KTY, **getattr(settings, f"JWK_{settings.JWK_KTY}_PARAMS")
-)
+_secret_key = JWK(**settings.SECRET_KEY)
 
 
 class TokenType(Enum):
