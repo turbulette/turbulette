@@ -78,15 +78,15 @@ def permission_required(permissions: list) -> F:
     """
 
     def wrap(func):
-        async def wrapped_func(obj, info, **kwargs):
+        @login_required
+        async def wrapped_func(obj, info, user, **kwargs):
             authorized = False
-            user = await login(info.context["request"].headers["authorization"])
             if permissions:
                 if user.permission_group:
                     authorized = await has_permission(user, permissions)
             if authorized:
                 info.context["user"] = user
-                return await func(obj, info, **kwargs)
+                return await func(obj, info, user, **kwargs)
             return PermissionDenied().dict()
 
         return wrapped_func
