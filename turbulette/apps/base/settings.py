@@ -6,6 +6,8 @@
 # to process the rules
 # SIMPLE_SETTINGS = simple_settings
 
+OVERRIDE_BY_ENV = True
+
 # Base settings rules
 SETTINGS_RULES = {
     "REQUIRED_SETTINGS": [
@@ -21,7 +23,9 @@ SETTINGS_RULES = {
         "INSTALLED_APPS": "json.loads",
         "MIDDLEWARE_CLASSES": "json.loads",
         "GRAPHQL_ENDPOINT": "str"
-    }
+    },
+
+    "OVERRIDE_BY_ENV": OVERRIDE_BY_ENV
 }
 
 ###########################

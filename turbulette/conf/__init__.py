@@ -1,4 +1,5 @@
 import sys
+from turbulette.conf.constants import OVERRIDE_BY_ENV
 from types import ModuleType
 from .exceptions import NotReadyError
 from . import constants
@@ -13,6 +14,7 @@ SIMPLE_SETTINGS = {
     constants.REQUIRED_SETTINGS_TYPES: {},
     constants.REQUIRED_NOT_NONE_SETTINGS: set(),
     constants.SETTINGS_LOGS: False,
+    constants.OVERRIDE_BY_ENV: True
 }
 
 

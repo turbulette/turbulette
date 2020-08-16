@@ -45,7 +45,10 @@ class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
             setting_value = getattr(module, setting)
             if setting == SETTINGS_RULES:
                 for key, value in setting_value.items():
-                    conf.SIMPLE_SETTINGS[key].update(value)
+                    if key == conf.OVERRIDE_BY_ENV:
+                        conf.SIMPLE_SETTINGS[key] = value
+                    else:
+                        conf.SIMPLE_SETTINGS[key].update(value)
             elif setting == SETTINGS_LOGS:
                 conf.SIMPLE_SETTINGS[SETTINGS_LOGS] = setting_value
             if not ismodule(setting_value):
@@ -69,7 +72,6 @@ class Registry:
     ):
         self.apps = {}
         self.ready = False
-        self._settings_initialized = False
 
         if project_settings:
             project_settings_module = import_module(project_settings)
@@ -176,10 +178,9 @@ class Registry:
         Returns:
             LazySettings: LazySettings initialized with all settings module found
         """
-        if not self._settings_initialized:
+        if not conf.settings:
             all_settings = []
 
-            self._settings_initialized = True
             for app in self.apps.values():
                 if (app.package_path / f"{self.settings_module}.py").is_file():
                     all_settings.append(f"{app.package_name}.{self.settings_module}")
