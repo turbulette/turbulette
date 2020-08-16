@@ -1,7 +1,7 @@
 from importlib import import_module
 from inspect import ismodule
 from types import ModuleType
-from typing import List
+from typing import Dict, List
 from ariadne import snake_case_fallback_resolvers
 from graphql.type import GraphQLSchema
 from simple_settings import LazySettings
@@ -70,7 +70,7 @@ class Registry:
         project_settings_module: ModuleType = None,
         app_settings_module: str = MODULE_SETTINGS,
     ):
-        self.apps = {}
+        self.apps: Dict[str, TurbuletteApp] = {}
         self.ready = False
 
         if project_settings:
