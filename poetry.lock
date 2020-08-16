@@ -250,7 +250,7 @@ tornado = ["gino-tornado (>=0.1.0,<0.2.0)"]
 category = "main"
 description = "Support for storing enum values in a table instead of a type"
 name = "gino-enum-tables"
-optional = false
+optional = true
 python-versions = ">=3.8,<4.0"
 version = "1.0.6"
 
@@ -825,7 +825,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "87c8b05b970f9c7c180067454b403a7e9bfaeedb586e725dcce2fc9f8cedc591"
+content-hash = "7778dc056141485664040da2ef018b8c8663eb1fb4d8116c4db089540ffc1906"
 lock-version = "1.0"
 python-versions = "^3.8"
 
