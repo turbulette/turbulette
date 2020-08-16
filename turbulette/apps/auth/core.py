@@ -11,7 +11,7 @@ from passlib.context import CryptContext
 
 from turbulette.conf import settings
 
-from .exceptions import JSONWebTokenError, JSONWebTokenExpired
+from .exceptions import JSONWebTokenError, InvalidJWTError, InvalidJWTSignatureError
 
 
 # Create crypto context
@@ -97,12 +97,10 @@ def decode_jwt(jwt: str) -> Tuple:
             iat_skew=settings.JWT_LEEWAY,
             allowed_algs=[settings.JWT_ALGORITHM],
         )
-    except InvalidJWSObject:
-        raise JSONWebTokenError("Invalid token. Please log in again.")
     except InvalidJWSSignature:
-        raise JSONWebTokenError("Invalid token signature")
+        raise InvalidJWTSignatureError
     except:
-        raise JSONWebTokenExpired("Token is expired")
+        raise JSONWebTokenError("JWT is invalid and/or improperly formatted")
 
 
 def get_token_from_user(user: user_model) -> str:

@@ -19,8 +19,14 @@ class JSONWebTokenError(Exception):
         super().__init__(message)
 
 
-class JSONWebTokenExpired(JSONWebTokenError):
-    default_message = "Signature has expired"
+class InvalidJWTError(JSONWebTokenError):
+    default_message = "Token is expired and/or invalid"
+
+
+
+class InvalidJWTSignatureError(JSONWebTokenError):
+    default_message = "JWT signature is invalid"
+
 
 
 class UserDoesNotExists(Exception):
