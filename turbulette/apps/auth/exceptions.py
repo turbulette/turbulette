@@ -21,3 +21,7 @@ class JSONWebTokenError(Exception):
 
 class JSONWebTokenExpired(JSONWebTokenError):
     default_message = "Signature has expired"
+
+
+class UserDoesNotExists(Exception):
+    pass
