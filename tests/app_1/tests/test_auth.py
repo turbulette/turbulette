@@ -1,6 +1,3 @@
-from base64 import decode
-from collections import UserString
-from importlib import reload
 import pytest
 
 # Needed to make fixtures available
