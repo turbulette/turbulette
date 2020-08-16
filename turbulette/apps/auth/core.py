@@ -100,7 +100,9 @@ def decode_jwt(jwt: str) -> Tuple:
     except InvalidJWSObject:
         raise JSONWebTokenError("Invalid token. Please log in again.")
     except InvalidJWSSignature:
-        raise JSONWebTokenError("Invalid signature or token expired. Please log in again.")
+        raise JSONWebTokenError("Invalid token signature")
+    except:
+        raise JSONWebTokenExpired("Token is expired")
 
 
 def get_token_from_user(user: user_model) -> str:
@@ -113,11 +115,6 @@ def get_token_from_user(user: user_model) -> str:
         str: The JWT token
     """
     return encode_jwt(jwt_payload(user), TokenType.ACCESS)
-
-
-def refresh_has_expired(orig_iat) -> bool:
-    exp = orig_iat + settings.JWT_REFRESH_EXPIRATION_DELTA.total_seconds()
-    return timegm(datetime.utcnow().utctimetuple()) > exp
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -145,7 +142,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def login(jwt_token: str) -> user_model:
+async def login(jwt: str) -> user_model:
     """Log a user
 
     Args:
@@ -157,16 +154,24 @@ async def login(jwt_token: str) -> user_model:
     Returns:
         user_model: The user model instance
     """
-    if not jwt_token:
+    if not jwt:
         raise JSONWebTokenError("JWT token not found")
-    prefix = jwt_token.split()[0]
+
+    prefix, *other = jwt.split()
+
+    access_token = other[0] if other else None
+
     if prefix != settings.JWT_PREFIX:
         raise JSONWebTokenError(
             f"Wrong token prefix in authorization header"
             f"(expecting {settings.JWT_PREFIX} got {prefix})"
         )
+
+    if not access_token:
+        raise JSONWebTokenError("JWT token not found")
+
     # Get the user's id from the JWT
-    claims = decode_jwt(jwt_token.split()[1])[1]
+    claims = decode_jwt(jwt.split()[1])[1]
     return await user_model.get_by_username(claims.get("sub"))
 
 

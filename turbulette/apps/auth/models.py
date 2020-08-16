@@ -10,6 +10,7 @@ from sqlalchemy import (
 )
 
 from turbulette.db import Model
+from .exceptions import UserDoesNotExists
 
 
 class AbstractUser:
@@ -30,14 +31,16 @@ class AbstractUser:
         return f"{self.get_username()}"
 
 
-    def get_username(self):
-        return getattr(self, self.USERNAME_FIELD)
+    def get_username(self) -> str:
+        return str(getattr(self, self.USERNAME_FIELD))
 
 
     @classmethod
     async def get_by_username(cls, username: str):
-        return await cls.query.where(getattr(cls, cls.USERNAME_FIELD) == username).gino.first()
-
+        user = await cls.query.where(getattr(cls, cls.USERNAME_FIELD) == username).gino.first()
+        if not user:
+            raise UserDoesNotExists
+        return user
 
 class Group(Model):
     id = Column(Integer, primary_key=True)

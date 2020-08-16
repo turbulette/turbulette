@@ -1,6 +1,6 @@
 from typing import Callable, Any, Tuple, TypeVar
 from turbulette.core.errors import BaseError, PermissionDenied
-from .exceptions import JSONWebTokenError
+from .exceptions import JSONWebTokenError, UserDoesNotExists
 from .core import TokenType, decode_jwt, login
 from .permissions import has_permission
 
@@ -31,6 +31,8 @@ def login_required(func: F) -> F:
             return await func(obj, info, user, **kwargs)
         except JSONWebTokenError as exception:
             return BaseError(exception.message).dict()
+        except UserDoesNotExists:
+            return BaseError("User does not exists").dict()
 
     return wrapper
 
