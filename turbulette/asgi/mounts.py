@@ -1,21 +1,16 @@
 from importlib import import_module
 
 from sqlalchemy.engine.url import URL
-
+from gino_starlette import Gino
 from turbulette import conf
 from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
-from .exceptions import ASGIFrameworkError, GinoExtensionError
+from .exceptions import ASGIFrameworkError
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
-    try:
-        from gino_starlette import Gino
-    except ModuleNotFoundError:
-        raise GinoExtensionError("Failed to import gino_starlette, is it installed?")
-
     if not settings:
         raise ImproperlyConfigured(
             f"You did not set the {SETTINGS_DATABASE_SETTINGS} setting"
@@ -81,11 +76,8 @@ def turbulette_starlette(project_settings: str = None):
     Returns:
         FastAPI: The Starlette instance
     """
-    try:
-        from starlette.applications import Starlette
-        from starlette.routing import Route
-    except ModuleNotFoundError:
-        raise ASGIFrameworkError("Failed to import starlette, is it installed?")
+    from starlette.applications import Starlette
+    from starlette.routing import Route
 
     project_settings_module = import_module(project_settings)
     db = gino_starlette(
