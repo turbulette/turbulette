@@ -1,4 +1,4 @@
-class JSONWebTokenError(Exception):
+class JWTDecodeError(Exception):
     default_message = "An error occured while processing the JSON web token"
 
     def __init__(self, message=None):
@@ -8,11 +8,11 @@ class JSONWebTokenError(Exception):
         super().__init__(message)
 
 
-class InvalidJWTSignatureError(JSONWebTokenError):
+class JWTInvalidSignatureError(JWTDecodeError):
     default_message = "JWT signature cannot be validated"
 
 
-class JWTExpiredError(JSONWebTokenError):
+class JWTExpiredError(JWTDecodeError):
     default_message = "JWT has exprired"
 
 
