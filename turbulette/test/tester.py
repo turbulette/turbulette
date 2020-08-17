@@ -69,15 +69,14 @@ class Tester:
 
     @classmethod
     def assert_data_in_response(
-        cls, response: GraphQLResult, query_name: str, data: Dict[str, Any]
+        cls, response: GraphQLResult, data: Dict[str, Any]
     ):
         """Assert that the response contains the specified key with the corresponding values
 
         Args:
             response (GraphQLResult): Response to check
-            query_name (str): Name of the GraphQL query/mutation
             data (Dict[str, Any]): Data that should be present in query response
         """
         for key, value in data.items():
-            if key in response[1]["data"][query_name]:
-                assert response[1]["data"][query_name][key] == value
+            if key in response:
+                assert response[key] == value
