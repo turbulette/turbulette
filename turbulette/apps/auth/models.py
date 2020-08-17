@@ -28,7 +28,21 @@ class AbstractUser:
     USERNAME_FIELD = "username"
 
     def __repr__(self):
-        return f"{self.get_username()}"
+        """Will work only it's lower than __repr__ of `Model` in the MRO of the concrete user class
+
+        example :
+
+        This will correctly output `<ConcreteUser: username>`
+
+                class ConcreteUser(AbstractUser, Model):
+                    ...
+
+        While this will make the __repr__ method of `Model` to be used
+
+                class ConcreteUser(Model, AbstractUser):
+                    ...
+        """
+        return super().__repr__(self.get_username())
 
 
     def get_username(self) -> str:
@@ -47,7 +61,7 @@ class Group(Model):
     name = Column(String, nullable=False, unique=True)
 
     def __repr__(self):
-        return f"{self.name}"
+        return super().__repr__(self.name)
 
 
 class Permission(Model):
@@ -56,10 +70,13 @@ class Permission(Model):
     key = Column(String, nullable=False, unique=True)
 
     def __repr__(self):
-        return f"{self.key}"
+        return f"<{type(self).__name__}: {self.key}>"
 
 
 class GroupPermission(Model):
     id = Column(Integer, primary_key=True)
     group = Column(Integer, ForeignKey("auth_group.id"), nullable=False)
     permission = Column(Integer, ForeignKey("auth_permission.id"), nullable=False)
+
+    def __repr__(self):
+        return f"<{type(self).__name__}: group: {self.group}, permission: {self.permission}>"
