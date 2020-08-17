@@ -79,4 +79,4 @@ class GroupPermission(Model):
     permission = Column(Integer, ForeignKey("auth_permission.id"), nullable=False)
 
     def __repr__(self):
-        return f"<{type(self).__name__}: group: {self.group}, permission: {self.permission}>"
+        return super().__repr__(f"group: {self.group}, permission: {self.permission}")
