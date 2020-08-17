@@ -12,6 +12,9 @@ class InvalidJWTSignatureError(JSONWebTokenError):
     default_message = "JWT signature cannot be validated"
 
 
+class JWTExpiredError(JSONWebTokenError):
+    default_message = "JWT has exprired"
+
 
 class UserDoesNotExists(Exception):
     pass

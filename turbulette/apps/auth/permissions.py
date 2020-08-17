@@ -2,7 +2,7 @@ from . import user_model
 from .models import Group, GroupPermission, Permission
 
 
-async def has_permission(user: user_model, permissions: list) -> bool:
+async def has_scope(username, permissions: list, is_staff=False) -> bool:
     """Check for a user permissions
 
     Args:
@@ -12,12 +12,20 @@ async def has_permission(user: user_model, permissions: list) -> bool:
     Returns:
         bool: ``True`` if the user has all of the required permissions, ``False`` otherwise
     """
-    query = GroupPermission.load(permission=Permission, group=Group).query.where(
-        Group.id == user.permission_group
-    )
-    group_permissions = await query.gino.all()
-    if len(group_permissions) == 0:
-        return False
-    return all(
-        any(p == gp.permission.key for gp in group_permissions) for p in permissions
-    )
+    authorized = True
+    user = await user_model.get_by_username(username)
+    if permissions:
+        query = GroupPermission.load(permission=Permission, group=Group).query.where(
+            Group.id == user.permission_group
+        )
+        group_permissions = await query.gino.all()
+        if len(group_permissions) > 0:
+            authorized = all(
+                any(p == gp.permission.key for gp in group_permissions)
+                for p in permissions
+            )
+        else:
+            authorized = False
+    if is_staff:
+        authorized = user.is_staff
+    return authorized
