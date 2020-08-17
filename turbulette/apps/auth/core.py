@@ -14,7 +14,7 @@ from python_jwt import generate_jwt, process_jwt, verify_jwt
 from turbulette.conf import settings
 from turbulette.core.errors import BaseError
 
-from .exceptions import InvalidJWTSignatureError, JSONWebTokenError, JWTExpiredError
+from .exceptions import JWTInvalidSignatureError, JWTDecodeError, JWTExpiredError
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -79,20 +79,20 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
 def process_jwt_header(header: str) -> str:
     if not header:
-        raise JSONWebTokenError("JWT token not found")
+        raise JWTDecodeError("JWT token not found")
 
     prefix, *jwt = header.split()
 
     jwt = jwt[0] if jwt else None
 
     if prefix != settings.JWT_PREFIX:
-        raise JSONWebTokenError(
+        raise JWTDecodeError(
             f"Wrong token prefix in authorization header"
             f"(expecting {settings.JWT_PREFIX} got {prefix})"
         )
 
     if not jwt:
-        raise JSONWebTokenError("JWT token not found")
+        raise JWTDecodeError("JWT token not found")
 
     return jwt
 
@@ -120,10 +120,10 @@ def decode_jwt(jwt: str) -> Tuple:
             iat_skew=settings.JWT_LEEWAY,
             allowed_algs=[settings.JWT_ALGORITHM],
         )
+    except (InvalidJWSObject, UnicodeDecodeError):
+        raise JWTDecodeError("JWT is invalid and/or improperly formatted")
     except InvalidJWSSignature:
-        raise InvalidJWTSignatureError
-    except InvalidJWSObject:
-        raise JSONWebTokenError("JWT is invalid and/or improperly formatted")
+        raise JWTInvalidSignatureError
     except:
         raise JWTExpiredError
 
@@ -169,7 +169,7 @@ async def get_user_by_payload(claims):
     username = claims.get("sub")
 
     if not username:
-        raise JSONWebTokenError("Invalid payload")
+        raise JWTDecodeError("Invalid payload")
 
     user = await user_model.get_by_username(username)
     return user
