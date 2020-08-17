@@ -36,3 +36,8 @@ class BaseModelMeta(ModelType):
 class Model(db.Model, metaclass=BaseModelMeta):
     """Base model class for gino models
     """
+
+    def __repr__(self, key: str = None):
+        if not key:
+            key = getattr(self, str(self.query.primary_key[0]))
+        return f"<{type(self).__name__}: {key}>"
