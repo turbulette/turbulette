@@ -12,7 +12,6 @@ def serialize_datetime(value):
 
 @json_scalar.value_parser
 def parse_json(value):
-    if value is None:
-        return None
+    if not value:
+        return {}
     return json.loads(value)
-
