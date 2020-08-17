@@ -28,14 +28,6 @@ class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
     """A custom strategy to collect all settings rules before processing them
     """
 
-    @staticmethod
-    def is_valid_file(file_name):
-        try:
-            import_module(file_name)
-            return True
-        except (ModuleNotFoundError):
-            return False
-
     @classmethod
     def load_settings_file(cls, settings_file):
         result = {}
