@@ -30,14 +30,20 @@ pytest = "^6.0.1"
 pytest-cov = "^2.10.0"
 pytest-asyncio = "^0.14.0"
 gunicorn = "^20.0.4"
+fastapi = "^0.61.0"
+coverage = {extras = ["toml"], version = "^5.2.1"}
 
 [tool.poetry.plugins."pytest11"]
 "turbulette" = "turbulette.test.pytest_plugin"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-# addopts = "--cov=turbulette --cov-report html"
-# --cov-report xml
+addopts = "--cov --cov-report html --cov-report xml"
+
+[tool.coverage.run]
+omit = ["turbulette/test/pytest_plugin.py"]
+source = ["turbulette/"]
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
