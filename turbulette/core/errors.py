@@ -19,7 +19,7 @@ class BaseError:
         return {self.errors_field_name: self.errors_list}
 
     def __str__(self) -> str:
-        return "\n".join(**self.errors_list)
+        return "\n".join(self.errors_list)
 
     def add(self, message: str, nature: str = None):
         self.errors_list.append(f"{nature}: {message}" if nature else message)
