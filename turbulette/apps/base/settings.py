@@ -63,6 +63,6 @@ LOGGING = {
     },
     "loggers": {
         "": {"handlers": ["logfile"], "level": "ERROR"},
-        "my_project": {"level": "INFO", "propagate": True,},
+        "turbulette": {"level": "INFO", "propagate": True,},
     },
 }
