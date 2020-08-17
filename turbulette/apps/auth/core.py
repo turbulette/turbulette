@@ -7,14 +7,14 @@ from typing import Tuple
 
 from gino.declarative import Model
 from jwcrypto.jwk import JWK
-from jwcrypto.jws import InvalidJWSSignature
+from jwcrypto.jws import InvalidJWSSignature, InvalidJWSObject
 from passlib.context import CryptContext
 from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
 from turbulette.core.errors import BaseError
 
-from .exceptions import InvalidJWTSignatureError, JSONWebTokenError, UserDoesNotExists
+from .exceptions import InvalidJWTSignatureError, JSONWebTokenError, JWTExpiredError
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -77,6 +77,26 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
     )
 
 
+def process_jwt_header(header: str) -> str:
+    if not header:
+        raise JSONWebTokenError("JWT token not found")
+
+    prefix, *jwt = header.split()
+
+    jwt = jwt[0] if jwt else None
+
+    if prefix != settings.JWT_PREFIX:
+        raise JSONWebTokenError(
+            f"Wrong token prefix in authorization header"
+            f"(expecting {settings.JWT_PREFIX} got {prefix})"
+        )
+
+    if not jwt:
+        raise JSONWebTokenError("JWT token not found")
+
+    return jwt
+
+
 def decode_jwt(jwt: str) -> Tuple:
     """Decode JSON web token
 
@@ -91,6 +111,7 @@ def decode_jwt(jwt: str) -> Tuple:
     """
     if not settings.JWT_VERIFY:
         return process_jwt(jwt)
+
     try:
         return verify_jwt(
             jwt,
@@ -101,8 +122,10 @@ def decode_jwt(jwt: str) -> Tuple:
         )
     except InvalidJWSSignature:
         raise InvalidJWTSignatureError
-    except:
+    except InvalidJWSObject:
         raise JSONWebTokenError("JWT is invalid and/or improperly formatted")
+    except:
+        raise JWTExpiredError
 
 
 def get_token_from_user(user: user_model) -> str:
@@ -140,39 +163,6 @@ def get_password_hash(password: str) -> str:
         str: The resulting hash
     """
     return pwd_context.hash(password)
-
-
-async def login(jwt: str) -> user_model:
-    """Log a user
-
-    Args:
-        auth_token (str): JSON web token
-
-    Raises:
-        JSONWebTokenError: Raised if JWT is not found or if the JWT prefix is incorrect
-
-    Returns:
-        user_model: The user model instance
-    """
-    if not jwt:
-        raise JSONWebTokenError("JWT token not found")
-
-    prefix, *other = jwt.split()
-
-    access_token = other[0] if other else None
-
-    if prefix != settings.JWT_PREFIX:
-        raise JSONWebTokenError(
-            f"Wrong token prefix in authorization header"
-            f"(expecting {settings.JWT_PREFIX} got {prefix})"
-        )
-
-    if not access_token:
-        raise JSONWebTokenError("JWT token not found")
-
-    # Get the user's id from the JWT
-    claims = decode_jwt(jwt.split()[1])[1]
-    return await user_model.get_by_username(claims.get("sub"))
 
 
 async def get_user_by_payload(claims):

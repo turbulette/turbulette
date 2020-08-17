@@ -1,67 +1,14 @@
-from typing import Callable, Any, Tuple, TypeVar
-from turbulette.core.errors import BaseError, PermissionDenied
-from .exceptions import UserDoesNotExists, InvalidJWTSignatureError
-from .core import TokenType, decode_jwt, login
-from .permissions import has_permission
+from typing import Any, Callable, Tuple, TypeVar
 
+from turbulette.core.errors import PermissionDenied
+
+from .core import TokenType, decode_jwt, process_jwt_header
+from .permissions import has_scope
 
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def login_required(func: F) -> F:
-    """Decorator that log a user before executing
-        the wrapped function
-
-    If the user successfully has been successfully
-    logged in, the user model instance is added to
-    the context dictionary with the key ``user``
-
-    Args:
-        func (FunctionType): Async function to wrap
-
-    Returns:
-        FunctionType: The wrapped resolver
-    """
-
-    async def wrapper(obj, info, **kwargs):
-        try:
-            user = await login(info.context["request"].headers["authorization"])
-            return await func(obj, info, user, **kwargs)
-        except InvalidJWTSignatureError as error:
-            return BaseError(error.message).dict()
-        except UserDoesNotExists:
-            return BaseError("User does not exists").dict()
-
-    return wrapper
-
-
-def staff_member_required(func: F) -> F:
-    """Decorator that log a user and check
-        if it's a staff member before executing
-        the wrapped function
-
-    If the user successfully has been successfully
-    logged in, the user model instance is added to
-    the context dictionary with the key ``user``
-
-    Args:
-        func (FunctionType): Async function to wrap
-
-    Returns:
-        FunctionType: The wrapped resolver
-    """
-
-    @login_required
-    async def wrapper(obj, info, user, **kwargs):
-        if user.is_staff:
-            staff_user = user
-            return await func(obj, info, staff_user, **kwargs)
-        return PermissionDenied().dict()
-
-    return wrapper
-
-
-def permission_required(permissions: list) -> F:
+def scope_required(permissions: list, is_staff=False) -> F:
     """Decorator that log a user and check if it
         has the required permissions
         before executing the wrapped function
@@ -78,14 +25,11 @@ def permission_required(permissions: list) -> F:
     """
 
     def wrap(func):
-        @login_required
-        async def wrapped_func(obj, info, user, **kwargs):
-            authorized = False
-            if permissions:
-                authorized = await has_permission(user, permissions)
+        @access_token_required
+        async def wrapped_func(obj, info, claims, **kwargs):
+            authorized = await has_scope(claims["sub"], permissions, is_staff)
             if authorized:
-                info.context["user"] = user
-                return await func(obj, info, user, **kwargs)
+                return await func(obj, info, claims, **kwargs)
             return PermissionDenied().dict()
 
         return wrapped_func
@@ -140,16 +84,13 @@ def refresh_token_required(func: F) -> F:
 def _jwt_required(token_type: TokenType) -> Tuple:
     def wrap(func: F) -> F:
         async def wrapped_func(obj, info, **kwargs):
-            token = info.context["request"].headers["authorization"].split()[1]
-            try:
-                claims = decode_jwt(token)[1]
-                if TokenType(claims["type"]) is not token_type:
-                    raise PermissionError(
-                        f"The provided token is not a {token_type.value} token"
-                    )
-                return await func(obj, info, claims, **kwargs)
-            except InvalidJWTSignatureError as error:
-                return BaseError(error.message).dict()
+            jwt = process_jwt_header(info.context["request"].headers["authorization"])
+            claims = decode_jwt(jwt)[1]
+            if TokenType(claims["type"]) is not token_type:
+                raise PermissionError(
+                    f"The provided token is not a {token_type.value} token"
+                )
+            return await func(obj, info, claims, **kwargs)
 
         return wrapped_func
 
