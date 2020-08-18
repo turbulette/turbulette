@@ -7,16 +7,9 @@ from turbulette.apps.registry import Registry
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 
-# @pytest.mark.usefixtures("reload_resources")
 def test_init():
     with pytest.raises(ImproperlyConfigured):
         reg = Registry()
-
-
-# @pytest.mark.usefixtures("reload_resources")
-# def test_init_with_app(settings_no_apps):
-#     app = TurbuletteApp("turbulette.apps.auth")
-#     reg = Registry(app_list=[app], project_settings=settings_no_apps)
 
 
 @pytest.mark.usefixtures("reload_resources")
@@ -30,7 +23,7 @@ def test_setup_no_schema(registry):
     registry.apps = {}
     with pytest.raises(RegistryError):
         registry.setup()
-    
+
 
 @pytest.mark.usefixtures("reload_resources")
 def test_register_app(settings_no_apps, registry):
