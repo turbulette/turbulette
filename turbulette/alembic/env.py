@@ -7,7 +7,7 @@ from turbulette.main import get_gino_instance
 from turbulette import conf
 
 
-def run_migrations_offline(metadata, config):
+def run_migrations_offline(metadata, config): # pragma: no cover
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -31,7 +31,7 @@ def run_migrations_offline(metadata, config):
         context.run_migrations()
 
 
-def run_migrations_online(metadata, config):
+def run_migrations_online(metadata, config): # pragma: no cover
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
@@ -54,7 +54,7 @@ def run_migrations_online(metadata, config):
 def run_migrations(project_settings: str):
     settings = import_module(project_settings)
     registry = Registry(project_settings_module=settings)
-    if not conf.registry:
+    if not conf.registry: # pragma: no cover
         conf.registry = registry
     registry.load_settings()
 
@@ -75,7 +75,7 @@ def run_migrations(project_settings: str):
     registry.load_models()
     alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))
 
-    if context.is_offline_mode():
+    if context.is_offline_mode(): # pragma: no cover
         run_migrations_offline(metadata, alembic_config)
     else:
         run_migrations_online(metadata, alembic_config)
