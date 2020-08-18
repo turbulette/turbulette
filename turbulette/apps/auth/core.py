@@ -21,7 +21,8 @@ pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
 
 # Dynamically import user model
 user_model: Model = getattr(
-    import_module(settings.AUTH_USER_MODEL[0]), settings.AUTH_USER_MODEL[1]
+    import_module(settings.AUTH_USER_MODEL.rsplit(".", 1)[0]),
+    settings.AUTH_USER_MODEL.rsplit(".", 1)[-1],
 )
 
 _secret_key = JWK(**settings.SECRET_KEY)
