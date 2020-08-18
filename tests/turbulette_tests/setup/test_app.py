@@ -1,4 +1,4 @@
-from importlib import import_module
+from importlib import import_module, reload
 
 import pytest
 
@@ -11,6 +11,7 @@ def test_missing_module_path(base_app_module_name):
     base_app.__spec__.submodule_search_locations = []
     with pytest.raises(TurbuletteAppError):
         TurbuletteApp(base_app_module_name)
+    reload(base_app)
 
 
 @pytest.mark.usefixtures("reload_resources")

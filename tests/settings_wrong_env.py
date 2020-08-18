@@ -1,8 +1,8 @@
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
-from turbulette.conf import get_config_from_paths
+from turbulette.conf.utils import get_config_from_paths
 
-config = get_config_from_paths([".env", "../.env"])
+config = get_config_from_paths([".wrong", "../.wrong"])
 
 ###########################
 # TURBULETTE
@@ -45,7 +45,6 @@ JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 JWT_ALGORITHM = "ES256"
 JWT_AUDIENCE = "http://api.io/booking"
 JWT_ISSUER = "http://api.io/auth/"
-
 
 SECRET_KEY = {
     "kty": "EC",

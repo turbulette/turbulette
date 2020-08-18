@@ -18,3 +18,4 @@ def test_missing_db_settings(settings):
     settings_module.DB_DSN = {}
     with pytest.raises(ImproperlyConfigured):
         turbulette_starlette(settings)
+    reload(settings_module)
