@@ -89,6 +89,6 @@ async def create_db(db_name, project_settings, request):
     await engine.close()
 
 
-@pytest.fixture
-def tester():
-    return Tester(conf.registry.schema)
+@pytest.fixture(scope="session")
+def tester(turbulette_setup):
+    return Tester(turbulette_setup.registry.schema)
