@@ -2,7 +2,7 @@ from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
 from turbulette.conf import get_config_from_paths
 
-config = get_config_from_paths([".env", "../.env"])
+config = get_config_from_paths([".env.example", "../.env.example"])
 
 ###########################
 # TURBULETTE

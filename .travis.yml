@@ -1,0 +1,21 @@
+dist: xenial
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+before_install:
+  - pip install poetry
+install:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
+  - poetry install --no-root
+services:
+  - postgresql
+env:
+  - DB_DRIVER=postgresql DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASSWORD="" PYTEST_TURBULETTE_SETTINGS=tests.settings
+before_script:
+  - psql -c 'create database test;' -U postgres
+script:
+  - pytest
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

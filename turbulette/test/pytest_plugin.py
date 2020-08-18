@@ -38,6 +38,8 @@ def project_settings(request):
                 raise ImproperlyConfigured("Cannot find the .env file")
             config = starlette_config(env)
             res = config.get(PYTEST_TURBULETTE_SETTINGS)
+            # Needed to make it available for alembic in env.py
+            environ[PYTEST_TURBULETTE_SETTINGS] = res
     return import_module(res)
 
 
