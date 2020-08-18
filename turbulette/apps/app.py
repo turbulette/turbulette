@@ -2,7 +2,7 @@ from importlib import import_module
 from importlib.util import find_spec
 from os import sep
 from pathlib import Path
-from typing import Dict, List, Union, Type
+from typing import Dict, List, Type
 from inspect import getmembers, isclass
 
 from ariadne import SchemaDirectiveVisitor, load_schema_from_path

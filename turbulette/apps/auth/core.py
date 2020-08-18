@@ -1,8 +1,5 @@
-from calendar import timegm
-from datetime import datetime
 from enum import Enum
 from importlib import import_module
-from re import error
 from typing import Tuple
 
 from gino.declarative import Model
@@ -12,7 +9,6 @@ from passlib.context import CryptContext
 from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
-from turbulette.core.errors import BaseError
 
 from .exceptions import JWTInvalidSignatureError, JWTDecodeError, JWTExpiredError
 

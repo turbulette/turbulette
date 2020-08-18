@@ -1,5 +1,4 @@
 from types import FunctionType
-from typing import Union
 from pydantic import BaseModel, ValidationError
 from ..errors import PydanticsValidationError
 
