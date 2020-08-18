@@ -55,7 +55,8 @@ class TurbuletteApp:
         if not spec.submodule_search_locations:
             raise TurbuletteAppError(self.label, "Cannot find the module path")
 
-        self.package_path = Path(spec.submodule_search_locations[0])
+        # Cast to a list ensure its indexable if `submodule_search_locations` is a _NamespacePath
+        self.package_path = Path(list(spec.submodule_search_locations)[0])
 
         self.schema = schema
         self.directives = {} if directives is None else directives
