@@ -1,12 +1,14 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
-  addBook: BookActionsPayload @staff_member_required
+  addBook: BookActionsPayload @scope(is_staff: true)
   borrowBook: BookActionsPayload @scope(permissions:"book:borrow")
+  createBook(input: CreateBookInput): BookPayload!
 }
 
 extend type Query {
-  books: BooksPayload @login_required
-  exclusiveBooks: BooksPayload
+  books: BooksPayload @access_token_required
+  book(id: ID!): BookPayload
+  exclusiveBooks: BooksPayload @access_token_required
 }
 
 type User {
@@ -27,9 +29,34 @@ type CreateUserPayload {
   errors: [String]
 }
 
-type Book {
+input ProfileInput {
+  genre: [String]
+  awards: [String]
+}
+
+input CreateBookInput {
   title: String!
   author: String!
+  publicationDate: DateTime!
+  profile: JSON
+}
+
+type Profile {
+  genre: [String]
+  awards: [String]
+}
+
+type Book {
+  id: ID!
+  title: String!
+  author: String!
+  publicationDate: DateTime!
+  profile: Profile
+}
+
+type BookPayload {
+  book: Book
+  errors: [String]
 }
 
 type BooksPayload {

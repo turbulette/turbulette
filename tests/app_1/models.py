@@ -1,10 +1,24 @@
+from gino.json_support import ObjectProperty
+from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.sql.sqltypes import String
+
 from turbulette.apps.auth.models import AbstractUser
 from turbulette.db import Model
 
-from sqlalchemy import Column, Integer, String
 
 class BaseUser(Model, AbstractUser):
     pass
 
-class CustomUser(Model, AbstractUser):
-    USERNAME_FIELD = "id"
+
+class CustomUser(AbstractUser, Model):
+    pass
+
+
+class Book(Model):
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    author = Column(String)
+    publication_date = Column(DateTime(), nullable=False)
+    book_profile = Column(JSONB, nullable=False, server_default="{}")
+    profile = ObjectProperty(prop_name="book_profile")

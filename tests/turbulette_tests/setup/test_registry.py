@@ -30,7 +30,7 @@ def test_setup_no_schema(registry):
     registry.apps = {}
     with pytest.raises(RegistryError):
         registry.setup()
-
+    
 
 @pytest.mark.usefixtures("reload_resources")
 def test_register_app(settings_no_apps, registry):
