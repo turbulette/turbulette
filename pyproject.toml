@@ -14,7 +14,7 @@ psycopg2-binary = "^2.8.5"
 passlib = {extras = ["bcrypt"], version = "^1.7.2"}
 simple-settings = "^0.19.1"
 python-jwt = "^3.2.6"
-gino-enum-tables = {version = "^1.0.6", optional = true}
+gino-enum-tables = {version = "^1.0.7", optional = true}
 gino = {extras = ["starlette"], version = "^1.0.1"}
 
 
