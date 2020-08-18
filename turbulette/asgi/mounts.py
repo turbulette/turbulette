@@ -54,7 +54,7 @@ def turbulette_fastapi(project_settings: str = None):
         raise ASGIFrameworkError("Failed to import FastAPI, is it installed?")
 
     project_settings_module = import_module(project_settings)
-    db = gino_starlette(
+    gino_starlette(
         project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
     )
     graphql_route = setup(project_settings)
@@ -80,7 +80,7 @@ def turbulette_starlette(project_settings: str = None):
     from starlette.routing import Route
 
     project_settings_module = import_module(project_settings)
-    db = gino_starlette(
+    gino_starlette(
         project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
     )
     graphql_route = setup(project_settings)
@@ -88,5 +88,5 @@ def turbulette_starlette(project_settings: str = None):
         debug=conf.settings.DEBUG,
         routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route),],
     )
-    db.init_app(app)
+    conf.db.init_app(app)
     return app
