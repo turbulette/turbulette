@@ -35,27 +35,36 @@ class Tester:
     async def assert_query_success(
         self,
         query: str,
+        op_name: str,
         variables: dict = None,
-        op_name: str = None,
         headers: dict = None,
-        jwt: str = None
+        jwt: str = None,
+        op_errors=False
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_no_errors(response)
+        assert response[1]["data"][op_name]
+        if op_errors:
+            assert response[1]["data"][op_name]["errors"]
+        else:
+            # If no errors, will assert to None
+            assert not response[1]["data"][op_name].get("errors")
         return response
 
     async def assert_query_failed(
         self,
         query: str,
+        op_name: str,
         variables: dict = None,
-        op_name: str = None,
         headers: dict = None,
         jwt: str = None
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_errors(response)
+        if response[1]["data"]:
+            assert not response[1]["data"][op_name]
         return response
 
     def assert_status_200(self, response: dict):
