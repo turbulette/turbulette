@@ -29,8 +29,7 @@ APOLLO_FEDERATION = False
 ###########################
 
 # User model used for authentication.
-# Tuple must respect the following format : (module path, model class)
-AUTH_USER_MODEL = ("tests.app_1.models", "BaseUser")
+AUTH_USER_MODEL = "tests.app_1.models.BaseUser"
 
 # A valid hash algorithm that can be passed to CryptContext
 # see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
