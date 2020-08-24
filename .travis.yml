@@ -1,45 +1,33 @@
 dist: xenial
 language: python
-
+python:
+- 3.6
+- 3.7
+- 3.8
+stages:
+- test
+- publish
 before_install:
-  - pip install poetry
+- pip install poetry
 install:
-  - export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
-  - poetry install --no-root
+- export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
+- poetry install --no-root
 services:
-  - postgresql
+- postgresql
 env:
-  - DB_DRIVER=postgresql DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASSWORD="" PYTEST_TURBULETTE_SETTINGS=tests.settings
-
-jobs:
-  include:
-    - python: "3.6"
-      before_script:
-        - psql -c 'create database test;' -U postgres
-      script: pytest
-    - python: "3.7"
-      before_script:
-        - psql -c 'create database test;' -U postgres
-      script: pytest
-    - python: "3.8"
-      before_script:
-        - psql -c 'create database test;' -U postgres
-      script: pytest
-
-
-# Publish
-# script: skip
-# before_deploy:
-#   - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
-#   - poetry build
-# deploy:
-#   provider: script
-#   script: poetry publish
-#   skip_cleanup: true
-#   on:
-#     tags: true
-# if: tag IS present
-
-# # Coverage
-# after_success:
-#   - bash <(curl -s https://codecov.io/bash)
+  matrix:
+  - DB_DRIVER=postgresql DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASSWORD=""
+    PYTEST_TURBULETTE_SETTINGS=tests.settings
+  global:
+    secure: Oate3GogJY93ckOgDjV1EK4eoW0Za4Zf+3yAx71DDq1ESqhfALoLScCn5DEkoDjdu0e7aVaqMS1toK/QYj3jMuU/x0tiJZ+iHXa8+vFwnQI46vL52x52+KxLMFrgify8qo/ocPBsSPaja9E2nymBHikuIuuCFhF4pkEYlr3IHsCwNW/5NUaOHDzen9a0lN5iNdSPaTqheCh5EHpcu6uMNZV36vQzgJHb1NpJSlX0GBBbHC8lI/tZbTtcqgY6fU4k0PFI3FPnlt4pOkSZCfmgr1X6YQ2d7FO8XItKJCTBb2MKoVezu3uAQv3To+2OlT0dGuocgIpO6UwJxFX5wRJKSHg0zFd5gDhSvFDJkMPZwm8fB06g0VryGTmWtt3zqdphXWXwveGI4ChWZxWuqoOYIBVhswZlXuPSuoqs4EvxDrDXbBlDIQ4GJWa1zxkhcGLpzbB8W72AjqNteFetHpgzk8e3P9E/dDG1xv0w/XlaJtDo1oEX4UVLuroSOa80MoQu/pHhvY5YKJBIZDUgAmp9LxkyfevKnKJ2RzNhYmzz0WknNnVdmVx/0CIBeJDIeSBUC/EMe4HKyQN2P2QsHcol43PwalwM3GLv0InRW3SZLA14eETEV2JWqmJiZfHkyR2KqTwcJBzeRjqC49I5W473w1FUFrcDh9UZPGazv7MgpjY=
+before_script:
+- psql -c 'create database test;' -U postgres
+script: pytest
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+deploy:
+  provider: pypi
+  username: "..."
+  password: "..."
+  on:
+    tags: true
