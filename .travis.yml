@@ -32,10 +32,9 @@ jobs:
         - pip install --upgrade pip
         - pip install poetry
         - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
-        - poetry build
       deploy:
         provider: script
-        script: poetry publish
+        script: poetry publish --build
         on:
           tags: true
           repo: gazorby/turbulette
