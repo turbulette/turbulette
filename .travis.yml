@@ -13,9 +13,36 @@ services:
   - postgresql
 env:
   - DB_DRIVER=postgresql DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PASSWORD="" PYTEST_TURBULETTE_SETTINGS=tests.settings
-before_script:
-  - psql -c 'create database test;' -U postgres
-script:
-  - pytest
+
+jobs:
+  include:
+    - python: "3.6"
+      before_script:
+        - psql -c 'create database test;' -U postgres
+      script: pytest
+    - python: "3.7"
+      before_script:
+        - psql -c 'create database test;' -U postgres
+      script: pytest
+    - python: "3.8"
+      before_script:
+        - psql -c 'create database test;' -U postgres
+      script: pytest
+
+
+# Publish
+script: skip
+before_deploy:
+  - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
+  - poetry build
+deploy:
+  provider: script
+  script: poetry publish
+  skip_cleanup: true
+  on:
+    tags: true
+if: tag IS present
+
+# Coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
