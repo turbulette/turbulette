@@ -31,18 +31,18 @@ jobs:
 
 
 # Publish
-script: skip
-before_deploy:
-  - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
-  - poetry build
-deploy:
-  provider: script
-  script: poetry publish
-  skip_cleanup: true
-  on:
-    tags: true
-if: tag IS present
+# script: skip
+# before_deploy:
+#   - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
+#   - poetry build
+# deploy:
+#   provider: script
+#   script: poetry publish
+#   skip_cleanup: true
+#   on:
+#     tags: true
+# if: tag IS present
 
-# Coverage
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+# # Coverage
+# after_success:
+#   - bash <(curl -s https://codecov.io/bash)
