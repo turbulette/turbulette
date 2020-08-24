@@ -1,7 +1,7 @@
 {
   "files": {
     "pyproject.toml": [
-      "^version\\s*=\\s*\"\\d+\\.\\d+\\.\\d+\"$",
+      "^version\\s*=\\s*\"(\\d+\\.\\d+\\.\\d+)\"$",
       "version = \"[version]\""
     ]
   },
