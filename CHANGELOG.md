@@ -1,0 +1,83 @@
+## 0.1.0 (2020-08-24)
+- 🎉 initial commit
+- ♻️ ref: add a dedicated package for custom types
+- ♻️ ref: uncomment code commented for debugging
+- ♻️ ref: remove unused variable
+- ♻️ remove unused import
+- ♻️ ref: more type hints to Tester class
+- ✨ feat: mock headers when using Tester class
+- ✅ test: add refreshToken unit test
+- ✨ feat: initial work to support refresh tokens
+- ♻️ ref: use python-jwt instead of pyjwt
+- ✅ tests: improve tests
+- ✅ tests(app_1): use BaseUser as auth model
+- ♻️ ref: use sub claim to store user id
+- ♻️ ref(decorator): pass user as a positional param
+- 🐛 fix(auth): use a fixed secret key
+- ✅ tests: add more tests
+- 🐛 fix(login_required): raise exception if user doesn't exists
+- ✨ gerat(settings): add OVERRIDE_BY_ENV settings
+- 🐛 fix(get_user_by_payload): use sub claim
+- ✅ tests: add get_user_by_payload
+- ✅ tests: fix test naming
+- 👷‍♂️ chore(deps): update dev dependencies
+- 👷‍♂️ chore(deps): make gino-enum-tables optional
+- 👷‍♂️ chore(deps): add gino-starlette as hard dep
+- 👷‍♂️ chore(deps): remove unused requests dep
+- ♻️ ref: remove unused imports to gino-enum-tables
+- ♻️ ref(auth): improve JWT exceptions
+- ✅ tests: fix login_required
+- ✅ tests: remove unused imports
+- ✅ tests: add create_user test
+- ✨ feat(test): add method to test data in response
+- ✅ test: update create_user test
+- ♻️ ref(auth): pass staff user as positional param
+- ♻️ ref(auth): refactor exception handling in decorators
+- 🐛 fix(auth): decorators requiring tokens
+- ♻️ ref(registry): add type hint on apps dict
+- 🐛 fix(app): directives module not loaded
+- ♻️ ref(auth) permission decorator return user
+- 🐛 fix(auth): directives must return logged user
+- 🐛 fix(auth): wrong query in has_permission()
+- ♻️ ref(auth): remove unused exception
+- 🐛 fix(auth): permission group is truly optional
+- ♻️ ref(auth): don't check group in perm. decorator As it's already done in has_permission()
+- ♻️ ref(pytest): remove unused conf_module fixture
+- ♻️ ref(auth): simply password check expression
+- ✨ feat(test): add a jwt param as a shortcut A shortcut to set the JWT in the Authorization header
+- ✅ test(auth): code refactoring & cleanup
+- ♻️ ref(assert_data_in_response): remove query_name
+- ♻️ ref(registry): remove unused overloaded method
+- ♻️ ref(auth): simplify auth decorators -
+  - Remove @login_required has the login/logout semantic does not make sense with stateless authentification - Introduce @scope decorator unifying permissions and is_staff checks
+- ✨ feat: add turbulette settings stub
+- ♻️ ref(auth): jwt exceptions harmonization
+- ♻️ ref(conf): remove unused code
+- ♻️ ref(conf): remove unused exception
+- 🐛 fix(json scalar): parsing for empty strings Empty string should be parsed as empty JSON object
+- ♻️ ref(monts): remove unnecessary import checks
+  - Starlette is already an hard dependency of Ariadne so there is no need to catch ModuleNotFoundError when importing it. - As gino-starlette as a hard dependency of Turbulette now, the same goes for it
+- ✨ feat(models): default __repr__ for models
+- ♻️ ref(auth): update models __repr__ methods
+- 👷‍♂️ chore: update dev dependencies
+- 🐛 fix(errors): __str__ method
+- ♻️ ref(settings): change turbulette logger name
+- ✅ tests: add no cover pragmas
+- ♻️ ref(test): tester fixture require turb. setup
+- ✨ feat(tester): check for operation specific errors
+- ✅ test: 100% coverage
+- ✅ test: remove unused tests
+- ✅ test: remove unused folders
+- ♻️ ref(auth): simplify AUTH_USER_MODEL setting
+- 👷‍♂️ chore: update project description
+- 👷‍♂️ chore: update .env.example
+- 👷‍♂️ chore(ci): add Travis CI
+- Fix compatibility for python 3.6/3.7 (#1)
+- 👷‍♂️ chore(github): add issue templates
+- Create CODE_OF_CONDUCT.md
+- 👷‍♂️ chore(github): add pull request template
+- 👷‍♂️ chore(github): fix pull request template
+- 👷‍♂️ chore(github): move code_of_conduct.md
+- ♻️ ref: harmonize mount functions
+- ♻️ ref: remove unused imports
+- Ci cd 2 (#3)
