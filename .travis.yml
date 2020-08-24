@@ -31,14 +31,11 @@ jobs:
       before_deploy:
         - pip install --upgrade pip
         - pip install poetry
+        - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
         - poetry build
       deploy:
         provider: script
         script: poetry publish
-        skip_cleanup: true
-        username: __token__
-        password:
-          secure: FrUwAuekhylPYcoqe15IdI5Og8wF/IFBzmyCpsXEa5hlEiRrdpwGnER6dOTzz6CJosksQvEF0xw+BIaU+SVD2TimWP6B7dqvbX9VF70mUWsQeECrnQFtPeVTO40xPWQVUtWZeDqgY36ZyWLLagJfE1fYP0MwGiEdR+wbNa6Uy22lOv4Uk8gDV7cxNa9CMWE5+YgpeCxnOC5c6Ju6hwNf8JJL3BOz6e6C1qhRLSM6/kuGwuXFx3t6zrzasR/NhyToc898FJJYKN0M50Vx9roINGrItvXTPyaEQp9tKyqCkZM7mWevM+ebZbm5T9XaJJC5bib0+w6BRlyaENQgUHM82pF8bZJxtkzU91IBSgY9ol3rNiPqanrAI+FvH2GR4uSAGgTziiei+F0JrRX9vFo/MIJESCLrNl9nCCXeDF6CS3/u1/+IfVHFMV/9jsRLT2YTcIaDzHVk4W/5wn8wtklUBD/0SQgkZH7xbIB308R8302l662wddukoZcKj4M1hBXQM4CqfBDI34hF6vJy1eYtYwawCsF1YVToqt2I3L/7vDKAtLGmH6MnxWhdsgg57kG3tvUq5CW1sMguI0qoxOmj8H8FOxMGwgjF+mVIvV8OwdHwWvHZ7h8KT2RHdAniXnuYoxcmucXPd2Mo9w4ymt7llyw4ULhMsHHAkEogMYjskNY=
         on:
           tags: true
           repo: gazorby/turbulette
