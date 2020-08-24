@@ -1,3 +1,6 @@
+## 0.1.1 (2020-08-24)
+- 👷‍♂️ chore(ci): update CI config
+
 ## 0.1.0 (2020-08-24)
 - 🎉 initial commit
 - ♻️ ref: add a dedicated package for custom types
