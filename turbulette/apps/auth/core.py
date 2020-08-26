@@ -78,9 +78,9 @@ def process_jwt_header(header: str) -> str:
     if not header:
         raise JWTDecodeError("JWT token not found")
 
-    prefix, *jwt = header.split()
+    prefix, *others = header.split()
 
-    jwt = jwt[0] if jwt else None
+    jwt = others[0] if others else None
 
     if prefix != settings.JWT_PREFIX:
         raise JWTDecodeError(
