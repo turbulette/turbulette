@@ -1,8 +1,5 @@
 # Adapted from https://github.com/piccolo-orm/piccolo_api
 
-from __future__ import annotations, generator_stop
-
-import typing as t
 from string import ascii_letters, digits
 
 from starlette.datastructures import URL
@@ -15,9 +12,7 @@ from starlette.responses import Response
 
 from turbulette.conf import settings
 from turbulette.utils.crypto import get_random_string
-
-if t.TYPE_CHECKING:  # pragma: no cover
-    from starlette.types import ASGIApp
+from starlette.types import ASGIApp
 
 
 CSRF_ALLOWED_CHARS = ascii_letters + digits
