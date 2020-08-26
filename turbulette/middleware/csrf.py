@@ -20,7 +20,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     from starlette.types import ASGIApp
 
 
-CSRF_ALLOWED_CHARS = ascii_letters
+CSRF_ALLOWED_CHARS = ascii_letters + digits
 SAFE_HTTP_METHODS = ("GET", "HEAD", "OPTIONS", "TRACE")
 CSRF_REQUEST_SCOPE_NAME = "csrftoken"
 ONE_YEAR = 31536000  # 365 * 24 * 60 * 60
