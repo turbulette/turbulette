@@ -1,9 +1,15 @@
 from importlib import import_module
-
+from importlib.util import find_spec
+from pathlib import Path
 from sqlalchemy.engine.url import URL
 from gino_starlette import Gino
 from turbulette import conf
-from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
+from turbulette.conf.constants import (
+    SETTINGS_DATABASE_SETTINGS,
+    SETTINGS_DB_DSN,
+    TURBULETTE_ROUTING_MODULE,
+    ROUTING_MODULE_ROUTES,
+)
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
@@ -78,15 +84,46 @@ def turbulette_starlette(project_settings: str = None):
     """
     from starlette.applications import Starlette
     from starlette.routing import Route
+    from starlette.middleware import Middleware
+
+    middlewares, routes = [], None
 
     project_settings_module = import_module(project_settings)
     gino_starlette(
         project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
     )
     graphql_route = setup(project_settings)
+
+    # Register middlewares
+    if conf.settings.MIDDLEWARE_CLASSES:
+        for middleware in conf.settings.MIDDLEWARE_CLASSES:
+            middlewares.append(
+                Middleware(
+                    getattr(
+                        import_module(middleware.rsplit(".", 1)[0]),
+                        middleware.rsplit(".", 1)[1],
+                    )
+                )
+            )
+
+    # Register routes
+    if (
+        Path(find_spec(project_settings).origin).parent
+        / f"{TURBULETTE_ROUTING_MODULE}.py"
+    ):
+        routes = getattr(
+            import_module(
+                f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
+            ),
+            ROUTING_MODULE_ROUTES,
+        )
+
     app = Starlette(
-        debug=conf.settings.DEBUG,
-        routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route),],
+        debug=project_settings_module.DEBUG,
+        routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
+        middleware=middlewares,
     )
+
+    conf.app = app
     conf.db.init_app(app)
     return app

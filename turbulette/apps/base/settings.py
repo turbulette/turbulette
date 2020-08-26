@@ -22,7 +22,14 @@ SETTINGS_RULES = {
         "DEBUG": "bool",
         "INSTALLED_APPS": "json.loads",
         "MIDDLEWARE_CLASSES": "json.loads",
-        "GRAPHQL_ENDPOINT": "str"
+        "GRAPHQL_ENDPOINT": "str",
+        "CSRF_COOKIE_NAME": "str",
+        "CSRF_HEADER_NAME": "str",
+        "CSRF_COOKIE_HTTPONLY": "bool",
+        "CSRF_COOKIE_SECURE": "bool",
+        "CSRF_FORM_PARAM": "bool",
+        "CSRF_HEADER_PARAM": "bool",
+        "ALLOWED_HOSTS": "json.loads"
     },
 
     "OVERRIDE_BY_ENV": OVERRIDE_BY_ENV
@@ -66,3 +73,14 @@ LOGGING = {
         "turbulette": {"level": "INFO", "propagate": True,},
     },
 }
+
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "X-CSRFToken"
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False
+CSRF_HEADER_PARAM = True
+
+# Require python-multipart
+CSRF_FORM_PARAM = False
+
+ALLOWED_HOSTS = []
