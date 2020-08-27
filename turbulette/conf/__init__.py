@@ -9,6 +9,7 @@ from .utils import get_config_from_paths
 registry: Registry = None
 db = None
 settings: LazySettings = None
+app = None
 
 SIMPLE_SETTINGS = {
     constants.REQUIRED_SETTINGS: set(),
