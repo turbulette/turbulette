@@ -153,6 +153,7 @@ class Registry:
             snake_case_fallback_resolvers,
             directives=None if directives == {} else directives,
         )
+        self.ready = True
         return self.schema
 
     def load_models(self):
