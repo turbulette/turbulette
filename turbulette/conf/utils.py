@@ -44,4 +44,4 @@ class TurubuletteSettingsStub(SettingsStub):
         self.settings.configure(**self.old_settings)
 
 
-settings_stub = TurubuletteSettingsStub
+settings_stub: TurubuletteSettingsStub = TurubuletteSettingsStub
