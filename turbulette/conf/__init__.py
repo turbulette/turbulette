@@ -1,10 +1,14 @@
+from simple_settings import LazySettings
+
 from turbulette.conf.constants import OVERRIDE_BY_ENV
+from turbulette.apps.registry import Registry
+
 from . import constants
 from .utils import get_config_from_paths
 
-registry = None
+registry: Registry = None
 db = None
-settings = None
+settings: LazySettings = None
 app = None
 
 SIMPLE_SETTINGS = {
@@ -12,5 +16,5 @@ SIMPLE_SETTINGS = {
     constants.REQUIRED_SETTINGS_TYPES: {},
     constants.REQUIRED_NOT_NONE_SETTINGS: set(),
     constants.SETTINGS_LOGS: False,
-    constants.OVERRIDE_BY_ENV: True
+    constants.OVERRIDE_BY_ENV: True,
 }
