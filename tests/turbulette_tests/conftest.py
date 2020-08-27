@@ -10,6 +10,7 @@ from turbulette.test.pytest_plugin import (
     project_settings,
     tester,
     turbulette_setup,
+    blank_conf
 )
 from turbulette.utils.crypto import get_random_string
 

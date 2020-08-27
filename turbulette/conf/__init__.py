@@ -5,6 +5,7 @@ from .utils import get_config_from_paths
 registry = None
 db = None
 settings = None
+app = None
 
 SIMPLE_SETTINGS = {
     constants.REQUIRED_SETTINGS: set(),

@@ -94,3 +94,11 @@ async def create_db(db_name, project_settings, request):
 @pytest.fixture(scope="session")
 def tester(turbulette_setup):
     return Tester(turbulette_setup.registry.schema)
+
+
+@pytest.fixture
+def blank_conf():
+    app, registry, db, settings = conf.app, conf.registry, conf.db, conf.settings
+    reload(conf)
+    yield
+    conf.app, conf.db, conf.registry, conf.settings = app, db, registry, settings
