@@ -21,7 +21,6 @@ click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
-rope = "^0.17.0"
 pylint = "^2.5.3"
 ptvsd = "^4.3.2"
 uvicorn = {extras = ["watchgodreload"], version = "^0.11.8"}
