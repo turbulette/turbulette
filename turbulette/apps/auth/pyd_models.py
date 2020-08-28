@@ -5,11 +5,11 @@ from pydantic import BaseModel, EmailStr, root_validator
 
 class Token(BaseModel):
     access_token: str
-    refresh_token: str = None
+    refresh_token: Optional[str] = None
 
 
 class AccessToken(BaseModel):
-    access_token: str = None
+    access_token: Optional[str] = None
 
 
 class TokenData(BaseModel):

@@ -145,7 +145,7 @@ class Registry:
         if not schema:
             raise RegistryError("None of the Turbulette apps have a schema")
 
-        self.schema = make_schema(
+        executable_schema = make_schema(
             [*schema],
             root_mutation,
             root_query,
@@ -154,7 +154,8 @@ class Registry:
             directives=None if directives == {} else directives,
         )
         self.ready = True
-        return self.schema
+        self.schema = executable_schema
+        return executable_schema
 
     def load_models(self):
         """Import GINO models of each app

@@ -6,6 +6,7 @@ python:
 - 3.7
 stages:
 - test
+- lint
 - name: deploy
   if: tag IS present
 
@@ -25,10 +26,13 @@ before_script:
 script:
   - pytest --ignore ./tests/turbulette_tests/cli
   - pytest --cov-append ./tests/turbulette_tests/cli
-  - black --check .
 
 jobs:
   include:
+    - stage: lint
+      script:
+        - black --check .
+        - mypy turbulette --ignore-missing-imports
     - stage: deploy
       script: skip
       before_deploy:

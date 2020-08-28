@@ -1,11 +1,9 @@
-from typing import Any, Callable, Coroutine
+from typing import Any, Callable
 
 from turbulette.core.errors import PermissionDenied
 
 from .core import TokenType, decode_jwt, process_jwt_header
 from .permissions import has_scope
-
-FuncType = Callable[[Any, Any], Coroutine[Any, Any, Any]]
 
 
 def scope_required(permissions: list, is_staff=False):
@@ -18,7 +16,7 @@ def scope_required(permissions: list, is_staff=False):
     with the key ``user``
     """
 
-    def wrap(func: FuncType):
+    def wrap(func: Callable[..., Any]):
         @access_token_required
         async def wrapped_func(obj, info, claims, **kwargs):
             authorized = await has_scope(claims["sub"], permissions, is_staff)
@@ -31,7 +29,7 @@ def scope_required(permissions: list, is_staff=False):
     return wrap
 
 
-def access_token_required(func: FuncType):
+def access_token_required(func: Callable[..., Any]):
     """Decorator that require a jwt access token
         before executing the wrapped function
 
@@ -47,7 +45,7 @@ def access_token_required(func: FuncType):
     return wrapper
 
 
-def refresh_token_required(func: FuncType):
+def refresh_token_required(func: Callable[..., Any]):
     """Decorator that require a jwt refresh token
         before executing the wrapped function
 
@@ -64,7 +62,7 @@ def refresh_token_required(func: FuncType):
 
 
 def _jwt_required(token_type: TokenType):
-    def wrap(func: FuncType):
+    def wrap(func: Callable[..., Any]):
         async def wrapped_func(obj, info, **kwargs):
             jwt = process_jwt_header(info.context["request"].headers["authorization"])
             claims = decode_jwt(jwt)[1]
