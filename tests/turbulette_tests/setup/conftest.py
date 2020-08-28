@@ -2,6 +2,7 @@ import pytest
 from importlib import import_module, reload
 from turbulette.apps import Registry
 
+
 @pytest.fixture(scope="session")
 def settings():
     return "tests.settings"
@@ -9,7 +10,7 @@ def settings():
 
 @pytest.fixture(scope="session")
 def settings_no_apps():
-    return 'tests.settings_no_apps'
+    return "tests.settings_no_apps"
 
 
 @pytest.fixture

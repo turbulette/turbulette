@@ -30,6 +30,7 @@ class TurubuletteSettingsStub(SettingsStub):
 
         Useful to safely change settings on the fly during tests
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Need to import here to make sure settings are initialized
@@ -44,4 +45,4 @@ class TurubuletteSettingsStub(SettingsStub):
         self.settings.configure(**self.old_settings)
 
 
-settings_stub = TurubuletteSettingsStub
+settings_stub: TurubuletteSettingsStub = TurubuletteSettingsStub

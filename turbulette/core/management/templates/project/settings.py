@@ -1,8 +1,8 @@
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
-from turbulette.conf import get_config_from_paths
+from starlette.config import Config
 
-config = get_config_from_paths([".env.example", "../.env.example"])
+config = Config(".env")
 
 ###########################
 # TURBULETTE
@@ -14,6 +14,8 @@ GRAPHQL_ENDPOINT = "/graphql"
 # that defines some GraphQL schema
 INSTALLED_APPS = []
 
+MIDDLEWARE_CLASSES = []
+
 CONFIGURE_LOGGING = False
 
 DEBUG = True
@@ -21,22 +23,37 @@ DEBUG = True
 # Enable ariadne apollo tracing extension
 APOLLO_TRACING = False
 
-# Tell ariadne to create schema with federation support
-# see https://ariadnegraphql.org/docs/apollo-federation#federated-architecture-example
 APOLLO_FEDERATION = False
+
 
 ###########################
 # AUTH
 ###########################
 
-# User model used for authentication.
-# Tuple must respect the following format : (module path, model class)
-# AUTH_USER_MODEL = ("tests.app.models", "BaseUser")
-
 # A valid hash algorithm that can be passed to CryptContext
 # see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
 HASH_ALGORITHM = "bcrypt"
 
+
+# Used to encode the JSON Web token
+
+JWT_REFRESH_ENABLED = True
+JWT_BLACKLIST_ENABLED = True
+JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
+JWT_ALGORITHM = "ES256"
+JWT_AUDIENCE = "http://api.io/booking"
+JWT_ISSUER = "http://api.io/auth/"
+
+
+SECRET_KEY = {
+    "kty": "EC",
+    "d": "RXZ7nMEJ83eyRPmu7rjNYxgOeGH1Th7O3PvQhvfLQLw",
+    "use": "sig",
+    "crv": "P-256",
+    "x": "bZOtOYAveZdxSpiJHeCILO3IUuHIWdb29v_6y6p8I8M",
+    "y": "j3N2iYJWeqvPKLTkHhlHoBLSXisO4Umc8634kS2TFSU",
+    "alg": "ES256",
+}
 
 ###########################
 # DATABASE

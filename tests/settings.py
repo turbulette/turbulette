@@ -14,6 +14,9 @@ GRAPHQL_ENDPOINT = "/graphql"
 # that defines some GraphQL schema
 INSTALLED_APPS = ["turbulette.apps.auth", "tests.app_1", "tests.app_2"]
 
+MIDDLEWARE_CLASSES = []
+# MIDDLEWARE_CLASSES = ["turbulette.apps.auth.csrf.middleware.CSRFMiddleware"]
+
 CONFIGURE_LOGGING = False
 
 DEBUG = True

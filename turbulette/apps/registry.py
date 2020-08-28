@@ -63,7 +63,7 @@ class Registry:
         app_settings_module: str = MODULE_SETTINGS,
     ):
         self.apps: Dict[str, TurbuletteApp] = {}
-        self.ready = False
+        self._ready = False
 
         if project_settings:
             project_settings_module = import_module(project_settings)
@@ -129,11 +129,11 @@ class Registry:
         """
         settings = self.load_settings()
         if settings.APOLLO_FEDERATION:
-            make_schema = import_module(
-                "ariadne.contrib.federation"
-            ).make_federated_schema
+            make_schema = getattr(
+                import_module("ariadne.contrib.federation"), "make_federated_schema"
+            )
         else:
-            make_schema = import_module("ariadne").make_executable_schema
+            make_schema = getattr(import_module("ariadne"), "make_executable_schema")
         schema, directives = [], {}
         for app in self.apps.values():
             app.load_graphql_ressources()
@@ -153,6 +153,7 @@ class Registry:
             snake_case_fallback_resolvers,
             directives=None if directives == {} else directives,
         )
+        self.ready = True
         return self.schema
 
     def load_models(self):
@@ -208,7 +209,7 @@ class Registry:
     def ready(self, value: bool):
         """Once the registry is ready, we cannot make it unready anymore
         """
-        if not hasattr(self, "_ready"):
+        if not self._ready:
             self._ready = value
         if self._ready and value is not self._ready:
             raise ValueError("Registry cannot be unready as it's already ready")

@@ -42,9 +42,10 @@ def setup(project_settings: str = None) -> GraphQL:
         schema,
         debug=settings.DEBUG,
         extensions=[
-            import_module(
-                "ariadne.contrib.tracing.apollotracing"
-            ).ApolloTracingExtension
+            getattr(
+                import_module("ariadne.contrib.tracing.apollotracing"),
+                "ApolloTracingExtension",
+            )
         ]
         if settings.APOLLO_TRACING
         else None,

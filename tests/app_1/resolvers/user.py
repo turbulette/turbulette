@@ -45,40 +45,31 @@ async def resolve_books(_, info, user, **kwargs):
         ]
     }
 
+
 @mutation.field("addBook")
 async def add_books(_, __, user, **kwargs):
-    return {
-        "success": True
-    }
+    return {"success": True}
+
 
 @mutation.field("borrowBook")
 async def borrow_book(_, __, user, **kwargs):
-    return {
-        "success": True
-    }
+    return {"success": True}
 
 
 @query.field("exclusiveBooks")
 async def is_logged(_, __, claims, **kwargs):
-    return {
-        "books": [
-            {"title": "Game Of Thrones", "author": "G.R.R Martin"},
-        ]
-    }
+    return {"books": [{"title": "Game Of Thrones", "author": "G.R.R Martin"},]}
 
 
 @query.field("book")
 async def book(_, __, id):
     book = await Book.query.where(Book.id == int(id)).gino.first()
-    return {
-        "book": book.to_dict()
-    }
+    return {"book": book.to_dict()}
+
 
 @mutation.field("createBook")
 @convert_kwargs_to_snake_case
 @validate(CreateBook)
 async def create_book(_, __, valid_input, **kwargs):
     book = await Book.create(**valid_input)
-    return {
-        "book": book.to_dict()
-    }
+    return {"book": book.to_dict()}

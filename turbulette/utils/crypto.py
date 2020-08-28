@@ -13,7 +13,4 @@ def get_random_string(size: int, allowed_chars: tuple):
     Returns:
         (string): The random string
     """
-    return "".join(
-        SystemRandom().choice(allowed_chars)
-        for _ in range(size)
-    )
+    return "".join(SystemRandom().choice(allowed_chars) for _ in range(size))
