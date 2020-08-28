@@ -25,6 +25,7 @@ before_script:
 script:
   - pytest --ignore ./tests/turbulette_tests/cli
   - pytest --cov-append ./tests/turbulette_tests/cli
+  - black --check .
 
 jobs:
   include:
