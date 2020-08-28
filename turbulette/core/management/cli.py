@@ -39,13 +39,19 @@ def cli():
 
 @click.command(help="Create a Turbulette project")
 @click.option("--name", prompt="Project name", help="The project name")
-def create_project(name):
+@click.option("--app", "-a", help="Create an app with the given name. Can be passed multiple times to create multiple applications", multiple=True)
+@click.pass_context
+def create_project(ctx, name, app):
     project_dir = Path.cwd() / name
     copytree(Path(__file__).parent / "templates" / "project", project_dir)
     for file in TEMPLATE_FILES:
         path = project_dir / file
         process_tags(path, {"settings": f"{name}.settings"})
-
+    if app:
+        current = Path.cwd()
+        chdir(project_dir.as_posix())
+        ctx.invoke(create_app, name=app)
+        chdir(current.as_posix())
 
 @click.command(help="Create a Turbulette application")
 @click.option("--name", "-n", prompt="App name", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
