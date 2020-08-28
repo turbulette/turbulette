@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import copytree
 from importlib import import_module
 import click
+from os import chdir
 from alembic.config import Config
 from alembic.command import revision, upgrade as alembic_upgrade
 from turbulette.conf.constants import (
@@ -54,7 +55,7 @@ def create_project(ctx, name, app):
         chdir(current.as_posix())
 
 @click.command(help="Create a Turbulette application")
-@click.option("--name", "-n", prompt="App name", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
+@click.option("--name", "-n", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
 def create_app(name):
     for app_name in name:
         alembic_ini = get_alembic_ini()
