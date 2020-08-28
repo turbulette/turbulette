@@ -22,7 +22,9 @@ env:
     PYTEST_TURBULETTE_SETTINGS=tests.settings
 before_script:
 - psql -c 'create database test;' -U postgres
-script: pytest
+script:
+  - pytest --ignore ./tests/turbulette_tests/cli
+  - pytest ./tests/turbulette_tests/cli
 
 jobs:
   include:
