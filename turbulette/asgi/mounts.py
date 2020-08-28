@@ -1,19 +1,23 @@
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
-from sqlalchemy.engine.url import URL
+
 from gino_starlette import Gino
+from sqlalchemy.engine.url import URL
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.routing import Route
+
 from turbulette import conf
 from turbulette.conf.constants import (
+    ROUTING_MODULE_ROUTES,
     SETTINGS_DATABASE_SETTINGS,
     SETTINGS_DB_DSN,
     TURBULETTE_ROUTING_MODULE,
-    ROUTING_MODULE_ROUTES,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
-from .exceptions import ASGIFrameworkError
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
@@ -42,34 +46,6 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
     return database
 
 
-def turbulette_fastapi(project_settings: str = None):
-    """Setup turbulette apps and mount the graphql route on a FastAPI instance
-
-    Args:
-        project_settings (str, optional): project settings module name. Defaults to None.
-
-    Raises:
-        ASGIFrameworkError: Raised if FastAPI cannot be imported
-
-    Returns:
-        FastAPI: The FastAPI instance
-    """
-    try:
-        from fastapi import FastAPI
-    except ModuleNotFoundError:
-        raise ASGIFrameworkError("Failed to import FastAPI, is it installed?")
-
-    project_settings_module = import_module(project_settings)
-    gino_starlette(
-        project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
-    )
-    graphql_route = setup(project_settings)
-    app = FastAPI()
-    app.mount(conf.settings.GRAPHQL_ENDPOINT, graphql_route)
-    conf.db.init_app(app)
-    return app
-
-
 def turbulette_starlette(project_settings: str = None):
     """Setup turbulette apps and mount the graphql route on a FastAPI instance
 
@@ -82,10 +58,6 @@ def turbulette_starlette(project_settings: str = None):
     Returns:
         FastAPI: The Starlette instance
     """
-    from starlette.applications import Starlette
-    from starlette.routing import Route
-    from starlette.middleware import Middleware
-
     middlewares, routes = [], []
 
     project_settings_module = import_module(project_settings)

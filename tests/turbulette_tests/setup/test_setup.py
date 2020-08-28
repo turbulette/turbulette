@@ -3,13 +3,11 @@ import sys
 import pytest
 from importlib import reload, import_module
 from ariadne.asgi import GraphQL
-from fastapi import FastAPI
 from starlette.applications import Starlette
 from turbulette import setup as turbulette_setup
-from turbulette import turbulette_fastapi, turbulette_starlette
+from turbulette import turbulette_starlette
 from turbulette.conf.constants import ENV_TURBULETTE_SETTINGS
 from turbulette.conf.exceptions import ImproperlyConfigured
-from turbulette.asgi.exceptions import ASGIFrameworkError
 
 
 def test_minimal_setup(settings):
@@ -37,14 +35,3 @@ def test_wrong_env_file():
 def test_starlette_setup(settings):
     app = turbulette_starlette(settings)
     assert isinstance(app, Starlette)
-
-
-@pytest.mark.usefixtures("reload_resources")
-def test_fastapi_setup(settings):
-    app = turbulette_fastapi(settings)
-    assert isinstance(app, FastAPI)
-    tmp = sys.modules["fastapi"]
-    sys.modules["fastapi"] = None
-    with pytest.raises(ASGIFrameworkError):
-        turbulette_fastapi(settings)
-    sys.modules["fastapi"] = tmp
