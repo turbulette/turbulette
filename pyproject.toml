@@ -44,7 +44,7 @@ python-multipart = "^0.0.5"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov --cov-append --cov-report html --cov-report xml"
+addopts = "--cov --cov-report html --cov-report xml"
 
 [tool.coverage.run]
 omit = ["turbulette/test/pytest_plugin.py"]
