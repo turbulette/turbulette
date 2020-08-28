@@ -1,3 +1,4 @@
+from typing import Type
 from importlib import import_module
 from pathlib import Path
 from typing import List
@@ -45,4 +46,4 @@ class TurubuletteSettingsStub(SettingsStub):
         self.settings.configure(**self.old_settings)
 
 
-settings_stub: TurubuletteSettingsStub = TurubuletteSettingsStub
+settings_stub: Type[TurubuletteSettingsStub] = TurubuletteSettingsStub

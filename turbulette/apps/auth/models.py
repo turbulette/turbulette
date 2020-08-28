@@ -42,7 +42,7 @@ class AbstractUser:
 
     @classmethod
     async def get_by_username(cls, username: str):
-        user = await cls.query.where(
+        user = await cls.query.where( # type: ignore [attr-defined]
             getattr(cls, cls.USERNAME_FIELD) == username
         ).gino.first()
         if not user:

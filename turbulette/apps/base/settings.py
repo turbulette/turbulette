@@ -77,4 +77,4 @@ CSRF_HEADER_PARAM = True
 # Require python-multipart
 CSRF_FORM_PARAM = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list = []

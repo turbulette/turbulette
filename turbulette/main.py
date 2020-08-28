@@ -1,7 +1,7 @@
 from importlib import import_module
 
 from ariadne.asgi import GraphQL
-from gino import Gino
+from gino import Gino # type: ignore [attr-defined]
 
 from turbulette import conf
 

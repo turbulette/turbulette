@@ -52,7 +52,7 @@ class TurbuletteApp:
         spec = find_spec(self.package_name)
 
         # If the path doesn't exists we cannot load GraphQL resources
-        if not spec.submodule_search_locations:
+        if not spec or not spec.submodule_search_locations:
             raise TurbuletteAppError(self.label, "Cannot find the module path")
 
         # Cast to a list ensure its indexable if `submodule_search_locations` is a _NamespacePath
@@ -79,7 +79,7 @@ class TurbuletteApp:
         """
         module = import_module(module_path)
         globals().update(
-            {n: getattr(module, n) for n in module.__all__}
+            {n: getattr(module, n) for n in getattr(module, "__all__")}
             if hasattr(module, "__all__")
             else {k: v for (k, v) in module.__dict__.items() if not k.startswith("_")}
         )
