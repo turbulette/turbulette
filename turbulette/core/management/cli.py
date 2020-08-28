@@ -49,10 +49,8 @@ def create_project(ctx, name, app):
         path = project_dir / file
         process_tags(path, {"settings": f"{name}.settings"})
     if app:
-        current = Path.cwd()
         chdir(project_dir.as_posix())
         ctx.invoke(create_app, name=app)
-        chdir(current.as_posix())
 
 @click.command(help="Create a Turbulette application")
 @click.option("--name", "-n", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
