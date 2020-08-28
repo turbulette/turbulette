@@ -16,6 +16,7 @@ simple-settings = "^0.19.1"
 python-jwt = "^3.2.6"
 gino-enum-tables = {version = "^1.0.7", optional = true}
 gino = {extras = ["starlette"], version = "^1.0.1"}
+click = "^7.1.2"
 
 
 [tool.poetry.dev-dependencies]
@@ -37,6 +38,9 @@ python-multipart = "^0.0.5"
 
 [tool.poetry.plugins."pytest11"]
 "turbulette" = "turbulette.test.pytest_plugin"
+
+[tool.poetry.scripts]
+"turb" = "turbulette.core.management.cli:cli"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
