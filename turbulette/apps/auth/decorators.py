@@ -6,7 +6,6 @@ from .core import TokenType, decode_jwt, process_jwt_header
 from .permissions import has_scope
 
 
-
 def scope_required(permissions: list, is_staff=False):
     """Decorator that log a user and check if it
         has the required permissions
