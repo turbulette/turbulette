@@ -28,15 +28,13 @@ async def test_csrf(blank_conf):
 
         # No cookie
         resp = await client.post(
-            "/welcome",
-            headers={settings.CSRF_HEADER_NAME: csrf_token}
+            "/welcome", headers={settings.CSRF_HEADER_NAME: csrf_token}
         )
         assert resp.status_code == 403
 
         # No header
         resp = await client.post(
-            "/welcome",
-            cookies={settings.CSRF_HEADER_NAME: csrf_token}
+            "/welcome", cookies={settings.CSRF_HEADER_NAME: csrf_token}
         )
         assert resp.status_code == 403
 
@@ -59,8 +57,7 @@ async def test_csrf(blank_conf):
 
             # No form
             resp = await client.post(
-                "/welcome",
-                form={settings.CSRF_COOKIE_NAME: csrf_token}
+                "/welcome", form={settings.CSRF_COOKIE_NAME: csrf_token}
             )
             assert resp.status_code == 403
 
@@ -69,7 +66,7 @@ async def test_csrf(blank_conf):
             "/welcome",
             cookies={settings.CSRF_COOKIE_NAME: csrf_token},
             headers={settings.CSRF_HEADER_NAME: csrf_token},
-            scheme="https"
+            scheme="https",
         )
         assert resp.status_code == 403
 
@@ -78,7 +75,10 @@ async def test_csrf(blank_conf):
             resp = await client.post(
                 "/welcome",
                 cookies={settings.CSRF_COOKIE_NAME: csrf_token},
-                headers={settings.CSRF_HEADER_NAME: csrf_token, "referer": "https://api.io"},
-                scheme="https"
+                headers={
+                    settings.CSRF_HEADER_NAME: csrf_token,
+                    "referer": "https://api.io",
+                },
+                scheme="https",
             )
             assert resp.status_code == 200

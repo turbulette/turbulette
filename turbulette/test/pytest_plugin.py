@@ -21,7 +21,9 @@ from .tester import Tester
 def pytest_addoption(parser):
     parser.addoption("--settings", action="store", help="Turbulette settings")
     parser.addoption(
-        "--keep-db", action="store_true", help="Keep test database after the test session"
+        "--keep-db",
+        action="store_true",
+        help="Keep test database after the test session",
     )
 
 
