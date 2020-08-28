@@ -48,32 +48,33 @@ def create_project(name):
 
 
 @click.command(help="Create a Turbulette application")
-@click.option("--name", prompt="App name", help="The app name")
+@click.option("--name", "-n", prompt="App name", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
 def create_app(name):
-    alembic_ini = get_alembic_ini()
-    copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / name)
+    for app_name in name:
+        alembic_ini = get_alembic_ini()
+        copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
 
-    alembic_config = configparser.ConfigParser(interpolation=None)
-    alembic_config.read(alembic_ini)
-    migration_dir = f"%(here)s{sep}{name}{sep}{FOLDER_MIGRATIONS}"
+        alembic_config = configparser.ConfigParser(interpolation=None)
+        alembic_config.read(alembic_ini)
+        migration_dir = f"%(here)s{sep}{app_name}{sep}{FOLDER_MIGRATIONS}"
 
-    if "version_locations" in alembic_config["alembic"]:
-        alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
-    else:
-        alembic_config["alembic"]["version_locations"] = migration_dir
+        if "version_locations" in alembic_config["alembic"]:
+            alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
+        else:
+            alembic_config["alembic"]["version_locations"] = migration_dir
 
-    with open(alembic_ini, "w") as alembic_file:
-        alembic_config.write(alembic_file)
+        with open(alembic_ini, "w") as alembic_file:
+            alembic_config.write(alembic_file)
 
-    config = Config(file_=alembic_ini.as_posix())
+        config = Config(file_=alembic_ini.as_posix())
 
-    revision(
-        config,
-        message=f"create app {name} branch",
-        head="base",
-        branch_label=name,
-        version_path=(Path(name) / FOLDER_MIGRATIONS).as_posix(),
-    )
+        revision(
+            config,
+            message=f"create app {app_name} branch",
+            head="base",
+            branch_label=app_name,
+            version_path=(Path(app_name) / FOLDER_MIGRATIONS).as_posix(),
+        )
 
 
 @click.command(
