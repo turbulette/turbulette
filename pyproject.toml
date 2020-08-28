@@ -2,8 +2,31 @@
 name = "turbulette"
 version = "0.1.2"
 description = "A Framework to build async GraphQL APIs with Ariadne and GINO"
-authors = ["Gazorby <gazorby@pm.me>"]
 license = "MIT"
+authors = ["Matthieu MN <matthieu.macnab@pm.me>"]
+maintainers = ["Matthieu MN <matthieu.macnab@pm.me>"]
+repository = "https://github.com/gazorby/turbulette"
+keywords = ["grapql", "api", "asyncio", "gino", "ariadne"]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Typing :: Typed",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+
+]
+
+[tool.poetry.urls]
+"Ariadne" = "https://ariadnegraphql.org/"
+"GINO" = "https://python-gino.org/docs/en/master/index.html"
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -48,6 +71,26 @@ addopts = "--cov --cov-report html --cov-report xml"
 [tool.coverage.run]
 omit = ["turbulette/test/pytest_plugin.py"]
 source = ["turbulette/"]
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | snapshots
+)/
+'''
 
 [build-system]
 requires = ["poetry>=0.12"]
