@@ -7,6 +7,7 @@ from .permissions import has_scope
 
 FuncType = Callable[[Any, Any], Coroutine[Any, Any, Any]]
 
+
 def scope_required(permissions: list, is_staff=False):
     """Decorator that log a user and check if it
         has the required permissions

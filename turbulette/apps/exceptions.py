@@ -3,5 +3,6 @@ class TurbuletteAppError(Exception):
         self.app_label = app_label
         super().__init__(self, f"[App {self.app_label}] : {message}")
 
+
 class RegistryError(Exception):
     pass

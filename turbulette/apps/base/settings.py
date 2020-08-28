@@ -10,12 +10,7 @@ OVERRIDE_BY_ENV = True
 
 # Base settings rules
 SETTINGS_RULES = {
-    "REQUIRED_SETTINGS": [
-        "INSTALLED_APPS",
-        "GRAPHQL_ENDPOINT",
-        "DEBUG"
-    ],
-
+    "REQUIRED_SETTINGS": ["INSTALLED_APPS", "GRAPHQL_ENDPOINT", "DEBUG"],
     "REQUIRED_SETTINGS_TYPES": {
         "APOLLO_TRACING": "bool",
         "APOLLO_FEDERATION": "bool",
@@ -29,10 +24,9 @@ SETTINGS_RULES = {
         "CSRF_COOKIE_SECURE": "bool",
         "CSRF_FORM_PARAM": "bool",
         "CSRF_HEADER_PARAM": "bool",
-        "ALLOWED_HOSTS": "json.loads"
+        "ALLOWED_HOSTS": "json.loads",
     },
-
-    "OVERRIDE_BY_ENV": OVERRIDE_BY_ENV
+    "OVERRIDE_BY_ENV": OVERRIDE_BY_ENV,
 }
 
 ###########################

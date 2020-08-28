@@ -1,13 +1,6 @@
 import datetime
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String
-)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 
 from turbulette.db import Model
 from .exceptions import UserDoesNotExists
@@ -44,17 +37,18 @@ class AbstractUser:
         """
         return super().__repr__(self.get_username())
 
-
     def get_username(self) -> str:
         return str(getattr(self, self.USERNAME_FIELD))
 
-
     @classmethod
     async def get_by_username(cls, username: str):
-        user = await cls.query.where(getattr(cls, cls.USERNAME_FIELD) == username).gino.first()
+        user = await cls.query.where(
+            getattr(cls, cls.USERNAME_FIELD) == username
+        ).gino.first()
         if not user:
             raise UserDoesNotExists
         return user
+
 
 class Group(Model):
     id = Column(Integer, primary_key=True)

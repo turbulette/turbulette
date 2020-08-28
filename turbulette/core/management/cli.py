@@ -40,7 +40,12 @@ def cli():
 
 @click.command(help="Create a Turbulette project")
 @click.option("--name", "-n", prompt="Project name", help="The project name")
-@click.option("--app", "-a", help="Create an app with the given name. Can be passed multiple times to create multiple applications", multiple=True)
+@click.option(
+    "--app",
+    "-a",
+    help="Create an app with the given name. Can be passed multiple times to create multiple applications",
+    multiple=True,
+)
 @click.pass_context
 def create_project(ctx, name, app):
     project_dir = Path.cwd() / name
@@ -52,8 +57,14 @@ def create_project(ctx, name, app):
         chdir(project_dir.as_posix())
         ctx.invoke(create_app, name=app)
 
+
 @click.command(help="Create a Turbulette application")
-@click.option("--name", "-n", help="The app name. Can be passed multiple times to create multiple applications", multiple=True)
+@click.option(
+    "--name",
+    "-n",
+    help="The app name. Can be passed multiple times to create multiple applications",
+    multiple=True,
+)
 def create_app(name):
     for app_name in name:
         alembic_ini = get_alembic_ini()

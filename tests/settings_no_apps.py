@@ -12,8 +12,7 @@ GRAPHQL_ENDPOINT = "/graphql"
 
 # List installed Turbulette apps
 # that defines some GraphQL schema
-INSTALLED_APPS = [
-]
+INSTALLED_APPS = []
 
 CONFIGURE_LOGGING = False
 

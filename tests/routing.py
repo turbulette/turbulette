@@ -6,7 +6,8 @@ from turbulette.routes import csrf
 async def welcome(request):
     return JSONResponse({"welcome": "welcome to the library"})
 
+
 routes = [
     Route("/csrf", endpoint=csrf),
-    Route("/welcome", endpoint=welcome, methods=["GET", "POST"])
+    Route("/welcome", endpoint=welcome, methods=["GET", "POST"]),
 ]

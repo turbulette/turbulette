@@ -23,9 +23,7 @@ FOLDER_ALEMBIC = "alembic"
 FOLDER_MIGRATIONS = "migrations"
 
 # Apps that must always be loaded with turbulette
-TURBULETTE_CORE_APPS = [
-    "turbulette.apps.base"
-]
+TURBULETTE_CORE_APPS = ["turbulette.apps.base"]
 
 
 # pytest settings
