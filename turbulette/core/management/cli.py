@@ -39,7 +39,7 @@ def cli():
 
 
 @click.command(help="Create a Turbulette project")
-@click.option("--name", prompt="Project name", help="The project name")
+@click.option("--name", "-n", prompt="Project name", help="The project name")
 @click.option("--app", "-a", help="Create an app with the given name. Can be passed multiple times to create multiple applications", multiple=True)
 @click.pass_context
 def create_project(ctx, name, app):
@@ -108,7 +108,7 @@ def upgrade(app):
     )
 )
 @click.argument("app", required=True, nargs=1)
-@click.option("--message/-m", help="Revision message")
+@click.option("--message", "-m", help="Revision message")
 def makerevision(app, message):
     alembic_ini = get_alembic_ini()
     config = Config(file_=alembic_ini.as_posix())
