@@ -86,7 +86,7 @@ def turbulette_starlette(project_settings: str = None):
     from starlette.routing import Route
     from starlette.middleware import Middleware
 
-    middlewares, routes = [], None
+    middlewares, routes = [], []
 
     project_settings_module = import_module(project_settings)
     gino_starlette(
@@ -110,7 +110,7 @@ def turbulette_starlette(project_settings: str = None):
     if (
         Path(find_spec(project_settings).origin).parent
         / f"{TURBULETTE_ROUTING_MODULE}.py"
-    ):
+    ).is_file():
         routes = getattr(
             import_module(
                 f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
