@@ -417,10 +417,10 @@ description = "Implementation of JOSE Web standards"
 name = "jwcrypto"
 optional = false
 python-versions = "*"
-version = "0.7"
+version = "0.8"
 
 [package.dependencies]
-cryptography = ">=1.5"
+cryptography = ">=2.3"
 
 [[package]]
 category = "dev"
@@ -704,10 +704,10 @@ description = "Module for generating and verifying JSON Web Tokens"
 name = "python-jwt"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "3.2.6"
+version = "3.3.0"
 
 [package.dependencies]
-jwcrypto = ">=0.6.0"
+jwcrypto = ">=0.8"
 
 [[package]]
 category = "dev"
@@ -1142,8 +1142,8 @@ isort = [
     {file = "isort-4.3.21.tar.gz", hash = "sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1"},
 ]
 jwcrypto = [
-    {file = "jwcrypto-0.7-py2.py3-none-any.whl", hash = "sha256:618ded1d25d3f806a1ab05cee42633a5a2787af33fca8d8f539b0aa1478b3728"},
-    {file = "jwcrypto-0.7.tar.gz", hash = "sha256:adbe1f6266cde35d40d5de6d1419612b3bd4c869b9332c88c9d7a9163d305100"},
+    {file = "jwcrypto-0.8-py2.py3-none-any.whl", hash = "sha256:16e17faa4dce36551ade3a3ccb06236a61e5924ea1db163c9be9827acf935a82"},
+    {file = "jwcrypto-0.8.tar.gz", hash = "sha256:b7fee2635bbefdf145399392f5be26ad54161c8271c66b5fe107b4b452f06c24"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.4.3.tar.gz", hash = "sha256:f3900e8a5de27447acbf900b4750b0ddfd7ec1ea7fbaf11dfa911141bc522af0"},
@@ -1365,8 +1365,8 @@ python-editor = [
     {file = "python_editor-1.0.4-py3.5.egg", hash = "sha256:c3da2053dbab6b29c94e43c486ff67206eafbe7eb52dbec7390b5e2fb05aac77"},
 ]
 python-jwt = [
-    {file = "python_jwt-3.2.6-py2.py3-none-any.whl", hash = "sha256:f13bdd52a8f83250a204fa290cdc980aa847fa3e7f7cb9b6f70391d3306cb85b"},
-    {file = "python_jwt-3.2.6.tar.gz", hash = "sha256:605031f3f0f5bc3921e5683d8002706e7e926848e7a898241efa81e0b8d4303b"},
+    {file = "python_jwt-3.3.0-py2.py3-none-any.whl", hash = "sha256:31aa6e505efce33f446cd4ae3cfac079af225824a59607af4d2a707bcbc6bc82"},
+    {file = "python_jwt-3.3.0.tar.gz", hash = "sha256:d895f697e7c6381666f65dd1adede94347bdd2794d39d79b3bae2bbf99747eb6"},
 ]
 regex = [
     {file = "regex-2020.7.14-cp27-cp27m-win32.whl", hash = "sha256:e46d13f38cfcbb79bfdb2964b0fe12561fe633caf964a77a5f8d4e45fe5d2ef7"},
