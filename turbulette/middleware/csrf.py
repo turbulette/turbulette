@@ -78,9 +78,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 
             if token_required and token:
                 response.set_cookie(
-                    self.cookie_name,
-                    token,
-                    max_age=self.max_age,
+                    self.cookie_name, token, max_age=self.max_age,
                 )
             return response
         else:

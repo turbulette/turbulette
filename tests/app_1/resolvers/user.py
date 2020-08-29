@@ -58,11 +58,7 @@ async def borrow_book(_, __, user, **kwargs):
 
 @query.field("exclusiveBooks")
 async def is_logged(_, __, claims, **kwargs):
-    return {
-        "books": [
-            {"title": "Game Of Thrones", "author": "G.R.R Martin"},
-        ]
-    }
+    return {"books": [{"title": "Game Of Thrones", "author": "G.R.R Martin"},]}
 
 
 @query.field("book")

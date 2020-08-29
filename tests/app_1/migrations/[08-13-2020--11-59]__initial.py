@@ -44,10 +44,7 @@ def upgrade():
         sa.Column("last_name", sa.String(), nullable=True),
         sa.Column("is_staff", sa.Boolean(), nullable=False),
         sa.Column("permission_group", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["permission_group"],
-            ["auth_group.id"],
-        ),
+        sa.ForeignKeyConstraint(["permission_group"], ["auth_group.id"],),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
         sa.UniqueConstraint("username"),
@@ -57,14 +54,8 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("group", sa.Integer(), nullable=False),
         sa.Column("permission", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["group"],
-            ["auth_group.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["permission"],
-            ["auth_permission.id"],
-        ),
+        sa.ForeignKeyConstraint(["group"], ["auth_group.id"],),
+        sa.ForeignKeyConstraint(["permission"], ["auth_permission.id"],),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###
