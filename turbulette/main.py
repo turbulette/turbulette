@@ -4,6 +4,7 @@ from ariadne.asgi import GraphQL
 from gino import Gino  # type: ignore [attr-defined]
 
 from turbulette import conf
+from turbulette.core.errors import error_formatter
 
 from .apps import Registry
 from .apps.config import get_project_settings_by_env
@@ -48,5 +49,6 @@ def setup(project_settings: str = None) -> GraphQL:
         ]
         if settings.APOLLO_TRACING
         else None,
+        error_formatter=error_formatter,
     )
     return graphql_route

@@ -1,9 +1,8 @@
 from typing import Any, Callable
-
 from turbulette.core.errors import PermissionDenied
-
 from .core import TokenType, decode_jwt, process_jwt_header
 from .permissions import has_scope
+from .exceptions import JWTInvalidTokenType
 
 
 def scope_required(permissions: list, is_staff=False):
@@ -67,8 +66,8 @@ def _jwt_required(token_type: TokenType):
             jwt = process_jwt_header(info.context["request"].headers["authorization"])
             claims = decode_jwt(jwt)[1]
             if TokenType(claims["type"]) is not token_type:
-                raise PermissionError(
-                    f"The provided token is not a {token_type.value} token"
+                raise JWTInvalidTokenType(
+                    f"The provided JWT is not a {token_type.value} token"
                 )
             return await func(obj, info, claims, **kwargs)
 

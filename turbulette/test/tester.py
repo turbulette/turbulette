@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
+from turbulette.core.errors import error_formatter
 
 
 class Tester:
@@ -31,6 +32,7 @@ class Tester:
             data={"query": query, "variables": variables, "operationName": op_name},
             context_value={"request": TestRequest(headers, jwt)},
             debug=True,
+            error_formatter=error_formatter,
         )
 
     async def assert_query_success(

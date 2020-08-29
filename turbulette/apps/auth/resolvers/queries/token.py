@@ -1,7 +1,7 @@
 from typing import Tuple
 from turbulette import query
 from turbulette.conf import settings
-from turbulette.core.errors import BaseError
+from turbulette.core.errors import ErrorField
 
 from ... import user_model
 from ...core import (
@@ -18,7 +18,7 @@ from ...pyd_models import AccessToken, Token
 @query.field("getJWT")
 async def get_jwt(_, __, username, password):
     user = await user_model.query.where(user_model.username == username).gino.first()
-    error = BaseError()
+    error = ErrorField()
     if user:
         if verify_password(password, user.hashed_password):
             payload = jwt_payload(user)
