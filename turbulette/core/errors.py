@@ -1,6 +1,6 @@
 class BaseError:
     """Base error class used to return functional errors
-        intended for the end user in a dedicated field
+    intended for the end user in a dedicated field
     """
 
     errors_field_name = "errors"

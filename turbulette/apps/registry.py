@@ -25,8 +25,7 @@ from .exceptions import RegistryError
 
 
 class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
-    """A custom strategy to collect all settings rules before processing them
-    """
+    """A custom strategy to collect all settings rules before processing them"""
 
     @classmethod
     def load_settings_file(cls, settings_file):
@@ -51,8 +50,8 @@ class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
 class Registry:
     """A class storing the Turbulette applications in use
 
-        It mostly serve as a proxy to execute common actions on all apps
-        plus some configuration stuff (loading settings etc)
+    It mostly serve as a proxy to execute common actions on all apps
+    plus some configuration stuff (loading settings etc)
     """
 
     def __init__(
@@ -158,8 +157,7 @@ class Registry:
         return executable_schema
 
     def load_models(self):
-        """Import GINO models of each app
-        """
+        """Import GINO models of each app"""
         for app in self.apps.values():
             app.load_models()
 
@@ -199,8 +197,7 @@ class Registry:
 
     @property
     def ready(self) -> bool:
-        """The registry is ready if all of its apps are ready
-        """
+        """The registry is ready if all of its apps are ready"""
         if not self._ready:
             self._ready = all(self.apps.values())
             return self._ready
@@ -208,8 +205,7 @@ class Registry:
 
     @ready.setter
     def ready(self, value: bool):
-        """Once the registry is ready, we cannot make it unready anymore
-        """
+        """Once the registry is ready, we cannot make it unready anymore"""
         if not self._ready:
             self._ready = value
         if self._ready and value is not self._ready:

@@ -30,8 +30,7 @@ def base_app_module_name():
 
 @pytest.fixture
 def reload_resources(settings, settings_no_apps, base_app_module_name):
-    """Reload modules that may have been modified
-    """
+    """Reload modules that may have been modified"""
     # Reload modules that may have been modified
     reload(import_module(settings))
     reload(import_module(settings_no_apps))

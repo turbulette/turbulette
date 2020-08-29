@@ -17,8 +17,7 @@ from .constants import (
 
 
 class TurbuletteApp:
-    """Class representing a Turbulette application
-    """
+    """Class representing a Turbulette application"""
 
     __slots__ = (
         "label",
@@ -86,9 +85,9 @@ class TurbuletteApp:
 
     def load_resolvers(self):
         """Load resolvers
-            This assumes that all python files under the ``resolvers`` contains resolvers
-            functions. Functions that are not binded to a GraphQL query should live outside
-            this folder.
+        This assumes that all python files under the ``resolvers`` contains resolvers
+        functions. Functions that are not binded to a GraphQL query should live outside
+        this folder.
         """
         resolver_modules = [
             m.as_posix()
@@ -106,15 +105,14 @@ class TurbuletteApp:
                 )
 
     def load_models(self):
-        """Load GINO models
-        """
+        """Load GINO models"""
         if (self.package_path / f"{self.models_module}.py").is_file():
             self._star_import(f"{self.package_name}.{self.models_module}")
 
     def load_directives(self):
         """Load GraphQL directives
-            Directives class must have a class attribute ``name``
-            that match the directive name in the GraphQL schema
+        Directives class must have a class attribute ``name``
+        that match the directive name in the GraphQL schema
         """
         if (
             not self.directives
@@ -132,8 +130,7 @@ class TurbuletteApp:
                     self.directives[member.name] = member
 
     def load_schema(self):
-        """Load GraphQL schema
-        """
+        """Load GraphQL schema"""
         if (self.package_path / self.schema_folder).is_dir() and self.schema is None:
             type_defs = [
                 load_schema_from_path(self.package_path / f"{self.schema_folder}")
@@ -142,16 +139,14 @@ class TurbuletteApp:
                 self.schema = [*type_defs]
 
     def load_graphql_ressources(self):
-        """Load all needed resources to enable GraphQL queries
-        """
+        """Load all needed resources to enable GraphQL queries"""
         self.load_schema()
         self.load_directives()
         self.load_resolvers()
         self.ready = True
 
     def __bool__(self):
-        """An app is True if it's ready
-        """
+        """An app is True if it's ready"""
         return self.ready
 
     def __repr__(self):

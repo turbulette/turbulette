@@ -34,8 +34,7 @@ class BaseModelMeta(ModelType):
 
 
 class Model(db.Model, metaclass=BaseModelMeta):
-    """Base model class for gino models
-    """
+    """Base model class for gino models"""
 
     def __repr__(self, key: str = None):
         if not key:

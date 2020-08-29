@@ -18,8 +18,7 @@ def get_gino_instance() -> Gino:
 
 
 def setup(project_settings: str = None) -> GraphQL:
-    """Load Turbulette applications and return the GraphQL route
-    """
+    """Load Turbulette applications and return the GraphQL route"""
 
     project_settings_module = (
         get_project_settings_by_env()

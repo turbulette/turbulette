@@ -4,8 +4,7 @@ from ariadne.types import GraphQLResult, GraphQLSchema
 
 
 class Tester:
-    """Helper class to test GraphQL queries against a schema
-    """
+    """Helper class to test GraphQL queries against a schema"""
 
     def __init__(self, schema: GraphQLSchema):
         self.schema = schema

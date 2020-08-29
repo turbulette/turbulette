@@ -29,7 +29,7 @@ def get_config_from_paths(paths: List[str]) -> Config:
 class TurubuletteSettingsStub(SettingsStub):
     """Subclass of SettingsStub to make it work with Turbulette settings
 
-        Useful to safely change settings on the fly during tests
+    Useful to safely change settings on the fly during tests
     """
 
     def __init__(self, **kwargs):
