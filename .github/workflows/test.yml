@@ -78,10 +78,7 @@ jobs:
           $HOME/.poetry/bin/poetry run black --check .
           $HOME/.poetry/bin/poetry run mypy turbulette --ignore-missing-imports
       - name: coverage
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_TOKEN }}
-          coverage-reports: coverage.xml
+        run: bash <(curl -s https://codecov.io/bash)
 
   release:
     runs-on: ubuntu-latest
