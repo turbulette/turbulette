@@ -113,7 +113,6 @@ def turbulette_starlette(project_settings: str):
         conf.app = app
         conf.db.init_app(app)
         return app
-    else:
-        ImproperlyConfigured(
-            f"Cannot find spec for module {project_settings}"
-        )  # pragma: no cover
+    raise ImproperlyConfigured(
+        f"Cannot find spec for module {project_settings}"
+    )  # pragma: no cover
