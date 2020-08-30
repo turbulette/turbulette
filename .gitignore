@@ -141,6 +141,7 @@ api/ublo/txs
 
 
 .vscode
+.idea
 
 # Testing
 program.prof
