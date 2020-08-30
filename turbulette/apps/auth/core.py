@@ -124,12 +124,12 @@ def decode_jwt(jwt: str) -> Tuple:
             iat_skew=settings.JWT_LEEWAY,
             allowed_algs=[settings.JWT_ALGORITHM],
         )
-    except (InvalidJWSObject, UnicodeDecodeError):
-        raise JWTDecodeError
+    except (InvalidJWSObject, UnicodeDecodeError) as error:
+        raise JWTDecodeError from error
     except InvalidJWSSignature:
         raise JWTInvalidSignature
-    except Exception:
-        raise JWTExpired
+    except Exception as error:
+        raise JWTExpired from error
 
 
 def get_token_from_user(user: user_model) -> str:
