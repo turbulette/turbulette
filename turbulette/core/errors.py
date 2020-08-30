@@ -5,7 +5,7 @@ from graphql import GraphQLError
 
 
 class ErrorCode(Enum):
-    """ Store error codes as names and messages as values
+    """Store error codes as names and messages as values.
 
     It is intended to be used with `BaseError` Exception and it subclasses
     to provide consistent formatting in GraphQL error responses.
@@ -21,8 +21,7 @@ class ErrorCode(Enum):
 
 
 class BaseError(Exception):
-    """Base Exception class for unexpected server errors
-    """
+    """Base Exception class for unexpected server errors."""
 
     error_code: Optional[ErrorCode] = None
     extensions = {}
@@ -33,7 +32,7 @@ class BaseError(Exception):
 
 
 class ErrorField:
-    """Base error class used to return functional errors
+    """Base error class used to return functional errors.
     intended for the end user in a dedicated field
     """
 
@@ -61,7 +60,7 @@ class ErrorField:
 
 
 class PermissionDenied(ErrorField):
-    """Wrapp BaseError with a default message for permission errors
+    """Wrap BaseError with a default message for permission errors.
 
     Args:
         BaseError (class): Inherits from BaseError class
@@ -72,7 +71,7 @@ class PermissionDenied(ErrorField):
 
 
 class PydanticsValidationError(ErrorField):
-    """Handle pydantic error messages when trying to validate a model
+    """Handle pydantic error messages when trying to validate a model.
 
     Args:
         BaseError (class): Inherits from BaseError class
@@ -84,7 +83,7 @@ class PydanticsValidationError(ErrorField):
 
 
 def error_formatter(error: GraphQLError, debug: bool = False) -> dict:
-    """Replace Ariadne default error formatter
+    """Replace Ariadne default error formatter.
 
     Args:
         error (GraphQLError): The GraphQL error
