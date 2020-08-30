@@ -1,5 +1,5 @@
 class BaseError:
-    """Base error class used to return functional errors
+    """Base error class used to return functional errors.
     intended for the end user in a dedicated field
     """
 
@@ -19,6 +19,7 @@ class BaseError:
         return {self.errors_field_name: self.errors_list}
 
     def __str__(self) -> str:
+        """Format errors array to a string."""
         return "\n".join(self.errors_list)
 
     def add(self, message: str, nature: str = None):
@@ -26,7 +27,7 @@ class BaseError:
 
 
 class PermissionDenied(BaseError):
-    """Wrapp BaseError with a default message for permission errors
+    """Wrap BaseError with a default message for permission errors.
 
     Args:
         BaseError (class): Inherits from BaseError class
@@ -37,7 +38,7 @@ class PermissionDenied(BaseError):
 
 
 class PydanticsValidationError(BaseError):
-    """Handle pydantic error messages when trying to validate a model
+    """Handle pydantic error messages when trying to validate a model.
 
     Args:
         BaseError (class): Inherits from BaseError class

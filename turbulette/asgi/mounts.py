@@ -21,6 +21,19 @@ from turbulette.type import DatabaseSettings
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
+    """Setup db connection using gino_starlette extension.
+
+    Args:
+        settings (DatabaseSettings): Settings to use when establishing the connection
+        dsn (URL): db credentials
+
+    Raises:
+        ImproperlyConfigured: Raised if either `settings` or `dsn`
+                              are incorrect or have missing values
+
+    Returns:
+        The GINO instance
+    """
     if not settings:
         raise ImproperlyConfigured(
             f"You did not set the {SETTINGS_DATABASE_SETTINGS} setting"
@@ -46,8 +59,8 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
     return database
 
 
-def turbulette_starlette(project_settings: str = None):
-    """Setup turbulette apps and mount the graphql route on a FastAPI instance
+def turbulette_starlette(project_settings: str):
+    """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
         project_settings (str, optional): project settings module name. Defaults to None.
@@ -61,8 +74,10 @@ def turbulette_starlette(project_settings: str = None):
     middlewares, routes = [], []
 
     project_settings_module = import_module(project_settings)
+
     gino_starlette(
-        project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
+        getattr(project_settings_module, "DATABASE_SETTINGS"),
+        getattr(project_settings_module, "DB_DSN"),
     )
     graphql_route = setup(project_settings)
 
@@ -79,23 +94,25 @@ def turbulette_starlette(project_settings: str = None):
             )
 
     # Register routes
-    if (
-        Path(find_spec(project_settings).origin).parent
-        / f"{TURBULETTE_ROUTING_MODULE}.py"
-    ).is_file():
-        routes = getattr(
-            import_module(
-                f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
-            ),
-            ROUTING_MODULE_ROUTES,
+    spec = find_spec(project_settings)
+    if spec and spec.origin:
+        if (Path(spec.origin).parent / f"{TURBULETTE_ROUTING_MODULE}.py").is_file():
+            routes = getattr(
+                import_module(
+                    f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
+                ),
+                ROUTING_MODULE_ROUTES,
+            )
+
+        app = Starlette(
+            debug=getattr(project_settings_module, "DEBUG"),
+            routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
+            middleware=middlewares,
         )
 
-    app = Starlette(
-        debug=project_settings_module.DEBUG,
-        routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
-        middleware=middlewares,
-    )
-
-    conf.app = app
-    conf.db.init_app(app)
-    return app
+        conf.app = app
+        conf.db.init_app(app)
+        return app
+    raise ImproperlyConfigured(
+        f"Cannot find spec for module {project_settings}"
+    )  # pragma: no cover

@@ -1,22 +1,21 @@
-from typing import Tuple
 from turbulette import query
 from turbulette.conf import settings
 from turbulette.core.errors import BaseError
-
-from ... import user_model
-from ...core import (
+from turbulette.apps.auth import user_model
+from turbulette.apps.auth.core import (
     TokenType,
     encode_jwt,
     jwt_payload,
     jwt_payload_from_id,
     verify_password,
 )
-from ...decorators import refresh_token_required
-from ...pyd_models import AccessToken, Token
+from turbulette.apps.auth.decorators import refresh_token_required
+from turbulette.apps.auth.pyd_models import AccessToken, Token
 
 
 @query.field("getJWT")
 async def get_jwt(_, __, username, password):
+    """Get access and refresh token from username and password."""
     user = await user_model.query.where(user_model.username == username).gino.first()
     error = BaseError()
     if user:
@@ -37,7 +36,8 @@ async def get_jwt(_, __, username, password):
 
 @query.field("refreshJWT")
 @refresh_token_required
-async def refresh_jwt_token(_, __, jwt_claims: Tuple):
-    id_ = jwt_claims.get(user_model.USERNAME_FIELD)
+async def refresh_jwt_token(_, __, jwt_claims: dict):
+    """Refresh an access token."""
+    id_ = jwt_claims["sub"]
     payload = jwt_payload_from_id(id_)
     return AccessToken(access_token=encode_jwt(payload, TokenType.ACCESS))

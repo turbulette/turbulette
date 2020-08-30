@@ -26,8 +26,21 @@ def get_new_token() -> str:
     return get_random_string(CSRF_TOKEN_LENGTH, ascii_letters + digits)
 
 
+def is_valid_referer(request: Request) -> bool:
+    header: str = (
+        request.headers.get("origin") or request.headers.get("referer") or ""
+    )
+
+    url = URL(header)
+    hostname = url.hostname
+    is_valid = hostname in settings.ALLOWED_HOSTS if hostname else False
+    return is_valid
+
+
 class CSRFMiddleware(BaseHTTPMiddleware):
     """
+    CSRF Middleware.
+
     For GET requests, set a random token as a cookie. For unsafe HTTP methods,
     require a HTTP header to match the cookie value, otherwise the request
     is rejected.
@@ -54,16 +67,6 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         self.header_name = header_name
         self.max_age = max_age
         super().__init__(app, **kwargs)
-
-    def is_valid_referer(self, request: Request) -> bool:
-        header: str = (
-            request.headers.get("origin") or request.headers.get("referer") or ""
-        )
-
-        url = URL(header)
-        hostname = url.hostname
-        is_valid = hostname in settings.ALLOWED_HOSTS if hostname else False
-        return is_valid
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         if request.method in SAFE_HTTP_METHODS:
@@ -122,7 +125,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
                 # the vast majority of HTTPS requests, but not HTTP requests,
                 # so only check it for HTTPS.
                 # https://seclab.stanford.edu/websec/csrf/csrf.pdf
-                if not self.is_valid_referer(request):
+                if not is_valid_referer(request):
                     return Response("Referrer or origin is incorrect", status_code=403)
 
             request.scope.update({CSRF_REQUEST_SCOPE_NAME: cookie_token})

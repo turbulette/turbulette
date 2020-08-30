@@ -16,8 +16,27 @@ from .constants import (
 )
 
 
+def _star_import(module_path: str):
+    """Perform a star import from the specified module path.
+
+        This is equivalent to ``from module import *``
+
+        https://stackoverflow.com/a/44492879/10735573
+
+    Args:
+        module_path (str): Module path from which to perform the import
+
+    """
+    module = import_module(module_path)
+    globals().update(
+        {n: getattr(module, n) for n in getattr(module, "__all__")}
+        if hasattr(module, "__all__")
+        else {k: v for (k, v) in module.__dict__.items() if not k.startswith("_")}
+    )
+
+
 class TurbuletteApp:
-    """Class representing a Turbulette application"""
+    """Class representing a Turbulette application."""
 
     __slots__ = (
         "label",
@@ -67,24 +86,9 @@ class TurbuletteApp:
         self.settings_module = settings_module
         self.ready = False
 
-    def _star_import(self, module_path: str):
-        """Perform a star import from the specified module path
-            This is equivalent to ``from module import *``
-
-            https://stackoverflow.com/a/44492879/10735573
-
-        Args:
-            module_path (str): Module path from which to perform the import
-        """
-        module = import_module(module_path)
-        globals().update(
-            {n: getattr(module, n) for n in getattr(module, "__all__")}
-            if hasattr(module, "__all__")
-            else {k: v for (k, v) in module.__dict__.items() if not k.startswith("_")}
-        )
-
     def load_resolvers(self):
-        """Load resolvers
+        """Load resolvers.
+
         This assumes that all python files under the ``resolvers`` contains resolvers
         functions. Functions that are not binded to a GraphQL query should live outside
         this folder.
@@ -105,12 +109,12 @@ class TurbuletteApp:
                 )
 
     def load_models(self):
-        """Load GINO models"""
+        """Load GINO models."""
         if (self.package_path / f"{self.models_module}.py").is_file():
-            self._star_import(f"{self.package_name}.{self.models_module}")
+            _star_import(f"{self.package_name}.{self.models_module}")
 
     def load_directives(self):
-        """Load GraphQL directives
+        """Load GraphQL directives.
         Directives class must have a class attribute ``name``
         that match the directive name in the GraphQL schema
         """
@@ -130,7 +134,7 @@ class TurbuletteApp:
                     self.directives[member.name] = member
 
     def load_schema(self):
-        """Load GraphQL schema"""
+        """Load GraphQL schema."""
         if (self.package_path / self.schema_folder).is_dir() and self.schema is None:
             type_defs = [
                 load_schema_from_path(self.package_path / f"{self.schema_folder}")
@@ -139,18 +143,20 @@ class TurbuletteApp:
                 self.schema = [*type_defs]
 
     def load_graphql_ressources(self):
-        """Load all needed resources to enable GraphQL queries"""
+        """Load all needed resources to enable GraphQL queries."""
         self.load_schema()
         self.load_directives()
         self.load_resolvers()
         self.ready = True
 
     def __bool__(self):
-        """An app is True if it's ready"""
+        """An app is True if it's ready."""
         return self.ready
 
     def __repr__(self):
+        """Standard repr : <TurbuletteApp>: package_name."""
         return f"<{type(self).__name__}: {self.package_name}>"
 
     def __str__(self):
+        """Should be enough to identify an app since the registry store them in a dict."""
         return self.label
