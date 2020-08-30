@@ -10,7 +10,14 @@ from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
 
-from .exceptions import JWTInvalidSignatureError, JWTDecodeError, JWTExpiredError
+from .exceptions import (
+    JWTInvalidSignature,
+    JWTDecodeError,
+    JWTExpired,
+    JWTNoUsername,
+    JWTInvalidPrefix,
+    JWTNotFound,
+)
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -76,20 +83,20 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
 def process_jwt_header(header: str) -> str:
     if not header:
-        raise JWTDecodeError("JWT token not found")
+        raise JWTNotFound()
 
     prefix, *others = header.split()
 
     jwt = others[0] if others else None
 
     if prefix != settings.JWT_PREFIX:
-        raise JWTDecodeError(
-            f"Wrong token prefix in authorization header"
-            f"(expecting {settings.JWT_PREFIX} got {prefix})"
+        raise JWTInvalidPrefix(
+            f"JWT prefix in the authorization header is invalid,"
+            f" got '{prefix}' expected '{settings.JWT_PREFIX}'"
         )
 
     if not jwt:
-        raise JWTDecodeError("JWT token not found")
+        raise JWTNotFound()
 
     return jwt
 
@@ -118,11 +125,11 @@ def decode_jwt(jwt: str) -> Tuple:
             allowed_algs=[settings.JWT_ALGORITHM],
         )
     except (InvalidJWSObject, UnicodeDecodeError):
-        raise JWTDecodeError("JWT is invalid and/or improperly formatted")
+        raise JWTDecodeError
     except InvalidJWSSignature:
-        raise JWTInvalidSignatureError
+        raise JWTInvalidSignature
     except Exception:
-        raise JWTExpiredError
+        raise JWTExpired
 
 
 def get_token_from_user(user: user_model) -> str:
@@ -166,7 +173,7 @@ async def get_user_by_payload(claims):
     username = claims.get("sub")
 
     if not username:
-        raise JWTDecodeError("Invalid payload")
+        raise JWTNoUsername()
 
     user = await user_model.get_by_username(username)
     return user
