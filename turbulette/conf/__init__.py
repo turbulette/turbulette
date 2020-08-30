@@ -22,7 +22,7 @@ from .utils import get_config_from_paths  # noqa
 registry: Optional[Registry] = None
 db: Gino = None
 settings: LazySettings = None
-app: Starlette = None
+app: Optional[Starlette] = None
 
 SIMPLE_SETTINGS = {
     constants.REQUIRED_SETTINGS: set(),
