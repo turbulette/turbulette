@@ -27,9 +27,7 @@ def get_new_token() -> str:
 
 
 def is_valid_referer(request: Request) -> bool:
-    header: str = (
-        request.headers.get("origin") or request.headers.get("referer") or ""
-    )
+    header: str = request.headers.get("origin") or request.headers.get("referer") or ""
 
     url = URL(header)
     hostname = url.hostname
@@ -81,7 +79,9 @@ class CSRFMiddleware(BaseHTTPMiddleware):
 
             if token_required and token:
                 response.set_cookie(
-                    self.cookie_name, token, max_age=self.max_age,
+                    self.cookie_name,
+                    token,
+                    max_age=self.max_age,
                 )
             return response
         else:

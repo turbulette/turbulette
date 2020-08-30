@@ -232,7 +232,10 @@ async def test_staff_member(
 
 
 async def test_permission(
-    tester, create_staff_user, get_staff_tokens, get_user_tokens,
+    tester,
+    create_staff_user,
+    get_staff_tokens,
+    get_user_tokens,
 ):
     from turbulette.apps.auth.utils import create_user
     from turbulette.apps.auth import get_token_from_user
