@@ -13,7 +13,7 @@ from typing import Optional
 from gino_starlette import Gino
 from simple_settings import LazySettings
 from starlette.applications import Starlette
-from turbulette.apps.registry import Registry
+from turbulette.type import Registry
 from turbulette.conf.constants import OVERRIDE_BY_ENV  # noqa
 
 from . import constants

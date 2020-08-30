@@ -58,7 +58,7 @@ def run_migrations(project_settings: str):
         conf.registry = registry
     registry.load_settings()
 
-    db = get_gino_instance()
+    database = get_gino_instance()
 
     # this is the Alembic Config object, which provides
     # access to the values within the .ini file in use.
@@ -70,7 +70,7 @@ def run_migrations(project_settings: str):
 
     # add your model's MetaData object here
     # for 'autogenerate' support
-    metadata = db
+    metadata = database
     print(registry.apps.values())
     registry.load_models()
     alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))
