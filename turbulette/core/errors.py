@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 from ariadne import format_error
 from graphql import GraphQLError
 
@@ -18,13 +17,14 @@ class ErrorCode(Enum):
     JWT_INVALID_PREFIX = "JWT prefix in the authorization header is invalid"
     JWT_NOT_FOUND = "JWT was not found"
     JWT_INVALID_TOKEN_TYPE = "JWT type is invalid"
+    SERVER_ERROR = "Internal server error"
 
 
 class BaseError(Exception):
     """Base Exception class for unexpected server errors."""
 
-    error_code: Optional[ErrorCode] = None
-    extensions = {}
+    error_code: ErrorCode = ErrorCode.SERVER_ERROR
+    extensions: dict = {}
 
     def __init__(self, message: str = None):
         self.extensions["code"] = self.error_code.name
