@@ -1,3 +1,5 @@
+"""The auth app provides user authentication and a permission system."""
+
 from .core import (  # noqa
     user_model,
     pwd_context,
