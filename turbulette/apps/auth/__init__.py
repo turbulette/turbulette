@@ -1,4 +1,4 @@
-from .core import (
+from .core import (  # noqa
     user_model,
     pwd_context,
     encode_jwt,

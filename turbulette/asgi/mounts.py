@@ -1,16 +1,39 @@
 from importlib import import_module
+from importlib.util import find_spec
+from pathlib import Path
 
-from sqlalchemy.engine.url import URL
 from gino_starlette import Gino
+from sqlalchemy.engine.url import URL
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.routing import Route
+
 from turbulette import conf
-from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
+from turbulette.conf.constants import (
+    ROUTING_MODULE_ROUTES,
+    SETTINGS_DATABASE_SETTINGS,
+    SETTINGS_DB_DSN,
+    TURBULETTE_ROUTING_MODULE,
+)
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
-from .exceptions import ASGIFrameworkError
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
+    """Setup db connection using gino_starlette extension.
+
+    Args:
+        settings (DatabaseSettings): Settings to use when establishing the connection
+        dsn (URL): db credentials
+
+    Raises:
+        ImproperlyConfigured: Raised if either `settings` or `dsn`
+                              are incorrect or have missing values
+
+    Returns:
+        The GINO instance
+    """
     if not settings:
         raise ImproperlyConfigured(
             f"You did not set the {SETTINGS_DATABASE_SETTINGS} setting"
@@ -36,36 +59,8 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
     return database
 
 
-def turbulette_fastapi(project_settings: str = None):
-    """Setup turbulette apps and mount the graphql route on a FastAPI instance
-
-    Args:
-        project_settings (str, optional): project settings module name. Defaults to None.
-
-    Raises:
-        ASGIFrameworkError: Raised if FastAPI cannot be imported
-
-    Returns:
-        FastAPI: The FastAPI instance
-    """
-    try:
-        from fastapi import FastAPI
-    except ModuleNotFoundError:
-        raise ASGIFrameworkError("Failed to import FastAPI, is it installed?")
-
-    project_settings_module = import_module(project_settings)
-    gino_starlette(
-        project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
-    )
-    graphql_route = setup(project_settings)
-    app = FastAPI()
-    app.mount(conf.settings.GRAPHQL_ENDPOINT, graphql_route)
-    conf.db.init_app(app)
-    return app
-
-
-def turbulette_starlette(project_settings: str = None):
-    """Setup turbulette apps and mount the graphql route on a FastAPI instance
+def turbulette_starlette(project_settings: str):
+    """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
         project_settings (str, optional): project settings module name. Defaults to None.
@@ -76,17 +71,48 @@ def turbulette_starlette(project_settings: str = None):
     Returns:
         FastAPI: The Starlette instance
     """
-    from starlette.applications import Starlette
-    from starlette.routing import Route
+    middlewares, routes = [], []
 
     project_settings_module = import_module(project_settings)
+
     gino_starlette(
-        project_settings_module.DATABASE_SETTINGS, project_settings_module.DB_DSN
+        getattr(project_settings_module, "DATABASE_SETTINGS"),
+        getattr(project_settings_module, "DB_DSN"),
     )
     graphql_route = setup(project_settings)
-    app = Starlette(
-        debug=conf.settings.DEBUG,
-        routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route),],
-    )
-    conf.db.init_app(app)
-    return app
+
+    # Register middlewares
+    if conf.settings.MIDDLEWARE_CLASSES:
+        for middleware in conf.settings.MIDDLEWARE_CLASSES:
+            middlewares.append(
+                Middleware(
+                    getattr(
+                        import_module(middleware.rsplit(".", 1)[0]),
+                        middleware.rsplit(".", 1)[1],
+                    )
+                )
+            )
+
+    # Register routes
+    spec = find_spec(project_settings)
+    if spec and spec.origin:
+        if (Path(spec.origin).parent / f"{TURBULETTE_ROUTING_MODULE}.py").is_file():
+            routes = getattr(
+                import_module(
+                    f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
+                ),
+                ROUTING_MODULE_ROUTES,
+            )
+
+        app = Starlette(
+            debug=getattr(project_settings_module, "DEBUG"),
+            routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
+            middleware=middlewares,
+        )
+
+        conf.app = app
+        conf.db.init_app(app)
+        return app
+    raise ImproperlyConfigured(
+        f"Cannot find spec for module {project_settings}"
+    )  # pragma: no cover

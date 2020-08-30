@@ -4,7 +4,7 @@ from turbulette import mutation, query
 from turbulette.apps.auth import user_model, get_token_from_user
 from turbulette.apps.auth.pyd_models import BaseUserCreate
 from turbulette.apps.auth.utils import create_user
-from turbulette.core.errors import BaseError
+from turbulette.core.errors import ErrorField
 from turbulette.core.validation.decorators import validate
 from ..models import Book
 from ..pyd_models import CreateBook
@@ -23,10 +23,10 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
         message = f"User {user_data['username']} already exists"
 
         # Make sure to call __str__ on BaseError
-        out = str(BaseError(message))
+        out = str(ErrorField(message))
         logging.info(out)
 
-        return BaseError(message).dict()
+        return ErrorField(message).dict()
 
     new_user = await create_user(**user_data, permission_group="customer")
     auth_token = get_token_from_user(new_user)
@@ -45,40 +45,31 @@ async def resolve_books(_, info, user, **kwargs):
         ]
     }
 
+
 @mutation.field("addBook")
 async def add_books(_, __, user, **kwargs):
-    return {
-        "success": True
-    }
+    return {"success": True}
+
 
 @mutation.field("borrowBook")
 async def borrow_book(_, __, user, **kwargs):
-    return {
-        "success": True
-    }
+    return {"success": True}
 
 
 @query.field("exclusiveBooks")
 async def is_logged(_, __, claims, **kwargs):
-    return {
-        "books": [
-            {"title": "Game Of Thrones", "author": "G.R.R Martin"},
-        ]
-    }
+    return {"books": [{"title": "Game Of Thrones", "author": "G.R.R Martin"},]}
 
 
 @query.field("book")
 async def book(_, __, id):
     book = await Book.query.where(Book.id == int(id)).gino.first()
-    return {
-        "book": book.to_dict()
-    }
+    return {"book": book.to_dict()}
+
 
 @mutation.field("createBook")
 @convert_kwargs_to_snake_case
 @validate(CreateBook)
 async def create_book(_, __, valid_input, **kwargs):
     book = await Book.create(**valid_input)
-    return {
-        "book": book.to_dict()
-    }
+    return {"book": book.to_dict()}

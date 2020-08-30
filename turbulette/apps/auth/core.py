@@ -10,7 +10,14 @@ from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
 
-from .exceptions import JWTInvalidSignatureError, JWTDecodeError, JWTExpiredError
+from .exceptions import (
+    JWTInvalidSignature,
+    JWTDecodeError,
+    JWTExpired,
+    JWTNoUsername,
+    JWTInvalidPrefix,
+    JWTNotFound,
+)
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -76,26 +83,26 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
 def process_jwt_header(header: str) -> str:
     if not header:
-        raise JWTDecodeError("JWT token not found")
+        raise JWTNotFound()
 
-    prefix, *jwt = header.split()
+    prefix, *others = header.split()
 
-    jwt = jwt[0] if jwt else None
+    jwt = others[0] if others else None
 
     if prefix != settings.JWT_PREFIX:
-        raise JWTDecodeError(
-            f"Wrong token prefix in authorization header"
-            f"(expecting {settings.JWT_PREFIX} got {prefix})"
+        raise JWTInvalidPrefix(
+            f"JWT prefix in the authorization header is invalid,"
+            f" got '{prefix}' expected '{settings.JWT_PREFIX}'"
         )
 
     if not jwt:
-        raise JWTDecodeError("JWT token not found")
+        raise JWTNotFound()
 
     return jwt
 
 
 def decode_jwt(jwt: str) -> Tuple:
-    """Decode JSON web token
+    """Decode JSON web token.
 
     Args:
         auth_token (str): The JSON web token
@@ -117,16 +124,16 @@ def decode_jwt(jwt: str) -> Tuple:
             iat_skew=settings.JWT_LEEWAY,
             allowed_algs=[settings.JWT_ALGORITHM],
         )
-    except (InvalidJWSObject, UnicodeDecodeError):
-        raise JWTDecodeError("JWT is invalid and/or improperly formatted")
-    except InvalidJWSSignature:
-        raise JWTInvalidSignatureError
-    except:
-        raise JWTExpiredError
+    except (InvalidJWSObject, UnicodeDecodeError) as error:
+        raise JWTDecodeError from error
+    except InvalidJWSSignature as error:
+        raise JWTInvalidSignature from error
+    except Exception as error:
+        raise JWTExpired from error
 
 
 def get_token_from_user(user: user_model) -> str:
-    """A shortcut to get the token directly from a user model instance
+    """A shortcut to get the token directly from a user model instance.
 
     Args:
         user (user_model): GINO model instance of AUTH_USER_MODEL
@@ -138,7 +145,7 @@ def get_token_from_user(user: user_model) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Check the password against an existing hash
+    """Check the password against an existing hash.
 
     Args:
         plain_password (str): Plain password to check
@@ -151,7 +158,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Get the password hash
+    """Get the password hash.
 
     Args:
         password (str): The password to hash
@@ -166,7 +173,7 @@ async def get_user_by_payload(claims):
     username = claims.get("sub")
 
     if not username:
-        raise JWTDecodeError("Invalid payload")
+        raise JWTNoUsername()
 
     user = await user_model.get_by_username(username)
     return user

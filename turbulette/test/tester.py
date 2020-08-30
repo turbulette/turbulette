@@ -1,10 +1,11 @@
 from typing import Dict, Any
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
+from turbulette.core.errors import error_formatter
+
 
 class Tester:
-    """Helper class to test GraphQL queries against a schema
-    """
+    """Helper class to test GraphQL queries against a schema."""
 
     def __init__(self, schema: GraphQLSchema):
         self.schema = schema
@@ -15,12 +16,13 @@ class Tester:
         variables: dict = None,
         op_name: str = None,
         headers: dict = None,
-        jwt: str = None
+        jwt: str = None,
     ) -> GraphQLResult:
         class TestRequest:
             def __init__(self, headers: dict = None, jwt: str = None):
                 # Need to import here to make sure that settings are initialized
                 from turbulette.conf import settings
+
                 self.headers = {} if not headers else headers
                 if jwt:
                     self.headers["authorization"] = f"{settings.JWT_PREFIX} {jwt}"
@@ -30,6 +32,7 @@ class Tester:
             data={"query": query, "variables": variables, "operationName": op_name},
             context_value={"request": TestRequest(headers, jwt)},
             debug=True,
+            error_formatter=error_formatter,
         )
 
     async def assert_query_success(
@@ -39,7 +42,7 @@ class Tester:
         variables: dict = None,
         headers: dict = None,
         jwt: str = None,
-        op_errors=False
+        op_errors=False,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
@@ -58,7 +61,7 @@ class Tester:
         op_name: str,
         variables: dict = None,
         headers: dict = None,
-        jwt: str = None
+        jwt: str = None,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
@@ -77,10 +80,8 @@ class Tester:
         assert "errors" in response[1]
 
     @classmethod
-    def assert_data_in_response(
-        cls, response: GraphQLResult, data: Dict[str, Any]
-    ):
-        """Assert that the response contains the specified key with the corresponding values
+    def assert_data_in_response(cls, response: GraphQLResult, data: Dict[str, Any]):
+        """Assert that the response contains the specified key with the corresponding values.
 
         Args:
             response (GraphQLResult): Response to check

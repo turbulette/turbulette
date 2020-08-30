@@ -1,2 +1,2 @@
-from .app import TurbuletteApp
-from .registry import Registry
+from .app import TurbuletteApp  # noqa
+from .registry import Registry  # noqa

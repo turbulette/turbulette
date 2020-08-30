@@ -1,9 +1,10 @@
 from importlib import import_module
 
 from ariadne.asgi import GraphQL
-from gino import Gino
+from gino import Gino  # type: ignore [attr-defined]
 
 from turbulette import conf
+from turbulette.core.errors import error_formatter
 
 from .apps import Registry
 from .apps.config import get_project_settings_by_env
@@ -18,9 +19,7 @@ def get_gino_instance() -> Gino:
 
 
 def setup(project_settings: str = None) -> GraphQL:
-    """Load Turbulette applications and return the GraphQL route
-    """
-
+    """Load Turbulette applications and return the GraphQL route."""
     project_settings_module = (
         get_project_settings_by_env()
         if not project_settings
@@ -42,11 +41,13 @@ def setup(project_settings: str = None) -> GraphQL:
         schema,
         debug=settings.DEBUG,
         extensions=[
-            import_module(
-                "ariadne.contrib.tracing.apollotracing"
-            ).ApolloTracingExtension
+            getattr(
+                import_module("ariadne.contrib.tracing.apollotracing"),
+                "ApolloTracingExtension",
+            )
         ]
         if settings.APOLLO_TRACING
         else None,
+        error_formatter=error_formatter,
     )
     return graphql_route

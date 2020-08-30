@@ -5,7 +5,7 @@ from turbulette.utils.normalize import camel_to_snake
 
 
 class BaseModelMeta(ModelType):
-    """Metaclass for turbulette's base model class
+    """Metaclass for turbulette's base model class.
 
     The metaclass auto fill the ``__tablename__`` class attribute
     using the app name from which the model class is defined,
@@ -34,10 +34,16 @@ class BaseModelMeta(ModelType):
 
 
 class Model(db.Model, metaclass=BaseModelMeta):
-    """Base model class for gino models
-    """
+    """Base model class for gino models."""
 
     def __repr__(self, key: str = None):
+        """Base repr for models.
+
+        The output follow the standard : <class_name>: <unique key>
+        The goal of the __repr__ method is to be unambiguous,
+        hence the use of primary key here. This should be overridden if
+        the model has a more readable attribute to help identify it
+        """
         if not key:
             key = getattr(self, str(self.query.primary_key[0]))
         return f"<{type(self).__name__}: {key}>"

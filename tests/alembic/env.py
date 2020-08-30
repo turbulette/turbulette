@@ -6,4 +6,4 @@ from turbulette.alembic.env import run_migrations
 
 # Add project folder to python path
 sys.path.append(abspath(join(getcwd())))
-run_migrations(environ["PYTEST_TURBULETTE_SETTINGS"])
+run_migrations("tests.settings")

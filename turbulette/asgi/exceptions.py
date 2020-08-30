@@ -1,2 +1,0 @@
-class ASGIFrameworkError(Exception):
-    pass

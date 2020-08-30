@@ -6,7 +6,7 @@ from os import environ
 from pathlib import Path
 
 import pytest
-from alembic.command import revision, upgrade
+from alembic.command import upgrade
 from alembic.config import Config
 from gino import Gino, create_engine
 from starlette.config import Config as starlette_config
@@ -21,7 +21,9 @@ from .tester import Tester
 def pytest_addoption(parser):
     parser.addoption("--settings", action="store", help="Turbulette settings")
     parser.addoption(
-        "--keep-db", action="store_true", help="Keep test database after the test session"
+        "--keep-db",
+        action="store_true",
+        help="Keep test database after the test session",
     )
 
 
@@ -94,3 +96,11 @@ async def create_db(db_name, project_settings, request):
 @pytest.fixture(scope="session")
 def tester(turbulette_setup):
     return Tester(turbulette_setup.registry.schema)
+
+
+@pytest.fixture
+def blank_conf():
+    app, registry, db, settings = conf.app, conf.registry, conf.db, conf.settings
+    reload(conf)
+    yield
+    conf.app, conf.db, conf.registry, conf.settings = app, db, registry, settings

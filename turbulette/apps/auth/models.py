@@ -1,13 +1,6 @@
 import datetime
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String
-)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 
 from turbulette.db import Model
 from .exceptions import UserDoesNotExists
@@ -28,7 +21,7 @@ class AbstractUser:
     USERNAME_FIELD = "username"
 
     def __repr__(self):
-        """Will work only it's lower than __repr__ of `Model` in the MRO of the concrete user class
+        """Will work only it's lower than __repr__ of `Model` in the MRO of the concrete user class.
 
         example :
 
@@ -44,23 +37,25 @@ class AbstractUser:
         """
         return super().__repr__(self.get_username())
 
-
     def get_username(self) -> str:
         return str(getattr(self, self.USERNAME_FIELD))
 
-
     @classmethod
     async def get_by_username(cls, username: str):
-        user = await cls.query.where(getattr(cls, cls.USERNAME_FIELD) == username).gino.first()
+        user = await cls.query.where(  # type: ignore [attr-defined] # pylint: disable=no-member
+            getattr(cls, cls.USERNAME_FIELD) == username
+        ).gino.first()
         if not user:
             raise UserDoesNotExists
         return user
+
 
 class Group(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
 
-    def __repr__(self):
+    def __repr__(self, key: str = None):
+        """Use the name to identify the Group object."""
         return super().__repr__(self.name)
 
 
@@ -69,8 +64,9 @@ class Permission(Model):
     name = Column(String, nullable=False)
     key = Column(String, nullable=False, unique=True)
 
-    def __repr__(self):
-        return f"<{type(self).__name__}: {self.key}>"
+    def __repr__(self, key: str = None):
+        """Use the key to identify the Permission object."""
+        return super().__repr__(self.key)
 
 
 class GroupPermission(Model):
@@ -78,5 +74,6 @@ class GroupPermission(Model):
     group = Column(Integer, ForeignKey("auth_group.id"), nullable=False)
     permission = Column(Integer, ForeignKey("auth_permission.id"), nullable=False)
 
-    def __repr__(self):
+    def __repr__(self, key: str = None):
+        """Use the group and permission to identify the GroupPermission object."""
         return super().__repr__(f"group: {self.group}, permission: {self.permission}")

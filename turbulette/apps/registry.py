@@ -25,8 +25,7 @@ from .exceptions import RegistryError
 
 
 class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
-    """A custom strategy to collect all settings rules before processing them
-    """
+    """A custom strategy to collect all settings rules before processing them."""
 
     @classmethod
     def load_settings_file(cls, settings_file):
@@ -49,10 +48,10 @@ class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
 
 
 class Registry:
-    """A class storing the Turbulette applications in use
+    """A class storing the Turbulette applications in use.
 
-        It mostly serve as a proxy to execute common actions on all apps
-        plus some configuration stuff (loading settings etc)
+    It mostly serve as a proxy to execute common actions on all apps
+    plus some configuration stuff (loading settings etc)
     """
 
     def __init__(
@@ -63,7 +62,7 @@ class Registry:
         app_settings_module: str = MODULE_SETTINGS,
     ):
         self.apps: Dict[str, TurbuletteApp] = {}
-        self.ready = False
+        self._ready = False
 
         if project_settings:
             project_settings_module = import_module(project_settings)
@@ -90,7 +89,7 @@ class Registry:
         self.schema = None
 
     def get_app_by_label(self, label: str) -> TurbuletteApp:
-        """Retrieve the Turbulette app given its label
+        """Retrieve the Turbulette app given its label.
 
         Args:
             label (str): App label
@@ -106,7 +105,7 @@ class Registry:
             )
 
     def get_app_by_package(self, package_name: str) -> TurbuletteApp:
-        """Retrieve a Turbulette application given its package path
+        """Retrieve a Turbulette application given its package path.
 
         Args:
             path (str): The module path of the app (dotted path)
@@ -122,18 +121,18 @@ class Registry:
             )
 
     def setup(self) -> GraphQLSchema:
-        """Load GraphQL resources and settings for each app and return the global executable schema
+        """Load GraphQL resources and settings for each app and return the global executable schema.
 
         Returns:
             GraphQLSchema: The aggregated schema
         """
         settings = self.load_settings()
         if settings.APOLLO_FEDERATION:
-            make_schema = import_module(
-                "ariadne.contrib.federation"
-            ).make_federated_schema
+            make_schema = getattr(
+                import_module("ariadne.contrib.federation"), "make_federated_schema"
+            )
         else:
-            make_schema = import_module("ariadne").make_executable_schema
+            make_schema = getattr(import_module("ariadne"), "make_executable_schema")
         schema, directives = [], {}
         for app in self.apps.values():
             app.load_graphql_ressources()
@@ -145,7 +144,7 @@ class Registry:
         if not schema:
             raise RegistryError("None of the Turbulette apps have a schema")
 
-        self.schema = make_schema(
+        executable_schema = make_schema(
             [*schema],
             root_mutation,
             root_query,
@@ -153,16 +152,17 @@ class Registry:
             snake_case_fallback_resolvers,
             directives=None if directives == {} else directives,
         )
-        return self.schema
+        self.ready = True
+        self.schema = executable_schema
+        return executable_schema
 
     def load_models(self):
-        """Import GINO models of each app
-        """
+        """Import GINO models of each app."""
         for app in self.apps.values():
             app.load_models()
 
     def load_settings(self) -> LazySettings:
-        """Put Turbulette app settings together in a LazySettings object
+        """Put Turbulette app settings together in a LazySettings object.
 
         The LazySettings object is from ``simple_settings`` library, which accepts
         multiple modules path during instantiation.
@@ -197,8 +197,7 @@ class Registry:
 
     @property
     def ready(self) -> bool:
-        """The registry is ready if all of its apps are ready
-        """
+        """The registry is ready if all of its apps are ready."""
         if not self._ready:
             self._ready = all(self.apps.values())
             return self._ready
@@ -206,9 +205,8 @@ class Registry:
 
     @ready.setter
     def ready(self, value: bool):
-        """Once the registry is ready, we cannot make it unready anymore
-        """
-        if not hasattr(self, "_ready"):
+        """Once the registry is ready, we cannot make it unready anymore."""
+        if not self._ready:
             self._ready = value
         if self._ready and value is not self._ready:
             raise ValueError("Registry cannot be unready as it's already ready")
