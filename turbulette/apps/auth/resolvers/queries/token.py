@@ -1,6 +1,7 @@
 from turbulette import query
 from turbulette.conf import settings
-from turbulette.core.errors import BaseError
+from turbulette.core.errors import ErrorField
+
 from turbulette.apps.auth import user_model
 from turbulette.apps.auth.core import (
     TokenType,
@@ -17,7 +18,7 @@ from turbulette.apps.auth.pyd_models import AccessToken, Token
 async def get_jwt(_, __, username, password):
     """Get access and refresh token from username and password."""
     user = await user_model.query.where(user_model.username == username).gino.first()
-    error = BaseError()
+    error = ErrorField()
     if user:
         if verify_password(password, user.hashed_password):
             payload = jwt_payload(user)

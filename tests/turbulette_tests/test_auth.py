@@ -44,6 +44,8 @@ async def test_get_tokens(tester, create_user, username, password, errors):
 
 
 async def test_refresh_jwt(tester, create_user, get_user_tokens):
+    from turbulette.core.errors import ErrorCode
+
     access_token, refresh_token = get_user_tokens
 
     response = await tester.assert_query_success(
@@ -52,15 +54,14 @@ async def test_refresh_jwt(tester, create_user, get_user_tokens):
 
     assert response[1]["data"]["refreshJWT"]["accessToken"]
 
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_refresh_jwt, jwt=access_token, op_name="refreshJWT"
     )
-
-    assert "accessToken" not in response[1]["data"]
-
-    response = await tester.assert_query_failed(
-        query=query_refresh_jwt, jwt=f"{refresh_token}__wrong__", op_name="refreshJWT"
+    assert (
+        resp[1]["errors"][0]["extensions"]["code"]
+        == ErrorCode.JWT_INVALID_TOKEN_TYPE.name
     )
+    assert "accessToken" not in response[1]["data"]
 
 
 async def test_login_required(tester, create_user, get_user_tokens):
@@ -74,47 +75,61 @@ async def test_login_required(tester, create_user, get_user_tokens):
 
 
 async def test_wrong_signature(tester, get_user_tokens):
-    await tester.assert_query_failed(
+    from turbulette.core.errors import ErrorCode
+
+    resp = await tester.assert_query_failed(
         query=query_books, jwt=get_user_tokens[0] + "wrong", op_name="books"
+    )
+    assert (
+        resp[1]["errors"][0]["extensions"]["code"]
+        == ErrorCode.JWT_INVALID_SINATURE.name
     )
 
 
 async def test_jwt_not_properly_formatted(tester, get_user_tokens):
+    from turbulette.core.errors import ErrorCode
+
     # Invalid JWT
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_books, jwt="invalid", op_name="books"
     )
+    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
     # Empty JWT
-    response = await tester.assert_query_failed(
-        query=query_books, jwt=" ", op_name="books"
-    )
+    resp = await tester.assert_query_failed(query=query_books, jwt=" ", op_name="books")
+    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FOUND.name
 
     # Prefix absent
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_books,
         headers={"authorization": f"{get_user_tokens[0]}"},
         op_name="books",
     )
+    assert (
+        resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_INVALID_PREFIX.name
+    )
 
     # Empty authorization header
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_books, headers={"authorization": ""}, op_name="books"
     )
+    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FOUND.name
 
     # Invalid JWT header
     header, others = get_user_tokens[0].split(".", maxsplit=1)
     wrong_jwt = header + "__." + others
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_books, jwt=wrong_jwt, op_name="books"
     )
+    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_INVALID.name
 
     # Invalid JWT payload
     header, payload, signature = get_user_tokens[0].split(".")
     wrong_jwt = header + payload + "__." + signature
-    response = await tester.assert_query_failed(
+    resp = await tester.assert_query_failed(
         query=query_books, jwt=wrong_jwt, op_name="books"
     )
+    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
 
 async def test_no_verify(tester, get_user_tokens):
@@ -144,7 +159,7 @@ async def test_get_token_from_user(tester, create_user):
 
 async def test_get_user_by_payload(tester, create_user, get_user_tokens):
     from turbulette.apps.auth.core import get_user_by_payload, decode_jwt
-    from turbulette.apps.auth.exceptions import JWTDecodeError, UserDoesNotExists
+    from turbulette.apps.auth.exceptions import JWTNoUsername, UserDoesNotExists
     from turbulette.apps.auth.core import jwt_payload_from_id, encode_jwt, TokenType
 
     claims = decode_jwt(get_user_tokens[1])[1]
@@ -154,7 +169,7 @@ async def test_get_user_by_payload(tester, create_user, get_user_tokens):
 
     # Invalid payload
     claims["sub"] = None
-    with pytest.raises(JWTDecodeError):
+    with pytest.raises(JWTNoUsername):
         user = await get_user_by_payload(claims)
 
     # Invalid user
@@ -262,6 +277,7 @@ async def test_access_token_required(tester, get_user_tokens):
 
 async def test_token_expired(tester, get_user_tokens):
     from turbulette.conf.utils import settings_stub
+    from turbulette.core.errors import ErrorCode
 
     with settings_stub(JWT_EXPIRATION_DELTA=timedelta(microseconds=1)):
         response = await tester.assert_query_success(
@@ -271,8 +287,9 @@ async def test_token_expired(tester, get_user_tokens):
             variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
         )
         await asyncio.sleep(0.05)
-        await tester.assert_query_failed(
+        resp = await tester.assert_query_failed(
             query=query_books,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
-            op_name="getJWT",
+            op_name="books",
         )
+        assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
