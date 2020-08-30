@@ -36,6 +36,7 @@ class TurubuletteSettingsStub(SettingsStub):
         super().__init__(**kwargs)
         # Need to import here to make sure settings are initialized
         self.settings = getattr(import_module("turbulette.conf"), "settings")
+        self.old_settings = None
 
     def __enter__(self):
         """Replace the corresponding Turbulette settings."""

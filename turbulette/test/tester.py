@@ -1,3 +1,4 @@
+from importlib import import_module
 from typing import Dict, Any
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
@@ -21,7 +22,7 @@ class Tester:
         class TestRequest:
             def __init__(self, headers: dict = None, jwt: str = None):
                 # Need to import here to make sure that settings are initialized
-                from turbulette.conf import settings
+                settings = getattr(import_module("turbulette.conf"), "settings")
 
                 self.headers = {} if not headers else headers
                 if jwt:

@@ -54,7 +54,7 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
     except KeyError as error:
         raise ImproperlyConfigured(
             f"You did not set {error.args[0]} in {SETTINGS_DATABASE_SETTINGS}"
-        )
+        ) from error
     conf.db = database
     return database
 

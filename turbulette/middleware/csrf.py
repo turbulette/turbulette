@@ -9,10 +9,10 @@ from starlette.middleware.base import (
     RequestResponseEndpoint,
 )
 from starlette.responses import Response
+from starlette.types import ASGIApp
 
 from turbulette.conf import settings
 from turbulette.utils.crypto import get_random_string
-from starlette.types import ASGIApp
 
 
 CSRF_ALLOWED_CHARS = ascii_letters + digits

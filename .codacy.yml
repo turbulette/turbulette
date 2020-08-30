@@ -1,3 +1,4 @@
 exclude_paths:
   - 'tests/**'
   - 'docs/**'
+  - 'turbulette/test/pytest_plugin.py'

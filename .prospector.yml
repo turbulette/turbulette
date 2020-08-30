@@ -4,8 +4,12 @@ ignore-paths:
 
 doc-warnings: true
 
+pyflakes:
+  run: false
+
 pylint:
   run: false
+
 
 pep8:
   run: true

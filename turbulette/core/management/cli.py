@@ -1,17 +1,15 @@
 import configparser
-from os import sep
+from importlib import import_module
+from os import chdir, sep
 from pathlib import Path
 from shutil import copytree
-from importlib import import_module
-import click
-from os import chdir
-from alembic.config import Config
-from alembic.command import revision, upgrade as alembic_upgrade
-from turbulette.conf.constants import (
-    FILE_ALEMBIC_INI,
-    FOLDER_MIGRATIONS,
-)
 
+import click
+from alembic.command import revision
+from alembic.command import upgrade as alembic_upgrade
+from alembic.config import Config
+
+from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
 TEMPLATE_FILES = [Path("app.py"), Path("alembic") / "env.py"]
 
@@ -43,7 +41,10 @@ def cli():
 @click.option(
     "--app",
     "-a",
-    help="Create an app with the given name. Can be passed multiple times to create multiple applications",
+    help=(
+        "Create an app with the given name."
+        "Can be passed multiple times to create multiple applications"
+    ),
     multiple=True,
 )
 @click.pass_context

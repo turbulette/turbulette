@@ -99,10 +99,10 @@ class Registry:
         """
         try:
             return self.apps[label]
-        except KeyError:
+        except KeyError as error:
             raise RegistryError(
                 f'App with label "{label}" cannot be found in the registry'
-            )
+            ) from error
 
     def get_app_by_package(self, package_name: str) -> TurbuletteApp:
         """Retrieve a Turbulette application given its package path.
@@ -115,10 +115,10 @@ class Registry:
         """
         try:
             return self.apps[package_name.rsplit(".", maxsplit=1)[-1]]
-        except KeyError:
+        except KeyError as error:
             raise RegistryError(
                 f'App with package name "{package_name}" cannot be found in the registry'
-            )
+            ) from error
 
     def setup(self) -> GraphQLSchema:
         """Load GraphQL resources and settings for each app and return the global executable schema.

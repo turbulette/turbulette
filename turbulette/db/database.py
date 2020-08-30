@@ -14,23 +14,26 @@ class BaseModelMeta(ModelType):
     """
 
     def __new__(cls, name, bases, namespace, **kwargs):
-        rv = type.__new__(cls, name, bases, namespace)
-        rv.__namespace__ = namespace
-        if rv.__table__ is None:
-            if not hasattr(rv, "__tablename__") and not bases[0].__class__ is ModelType:
+        model = type.__new__(cls, name, bases, namespace)
+        model.__namespace__ = namespace
+        if model.__table__ is None:
+            if (
+                not hasattr(model, "__tablename__")
+                and not bases[0].__class__ is ModelType
+            ):
 
-                package = getmodule(rv).__name__.rsplit(".", maxsplit=1)[-2]
+                package = getmodule(model).__name__.rsplit(".", maxsplit=1)[-2]
                 # Generate the snake_case name using the app name and class name
                 table_name = (
                     f"{registry.get_app_by_package(package).label}"
                     f"_{camel_to_snake(name)}"
                 )
 
-                rv.__tablename__ = table_name
+                model.__tablename__ = table_name
                 # Add namespace to make GINO aware of the new name
-                rv.__namespace__.update({"__tablename__": table_name})
-            rv.__table__ = getattr(rv, "_init_table")(rv)
-        return rv
+                model.__namespace__.update({"__tablename__": table_name})
+            model.__table__ = getattr(model, "_init_table")(model)
+        return model
 
 
 class Model(db.Model, metaclass=BaseModelMeta):

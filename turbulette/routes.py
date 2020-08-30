@@ -3,7 +3,7 @@ from turbulette.conf import settings
 from .middleware.csrf import get_new_token
 
 
-async def csrf(request):
+async def csrf(request):  # pylint: disable=unused-argument
     """CSRF route.
     Set the CSRF cookie and return a `JSONResponse with the token`.
 
