@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-      - ci-cd
+      - ci/*
       - v*.*.x
     tags:
     - 'v*.*.*'
@@ -71,8 +71,9 @@ jobs:
             DB_PASSWORD: ""
             PYTEST_TURBULETTE_SETTINGS: tests.settings
         run: |
-          $HOME/.poetry/bin/poetry run pytest --ignore ./tests/turbulette_tests/cli
-          $HOME/.poetry/bin/poetry run pytest --cov-append ./tests/turbulette_tests/cli
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
+          $HOME/.poetry/bin/poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
+          $HOME/.poetry/bin/poetry run pytest --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
       - name: lint
         run: |
           $HOME/.poetry/bin/poetry run black --check .
