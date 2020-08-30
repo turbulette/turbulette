@@ -4,8 +4,17 @@ ignore-paths:
 
 doc-warnings: true
 
+pyflakes:
+  run: false
+
 pylint:
   run: false
+
+
+bandit:
+  run: true
+  options:
+    config: bandit.yml
 
 pep8:
   run: true
