@@ -1,14 +1,14 @@
-from typing import Type
 from importlib import import_module
 from pathlib import Path
-from typing import List
+from typing import List, Type
 from simple_settings.utils import SettingsStub
 from starlette.config import Config
+
 from .exceptions import ImproperlyConfigured
 
 
 def get_config_from_paths(paths: List[str]) -> Config:
-    """Return a Config instance from the first existing path
+    """Return a Config instance from the first existing path.
 
     Args:
         paths (List[str]): Paths to config file to try
@@ -27,7 +27,7 @@ def get_config_from_paths(paths: List[str]) -> Config:
 
 
 class TurubuletteSettingsStub(SettingsStub):
-    """Subclass of SettingsStub to make it work with Turbulette settings
+    """Subclass of SettingsStub to make it work with Turbulette settings.
 
     Useful to safely change settings on the fly during tests
     """
@@ -38,11 +38,13 @@ class TurubuletteSettingsStub(SettingsStub):
         self.settings = getattr(import_module("turbulette.conf"), "settings")
 
     def __enter__(self):
+        """Replace the corresponding Turbulette settings."""
         self.settings.setup()
         self.old_settings = self.settings.as_dict()
         self.settings.configure(**self.new_settings)
 
     def __exit__(self, ext_type, exc_value, traceback):
+        """Restore old settings."""
         self.settings.configure(**self.old_settings)
 
 

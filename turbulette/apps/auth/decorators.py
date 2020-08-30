@@ -6,9 +6,10 @@ from .exceptions import JWTInvalidTokenType
 
 
 def scope_required(permissions: list, is_staff=False):
-    """Decorator that log a user and check if it
-        has the required permissions
-        before executing the wrapped function
+    """Scope decorator.
+
+    Log a user and check if it has the required permissions
+    before executing the wrapped function
 
     If the user successfully has been successfully logged in,
     the user model instance is added to the context dictionary
@@ -29,8 +30,10 @@ def scope_required(permissions: list, is_staff=False):
 
 
 def access_token_required(func: Callable[..., Any]):
-    """Decorator that require a jwt access token
-        before executing the wrapped function
+    """Access token decorator.
+
+    Decorator that require a jwt access token
+    before executing the wrapped function
 
     If the user successfully has been successfully
     logged in, the user model instance is added to
@@ -45,8 +48,10 @@ def access_token_required(func: Callable[..., Any]):
 
 
 def refresh_token_required(func: Callable[..., Any]):
-    """Decorator that require a jwt refresh token
-        before executing the wrapped function
+    """Refresh token decorator.
+
+    Decorator that require a jwt refresh token
+    before executing the wrapped function
 
     If the user successfully has been successfully
     logged in, the user model instance is added to
@@ -61,6 +66,8 @@ def refresh_token_required(func: Callable[..., Any]):
 
 
 def _jwt_required(token_type: TokenType):
+    """Base decorator for requiring JWT."""
+
     def wrap(func: Callable[..., Any]):
         async def wrapped_func(obj, info, **kwargs):
             jwt = process_jwt_header(info.context["request"].headers["authorization"])

@@ -102,7 +102,7 @@ def process_jwt_header(header: str) -> str:
 
 
 def decode_jwt(jwt: str) -> Tuple:
-    """Decode JSON web token
+    """Decode JSON web token.
 
     Args:
         auth_token (str): The JSON web token
@@ -128,12 +128,12 @@ def decode_jwt(jwt: str) -> Tuple:
         raise JWTDecodeError
     except InvalidJWSSignature:
         raise JWTInvalidSignature
-    except:
+    except Exception:
         raise JWTExpired
 
 
 def get_token_from_user(user: user_model) -> str:
-    """A shortcut to get the token directly from a user model instance
+    """A shortcut to get the token directly from a user model instance.
 
     Args:
         user (user_model): GINO model instance of AUTH_USER_MODEL
@@ -145,7 +145,7 @@ def get_token_from_user(user: user_model) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Check the password against an existing hash
+    """Check the password against an existing hash.
 
     Args:
         plain_password (str): Plain password to check
@@ -158,7 +158,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Get the password hash
+    """Get the password hash.
 
     Args:
         password (str): The password to hash

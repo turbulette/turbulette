@@ -53,6 +53,7 @@ class ErrorField:
         return {self.errors_field_name: self.errors_list}
 
     def __str__(self) -> str:
+        """Format errors array to a string."""
         return "\n".join(self.errors_list)
 
     def add(self, message: str, nature: str = None):
