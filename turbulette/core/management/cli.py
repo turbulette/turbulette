@@ -41,7 +41,10 @@ def cli():
 @click.option(
     "--app",
     "-a",
-    help="Create an app with the given name. Can be passed multiple times to create multiple applications",
+    help=(
+        "Create an app with the given name."
+        "Can be passed multiple times to create multiple applications"
+    ),
     multiple=True,
 )
 @click.pass_context
