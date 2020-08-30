@@ -126,8 +126,8 @@ def decode_jwt(jwt: str) -> Tuple:
         )
     except (InvalidJWSObject, UnicodeDecodeError) as error:
         raise JWTDecodeError from error
-    except InvalidJWSSignature:
-        raise JWTInvalidSignature
+    except InvalidJWSSignature as error:
+        raise JWTInvalidSignature from error
     except Exception as error:
         raise JWTExpired from error
 
