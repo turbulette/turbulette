@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-      - ci-cd
+      - ci/*
       - v*.*.x
     tags:
     - 'v*.*.*'
