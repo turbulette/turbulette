@@ -1,5 +1,5 @@
 def camel_to_snake(string: str) -> str:
-    """Convert a camel case to snake case
+    """Convert a camel case to snake case.
 
         This as the advantage to only use builtins (no need to import re)
 

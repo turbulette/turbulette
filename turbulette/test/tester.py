@@ -4,7 +4,7 @@ from ariadne.types import GraphQLResult, GraphQLSchema
 
 
 class Tester:
-    """Helper class to test GraphQL queries against a schema"""
+    """Helper class to test GraphQL queries against a schema."""
 
     def __init__(self, schema: GraphQLSchema):
         self.schema = schema
@@ -79,7 +79,7 @@ class Tester:
 
     @classmethod
     def assert_data_in_response(cls, response: GraphQLResult, data: Dict[str, Any]):
-        """Assert that the response contains the specified key with the corresponding values
+        """Assert that the response contains the specified key with the corresponding values.
 
         Args:
             response (GraphQLResult): Response to check

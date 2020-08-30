@@ -4,6 +4,12 @@ from .middleware.csrf import get_new_token
 
 
 async def csrf(request):
+    """CSRF route.
+    Set the CSRF cookie and return a `JSONResponse with the token`.
+
+    We need this REST endpoint to protect against CSRF because all GraphQL queries use POST method,
+    so they are not safe to transmit the token.
+    """
     token = get_new_token()
     response = JSONResponse({"csrftoken": token})
     response.set_cookie(

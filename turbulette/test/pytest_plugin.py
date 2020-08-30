@@ -6,7 +6,7 @@ from os import environ
 from pathlib import Path
 
 import pytest
-from alembic.command import revision, upgrade
+from alembic.command import upgrade
 from alembic.config import Config
 from gino import Gino, create_engine
 from starlette.config import Config as starlette_config

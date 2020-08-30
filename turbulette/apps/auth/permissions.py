@@ -3,7 +3,7 @@ from .models import Group, GroupPermission, Permission
 
 
 async def has_scope(username, permissions: list, is_staff=False) -> bool:
-    """Check for a user permissions
+    """Check for a user permissions.
 
     Args:
         user (user_model): The auth user mode specified in settings

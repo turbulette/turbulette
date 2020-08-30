@@ -1,5 +1,5 @@
 class JWTDecodeError(Exception):
-    default_message = "An error occured while processing the JSON web token"
+    default_message = "An error occurred while processing the JSON web token"
 
     def __init__(self, message=None):
         if message is None:
@@ -13,7 +13,7 @@ class JWTInvalidSignatureError(JWTDecodeError):
 
 
 class JWTExpiredError(JWTDecodeError):
-    default_message = "JWT has exprired"
+    default_message = "JWT has expired"
 
 
 class UserDoesNotExists(Exception):
