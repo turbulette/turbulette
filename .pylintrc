@@ -148,7 +148,6 @@ disable=print-statement,
         no-self-use,
         too-few-public-methods,
         too-many-instance-attributes,
-        unused-arguments,
         no-name-in-module
 
 # Enable the message, report, category or checker with the given id(s). You can
