@@ -1,6 +1,10 @@
 import json
-from ariadne import ScalarType
+from ariadne import ScalarType, QueryType, MutationType
 
+query = QueryType()
+mutation = MutationType()
+
+# Custom scalars
 datetime_scalar = ScalarType("DateTime")
 json_scalar = ScalarType("JSON")
 

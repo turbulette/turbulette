@@ -10,7 +10,7 @@ from simple_settings.strategies import SettingsLoadStrategyPython
 from turbulette import conf
 from turbulette.apps.base import mutation as root_mutation
 from turbulette.apps.base import query as root_query
-from turbulette.apps.base.resolvers.scalars.scalar_types import base_scalars_resolvers
+from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.conf.constants import (
     SETTINGS_INSTALLED_APPS,
     SETTINGS_LOGS,

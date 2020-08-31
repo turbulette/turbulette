@@ -1,0 +1,10 @@
+scalar DateTime
+scalar JSON
+
+type Query {
+  _: Boolean
+}
+
+type Mutation {
+  _: Boolean
+}
