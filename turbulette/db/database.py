@@ -15,7 +15,7 @@ class BaseModelMeta(ModelType):
 
     def __new__(
         cls, name, bases, namespace, **kwargs
-    ):  # plyint: disable=unused-argument
+    ):  # pylint: disable=unused-argument
         model = type.__new__(cls, name, bases, namespace)
         model.__namespace__ = namespace
         if model.__table__ is None:

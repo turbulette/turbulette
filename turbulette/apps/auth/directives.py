@@ -8,7 +8,7 @@ class LoginRequiredDirective(SchemaDirectiveVisitor):
 
     def visit_field_definition(
         self, field, object_type
-    ):  # plyint: disable=unused-argument
+    ):  # pylint: disable=unused-argument
         original_resolver = field.resolve or default_field_resolver
 
         @access_token_required
@@ -24,7 +24,7 @@ class ScopeDirective(SchemaDirectiveVisitor):
 
     def visit_field_definition(
         self, field, object_type
-    ):  # plyint: disable=unused-argument
+    ):  # pylint: disable=unused-argument
         original_resolver = field.resolve or default_field_resolver
 
         @scope_required(
