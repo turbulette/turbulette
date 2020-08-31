@@ -1,3 +1,4 @@
+from turbulette.conf.exceptions import ImproperlyConfigured
 import pytest
 from async_asgi_testclient import TestClient
 
@@ -82,3 +83,16 @@ async def test_csrf(blank_conf):
                 scheme="https",
             )
             assert resp.status_code == 200
+
+        with settings_stub(CSRF_FORM_PARAM=False, CSRF_HEADER_PARAM=False):
+            with pytest.raises(ImproperlyConfigured):
+                # No submit method set
+                resp = await client.post(
+                    "/welcome",
+                    cookies={settings.CSRF_COOKIE_NAME: csrf_token},
+                    headers={
+                        settings.CSRF_HEADER_NAME: csrf_token,
+                    },
+                    scheme="http",
+                )
+                assert resp.status_code == 403
