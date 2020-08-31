@@ -6,7 +6,9 @@ from .decorators import scope_required, access_token_required
 class LoginRequiredDirective(SchemaDirectiveVisitor):
     name = "access_token_required"
 
-    def visit_field_definition(self, field, object_type):
+    def visit_field_definition(
+        self, field, object_type
+    ):  # plyint: disable=unused-arguments
         original_resolver = field.resolve or default_field_resolver
 
         @access_token_required

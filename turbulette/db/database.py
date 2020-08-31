@@ -13,7 +13,9 @@ class BaseModelMeta(ModelType):
     The naming follow snake_case convention
     """
 
-    def __new__(cls, name, bases, namespace, **kwargs):
+    def __new__(
+        cls, name, bases, namespace, **kwargs
+    ):  # plyint: disable=unused-arguments
         model = type.__new__(cls, name, bases, namespace)
         model.__namespace__ = namespace
         if model.__table__ is None:
