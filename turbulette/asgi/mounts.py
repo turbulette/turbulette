@@ -76,8 +76,8 @@ def turbulette_starlette(project_settings: str):
     project_settings_module = import_module(project_settings)
 
     gino_starlette(
-        getattr(project_settings_module, "DATABASE_SETTINGS"),
-        getattr(project_settings_module, "DB_DSN"),
+        getattr(project_settings_module, SETTINGS_DATABASE_SETTINGS),
+        getattr(project_settings_module, SETTINGS_DB_DSN),
     )
     graphql_route = setup(project_settings)
 
