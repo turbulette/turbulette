@@ -101,8 +101,8 @@ def error_formatter(error: GraphQLError, debug: bool = False) -> dict:
 
     # Create formatted error data
     if "code" in formatted["extensions"]:
-        for err in ErrorCode:
-            if formatted["extensions"]["code"] == err.name:
-                if not formatted.get("message") or formatted["message"] == "None":
-                    formatted["message"] = err.value
+        # The `code` key has already been set up by BaseError
+        error_code = getattr(ErrorCode, formatted["extensions"]["code"])
+        if not formatted.get("message") or formatted["message"] == "None":
+            formatted["message"] = error_code.value
     return formatted
