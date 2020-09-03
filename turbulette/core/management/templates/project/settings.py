@@ -14,7 +14,7 @@ GRAPHQL_ENDPOINT = "/graphql"
 # that defines some GraphQL schema
 INSTALLED_APPS = []
 
-MIDDLEWARE_CLASSES = []
+MIDDLEWARES = []
 
 CONFIGURE_LOGGING = False
 
