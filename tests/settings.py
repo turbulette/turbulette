@@ -14,8 +14,13 @@ GRAPHQL_ENDPOINT = "/graphql"
 # that defines some GraphQL schema
 INSTALLED_APPS = ["turbulette.apps.auth", "tests.app_1", "tests.app_2"]
 
-# MIDDLEWARE_CLASSES = []
-MIDDLEWARE_CLASSES = ["turbulette.middleware.csrf.CSRFMiddleware"]
+
+MIDDLEWARES = [
+    "turbulette.middleware.csrf.CSRFMiddleware",
+    "starlette.middleware.cors.CORSMiddleware",
+]
+
+CORSMiddleware = {"allow_origins": ["https://www.example.org"]}
 
 CONFIGURE_LOGGING = False
 

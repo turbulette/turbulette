@@ -82,14 +82,19 @@ def turbulette_starlette(project_settings: str):
     graphql_route = setup(project_settings)
 
     # Register middlewares
-    if conf.settings.MIDDLEWARE_CLASSES:
-        for middleware in conf.settings.MIDDLEWARE_CLASSES:
+    if conf.settings.MIDDLEWARES:
+        for middleware in conf.settings.MIDDLEWARES:
+            package, class_ = middleware.rsplit(".", 1)
+            middleware_settings = (
+                getattr(conf.settings, class_) if hasattr(conf.settings, class_) else {}
+            )
             middlewares.append(
                 Middleware(
                     getattr(
-                        import_module(middleware.rsplit(".", 1)[0]),
-                        middleware.rsplit(".", 1)[1],
-                    )
+                        import_module(package),
+                        class_,
+                    ),
+                    **middleware_settings,
                 )
             )
 
