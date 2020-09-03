@@ -1,5 +1,5 @@
 from sqlalchemy.engine.url import URL, make_url
-from starlette.datastructures import Secret
+from starlette.datastructures import Secret, CommaSeparatedStrings
 from starlette.config import Config
 
 config = Config(".env")
@@ -8,51 +8,29 @@ config = Config(".env")
 # TURBULETTE
 ###########################
 
-GRAPHQL_ENDPOINT = "/graphql"
+GRAPHQL_ENDPOINT = config("GRAPHQL_ENDPOINT", cast=str, default="/graphql")
 
 # List installed Turbulette apps
 # that defines some GraphQL schema
 INSTALLED_APPS = []
 
-MIDDLEWARES = []
+MIDDLEWARES = config("MIDDLEWARES", cast=CommaSeparatedStrings, default=[])
 
-CONFIGURE_LOGGING = False
-
-DEBUG = True
-
-# Enable ariadne apollo tracing extension
-APOLLO_TRACING = False
-
-APOLLO_FEDERATION = False
-
+CONFIGURE_LOGGING = config("CONFIGURE_LOGGING", cast=bool, default=False)
+DEBUG = config("DEBUG", cast=bool, default=True)
 
 ###########################
 # AUTH
 ###########################
 
-# A valid hash algorithm that can be passed to CryptContext
-# see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
-HASH_ALGORITHM = "bcrypt"
-
-
-# Used to encode the JSON Web token
-
-JWT_REFRESH_ENABLED = True
-JWT_BLACKLIST_ENABLED = True
-JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
-JWT_ALGORITHM = "ES256"
-JWT_AUDIENCE = "http://api.io/booking"
-JWT_ISSUER = "http://api.io/auth/"
-
-
 SECRET_KEY = {
-    "kty": "EC",
-    "d": "RXZ7nMEJ83eyRPmu7rjNYxgOeGH1Th7O3PvQhvfLQLw",
-    "use": "sig",
-    "crv": "P-256",
-    "x": "bZOtOYAveZdxSpiJHeCILO3IUuHIWdb29v_6y6p8I8M",
-    "y": "j3N2iYJWeqvPKLTkHhlHoBLSXisO4Umc8634kS2TFSU",
-    "alg": "ES256",
+    "kty": config("SECRET_KEY_KTY", cast=Secret),
+    "d": config("SECRET_KEY_D", cast=Secret),
+    "use": config("SECRET_KEY_USE", cast=Secret),
+    "crv": config("SECRET_KEY_CRV", cast=Secret),
+    "x": config("SECRET_KEY_X", cast=Secret),
+    "y": config("SECRET_KEY_Y", cast=Secret),
+    "alg": config("SECRET_KEY_ALG", cast=Secret),
 }
 
 ###########################

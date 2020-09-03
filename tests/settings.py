@@ -19,7 +19,6 @@ CORSMiddleware = {
     "allow_origins": config("CORS_ALLOW_ORIGINS", default=["*"], cast=list)
 }
 
-CONFIGURE_LOGGING = config("CONFIGURE_LOGGING", cast=bool, default=False)
 DEBUG = config("DEBUG", cast=bool, default=True)
 # Enable ariadne apollo tracing extension
 APOLLO_TRACING = config("APOLLO_TRACING", cast=bool, default=False)

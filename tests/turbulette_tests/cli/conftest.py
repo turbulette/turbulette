@@ -64,20 +64,9 @@ def project_settings_cli(create_env, create_project):
 
 @pytest.fixture(scope="session")
 def create_env(db_name_cli, create_project):
-    env_file = (create_project / ".env").open("w")
-    env_file.write(
-        "\n".join(
-            [
-                "DB_DRIVER=postgresql",
-                "DB_HOST=localhost",
-                "DB_PORT=5432",
-                "DB_USER=postgres",
-                'DB_PASSWORD=""',
-                f"DB_DATABASE={db_name_cli}",
-            ]
-        )
-    )
-    env_file.close()
+    env_file = (create_project / ".env").read_text()
+    env_file = env_file.replace("DB_DATABASE=", f"DB_DATABASE={db_name_cli}")
+    (create_project / ".env").write_text(env_file)
 
 
 @pytest.fixture(scope="session")
