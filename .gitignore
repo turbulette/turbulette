@@ -149,3 +149,6 @@ import.log
 api
 docker/
 docker-compose.yml
+
+# Template
+!turbulette/core/management/templates/project/.env
