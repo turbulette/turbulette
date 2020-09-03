@@ -13,7 +13,6 @@ SETTINGS_RULES = {
         "JWT_VERIFY_EXPIRATION": "bool",
         "JWT_REFRESH_ENABLED": "bool",
         "JWT_BLACKLIST_ENABLED": "bool",
-        "JWT_BLACKLIST_TOKEN_CHECKS": "json.loads",
     },
 }
 

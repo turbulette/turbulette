@@ -75,7 +75,7 @@ class Registry:
 
         self.project_settings_path = project_settings_module.__name__
         path_list = (
-            getattr(project_settings_module, SETTINGS_INSTALLED_APPS)
+            list(getattr(project_settings_module, SETTINGS_INSTALLED_APPS))
             + TURBULETTE_CORE_APPS
         )
 

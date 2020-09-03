@@ -1,35 +1,29 @@
 from sqlalchemy.engine.url import URL, make_url
-from starlette.datastructures import Secret
+from starlette.datastructures import Secret, CommaSeparatedStrings
 from turbulette.conf import get_config_from_paths
 
-config = get_config_from_paths([".env.example", "../.env.example"])
+config = get_config_from_paths(["tests/.env.example", "../tests/.env.example"])
 
 ###########################
 # TURBULETTE
 ###########################
 
-GRAPHQL_ENDPOINT = "/graphql"
+GRAPHQL_ENDPOINT = config("GRAPHQL_ENDPOINT", cast=str, default="/graphql")
 
 # List installed Turbulette apps
 # that defines some GraphQL schema
 INSTALLED_APPS = ["turbulette.apps.auth", "tests.app_1", "tests.app_2"]
 
+MIDDLEWARES = config("MIDDLEWARES", cast=CommaSeparatedStrings)
+CORSMiddleware = {
+    "allow_origins": config("CORS_ALLOW_ORIGINS", default=["*"], cast=list)
+}
 
-MIDDLEWARES = [
-    "turbulette.middleware.csrf.CSRFMiddleware",
-    "starlette.middleware.cors.CORSMiddleware",
-]
-
-CORSMiddleware = {"allow_origins": ["https://www.example.org"]}
-
-CONFIGURE_LOGGING = False
-
-DEBUG = True
-
+CONFIGURE_LOGGING = config("CONFIGURE_LOGGING", cast=bool, default=False)
+DEBUG = config("DEBUG", cast=bool, default=True)
 # Enable ariadne apollo tracing extension
-APOLLO_TRACING = False
-
-APOLLO_FEDERATION = False
+APOLLO_TRACING = config("APOLLO_TRACING", cast=bool, default=False)
+APOLLO_FEDERATION = config("APOLLO_FEDERATION", cast=bool, default=False)
 
 
 ###########################
@@ -37,31 +31,30 @@ APOLLO_FEDERATION = False
 ###########################
 
 # User model used for authentication.
-AUTH_USER_MODEL = "tests.app_1.models.BaseUser"
+AUTH_USER_MODEL = config("AUTH_USER_MODEL", cast=str)
 
 # A valid hash algorithm that can be passed to CryptContext
 # see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
-HASH_ALGORITHM = "bcrypt"
-
+HASH_ALGORITHM = config("HASH_ALGORITHM", cast=str, default="bcrypt")
 
 # Used to encode the JSON Web token
-
-JWT_REFRESH_ENABLED = True
-JWT_BLACKLIST_ENABLED = True
-JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
-JWT_ALGORITHM = "ES256"
-JWT_AUDIENCE = "http://api.io/booking"
-JWT_ISSUER = "http://api.io/auth/"
-
+JWT_REFRESH_ENABLED = config("JWT_REFRESH_ENABLED", cast=bool, default=True)
+JWT_BLACKLIST_ENABLED = config("JWT_REFRESH_ENABLED", cast=bool, default=True)
+JWT_BLACKLIST_TOKEN_CHECKS = config(
+    "JWT_BLACKLIST_TOKEN_CHECKS", cast=CommaSeparatedStrings
+)
+JWT_ALGORITHM = config("JWT_ALGORITHM", cast=str, default="ES256")
+JWT_AUDIENCE = config("JWT_AUDIENCE", cast=str, default="http://api.io/booking")
+JWT_ISSUER = config("JWT_ISSUER", cast=str, default="http://api.io/auth/")
 
 SECRET_KEY = {
-    "kty": "EC",
-    "d": "RXZ7nMEJ83eyRPmu7rjNYxgOeGH1Th7O3PvQhvfLQLw",
-    "use": "sig",
-    "crv": "P-256",
-    "x": "bZOtOYAveZdxSpiJHeCILO3IUuHIWdb29v_6y6p8I8M",
-    "y": "j3N2iYJWeqvPKLTkHhlHoBLSXisO4Umc8634kS2TFSU",
-    "alg": "ES256",
+    "kty": config("SECRET_KEY_KTY", cast=Secret),
+    "d": config("SECRET_KEY_D", cast=Secret),
+    "use": config("SECRET_KEY_USE", cast=Secret),
+    "crv": config("SECRET_KEY_CRV", cast=Secret),
+    "x": config("SECRET_KEY_X", cast=Secret),
+    "y": config("SECRET_KEY_Y", cast=Secret),
+    "alg": config("SECRET_KEY_ALG", cast=Secret),
 }
 
 ###########################

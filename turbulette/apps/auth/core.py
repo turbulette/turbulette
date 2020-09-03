@@ -28,7 +28,8 @@ user_model: Model = getattr(
     settings.AUTH_USER_MODEL.rsplit(".", 1)[-1],
 )
 
-_secret_key = JWK(**settings.SECRET_KEY)
+# Cast secrets to str
+_secret_key = JWK(**{key: str(value) for key, value in settings.SECRET_KEY.items()})
 
 
 class TokenType(Enum):

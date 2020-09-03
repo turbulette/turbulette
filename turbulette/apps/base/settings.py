@@ -15,7 +15,6 @@ SETTINGS_RULES = {
         "APOLLO_TRACING": "bool",
         "APOLLO_FEDERATION": "bool",
         "DEBUG": "bool",
-        "INSTALLED_APPS": "json.loads",
         "MIDDLEWARE_CLASSES": "json.loads",
         "GRAPHQL_ENDPOINT": "str",
         "CSRF_COOKIE_NAME": "str",
