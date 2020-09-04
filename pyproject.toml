@@ -5,6 +5,7 @@ description = "A Framework to build async GraphQL APIs with Ariadne and GINO"
 license = "MIT"
 authors = ["Matthieu MN <matthieu.macnab@pm.me>"]
 maintainers = ["Matthieu MN <matthieu.macnab@pm.me>"]
+homepage = "https://github.com/gazorby/turbulette"
 repository = "https://github.com/gazorby/turbulette"
 keywords = ["grapql", "api", "asyncio", "gino", "ariadne"]
 readme = "README.md"
