@@ -10,7 +10,7 @@ from alembic.command import revision
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 from click.exceptions import ClickException
-from jwcrypto import jwk
+from jwcrypto import jwk as jwk_
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
@@ -49,6 +49,7 @@ def cli():
 @click.option(
     "--app",
     "-a",
+    "first_app",
     help=(
         "Create an app with the given name."
         "Can be passed multiple times to create multiple applications"
@@ -56,15 +57,15 @@ def cli():
     multiple=True,
 )
 @click.pass_context
-def create_project(ctx, name, app):
+def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
     copytree(Path(__file__).parent / "templates" / "project", project_dir)
     for file in TEMPLATE_FILES:
         path = project_dir / file
         process_tags(path, {"settings": f"{name}.settings"})
-    if app:
+    if first_app:
         chdir(project_dir.as_posix())
-        ctx.invoke(create_app, name=app)
+        ctx.invoke(app, name=first_app)
 
 
 @click.command(help="Generate a JSON Web Key to put in the settings.py or .env")
@@ -99,7 +100,7 @@ def create_project(ctx, name, app):
 @click.option(
     "--env", "-e", help="Display secret params as env variables", is_flag=True
 )
-def secret_key(kty, size, crv, exp, env):
+def jwk(kty, size, crv, exp, env):
     """Generate a JSON Web key."""
     payload = {}
 
@@ -124,7 +125,7 @@ def secret_key(kty, size, crv, exp, env):
     payload["kty"] = kty
 
     # Generate the JWK
-    jwk_key = jwk.JWK.generate(**payload).export(as_dict=True)
+    jwk_key = jwk_.JWK.generate(**payload).export(as_dict=True)
 
     if env:
         # Normalize secret key params
@@ -145,7 +146,7 @@ def secret_key(kty, size, crv, exp, env):
     help="The app name. Can be passed multiple times to create multiple applications",
     multiple=True,
 )
-def create_app(name):
+def app(name):
     for app_name in name:
         alembic_ini = get_alembic_ini()
         copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
@@ -206,8 +207,8 @@ def makerevision(app, message):
     revision(config, message=message, autogenerate=True, head=f"{app}@head")
 
 
-cli.add_command(create_project)
-cli.add_command(create_app)
+cli.add_command(project)
+cli.add_command(app)
 cli.add_command(upgrade)
 cli.add_command(makerevision)
-cli.add_command(secret_key)
+cli.add_command(jwk)

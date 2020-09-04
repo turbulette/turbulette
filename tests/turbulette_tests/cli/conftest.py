@@ -34,7 +34,7 @@ def create_project():
     tmp_dir = TemporaryDirectory()
     with working_directory(tmp_dir.name):
         runner = CliRunner()
-        res = runner.invoke(cli, ["create-project", "--name", PROJECT])
+        res = runner.invoke(cli, ["project", "--name", PROJECT])
         assert res.exit_code == 0
     yield Path(tmp_dir.name) / PROJECT
     tmp_dir.cleanup()
@@ -44,9 +44,7 @@ def create_project():
 def create_apps(create_project):
     runner = CliRunner()
     chdir(create_project)
-    res = runner.invoke(
-        cli, ["create-app", "--name", APP_1, "--name", APP_2, "--name", APP_3]
-    )
+    res = runner.invoke(cli, ["app", "--name", APP_1, "--name", APP_2, "--name", APP_3])
     assert res.exit_code == 0
 
 
