@@ -25,6 +25,10 @@ class JWTNotFound(BaseError):
     error_code = ErrorCode.JWT_NOT_FOUND
 
 
+class JWTNotFresh(BaseError):
+    error_code = ErrorCode.JWT_NOT_FRESH
+
+
 class JWTInvalidTokenType(BaseError):
     error_code = ErrorCode.JWT_INVALID_TOKEN_TYPE
 

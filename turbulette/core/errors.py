@@ -16,6 +16,7 @@ class ErrorCode(Enum):
     JWT_USERNAME_NOT_FOUND = "No username was found when decoding the JWT"
     JWT_INVALID_PREFIX = "JWT prefix in the authorization header is invalid"
     JWT_NOT_FOUND = "JWT was not found"
+    JWT_NOT_FRESH = "JWT is not fresh enough"
     JWT_INVALID_TOKEN_TYPE = "JWT type is invalid"
     SERVER_ERROR = "Internal server error"
 

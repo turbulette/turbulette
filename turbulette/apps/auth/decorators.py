@@ -1,8 +1,9 @@
+from datetime import datetime
 from typing import Any, Callable
 from turbulette.core.errors import PermissionDenied
-from .core import TokenType, decode_jwt, process_jwt_header
+from .core import TokenType, decode_jwt, process_jwt_header, settings
 from .permissions import has_scope
-from .exceptions import JWTInvalidTokenType
+from .exceptions import JWTInvalidTokenType, JWTNotFresh
 
 
 def scope_required(permissions: list, is_staff=False):
@@ -42,6 +43,30 @@ def access_token_required(func: Callable[..., Any]):
 
     @_jwt_required(TokenType.ACCESS)
     async def wrapper(obj, info, claims, **kwargs):
+        return await func(obj, info, claims, **kwargs)
+
+    return wrapper
+
+
+def fresh_token_required(func: Callable[..., Any]):
+    """Fresh token decorator.
+
+    Decorator that require a fresh jwt access token
+    before executing the wrapped function
+
+    If the user successfully has been successfully
+    logged in, the user model instance is added to
+    the context dictionary with the key ``user``
+
+    The "freshness" is determined by the `JWT_FRESH_DELTA` timedelta setting
+    """
+
+    @_jwt_required(TokenType.ACCESS)
+    async def wrapper(obj, info, claims, **kwargs):
+        if (
+            datetime.utcnow() - datetime.utcfromtimestamp(claims["iat"])
+        ) > settings.JWT_FRESH_DELTA:
+            raise JWTNotFresh()
         return await func(obj, info, claims, **kwargs)
 
     return wrapper

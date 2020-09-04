@@ -1,5 +1,6 @@
 directive @scope(permissions: [String!], is_staff: Boolean) on FIELD_DEFINITION
 directive @access_token_required on FIELD_DEFINITION
+directive @fresh_token_required on FIELD_DEFINITION
 
 type JsonWebToken {
   accessToken: String

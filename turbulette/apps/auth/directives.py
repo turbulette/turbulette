@@ -1,6 +1,6 @@
 from ariadne import SchemaDirectiveVisitor
 from graphql import default_field_resolver
-from .decorators import scope_required, access_token_required
+from .decorators import scope_required, access_token_required, fresh_token_required
 
 
 class LoginRequiredDirective(SchemaDirectiveVisitor):
@@ -16,6 +16,22 @@ class LoginRequiredDirective(SchemaDirectiveVisitor):
             return await original_resolver(obj, info, user, **kwargs)
 
         field.resolve = resolve_login_required
+        return field
+
+
+class FreshTokenRequiredDirective(SchemaDirectiveVisitor):
+    name = "fresh_token_required"
+
+    def visit_field_definition(
+        self, field, object_type
+    ):  # pylint: disable=unused-argument
+        original_resolver = field.resolve or default_field_resolver
+
+        @fresh_token_required
+        async def resolve_fresh_token_required(obj, info, claims, **kwargs):
+            return await original_resolver(obj, info, claims, **kwargs)
+
+        field.resolve = resolve_fresh_token_required
         return field
 
 
