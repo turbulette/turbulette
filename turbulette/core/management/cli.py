@@ -10,16 +10,19 @@ from alembic.command import revision
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 from click.exceptions import ClickException
-from jwcrypto import jwk as jwk_
+from jwcrypto import jwk as jwk
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
-TEMPLATE_FILES = [Path("app.py"), Path("alembic") / "env.py"]
+TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env"]
 
 CRV = {
     "OKP": ["Ed25519", "Ed448", "X25519", "X448"],
     "EC": ["P-256", "P-384", "P-521", "secp256k1"],
 }
+
+DEFAULT_KTY = "EC"
+DEFAULT_CRV = "P-256"
 
 
 def process_tags(file: Path, tags: dict):
@@ -60,9 +63,24 @@ def cli():
 def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
     copytree(Path(__file__).parent / "templates" / "project", project_dir)
+
+    # Generate a default secret key
+    jwk_key = jwk.JWK.generate(kty=DEFAULT_KTY, crv=DEFAULT_CRV).export(as_dict=True)
+
     for file in TEMPLATE_FILES:
         path = project_dir / file
-        process_tags(path, {"settings": f"{name}.settings"})
+        process_tags(
+            path,
+            {
+                "settings": f"{name}.settings",
+                "SECRET_KEY_KTY": f"SECRET_KEY_KTY={jwk_key['kty']}",
+                "SECRET_KEY_CRV": f"SECRET_KEY_CRV={jwk_key['crv']}",
+                "SECRET_KEY_D": f"SECRET_KEY_D={jwk_key['d']}",
+                "SECRET_KEY_X": f"SECRET_KEY_X={jwk_key['x']}",
+                "SECRET_KEY_Y": f"SECRET_KEY_Y={jwk_key['y']}",
+            },
+        )
+
     if first_app:
         chdir(project_dir.as_posix())
         ctx.invoke(app_, name=first_app)
@@ -100,7 +118,7 @@ def project(ctx, name, first_app):
 @click.option(
     "--env", "-e", help="Display secret params as env variables", is_flag=True
 )
-def jwk(kty, size, crv, exp, env):
+def jwk_(kty, size, crv, exp, env):
     """Generate a JSON Web key."""
     payload = {}
 
@@ -125,7 +143,7 @@ def jwk(kty, size, crv, exp, env):
     payload["kty"] = kty
 
     # Generate the JWK
-    jwk_key = jwk_.JWK.generate(**payload).export(as_dict=True)
+    jwk_key = jwk.JWK.generate(**payload).export(as_dict=True)
 
     if env:
         # Normalize secret key params
@@ -211,4 +229,4 @@ cli.add_command(project)
 cli.add_command(app_, "app")
 cli.add_command(upgrade)
 cli.add_command(makerevision)
-cli.add_command(jwk)
+cli.add_command(jwk_, "jwk")

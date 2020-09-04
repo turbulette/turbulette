@@ -26,11 +26,9 @@ DEBUG = config("DEBUG", cast=bool, default=True)
 SECRET_KEY = {
     "kty": config("SECRET_KEY_KTY", cast=Secret),
     "d": config("SECRET_KEY_D", cast=Secret),
-    "use": config("SECRET_KEY_USE", cast=Secret),
     "crv": config("SECRET_KEY_CRV", cast=Secret),
     "x": config("SECRET_KEY_X", cast=Secret),
     "y": config("SECRET_KEY_Y", cast=Secret),
-    "alg": config("SECRET_KEY_ALG", cast=Secret),
 }
 
 ###########################

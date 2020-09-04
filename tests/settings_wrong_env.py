@@ -48,11 +48,9 @@ JWT_ISSUER = "http://api.io/auth/"
 SECRET_KEY = {
     "kty": "EC",
     "d": "RXZ7nMEJ83eyRPmu7rjNYxgOeGH1Th7O3PvQhvfLQLw",
-    "use": "sig",
     "crv": "P-256",
     "x": "bZOtOYAveZdxSpiJHeCILO3IUuHIWdb29v_6y6p8I8M",
     "y": "j3N2iYJWeqvPKLTkHhlHoBLSXisO4Umc8634kS2TFSU",
-    "alg": "ES256",
 }
 
 ###########################
