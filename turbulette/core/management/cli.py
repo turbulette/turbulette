@@ -65,7 +65,7 @@ def project(ctx, name, first_app):
         process_tags(path, {"settings": f"{name}.settings"})
     if first_app:
         chdir(project_dir.as_posix())
-        ctx.invoke(app, name=first_app)
+        ctx.invoke(app_, name=first_app)
 
 
 @click.command(help="Generate a JSON Web Key to put in the settings.py or .env")
@@ -146,7 +146,7 @@ def jwk(kty, size, crv, exp, env):
     help="The app name. Can be passed multiple times to create multiple applications",
     multiple=True,
 )
-def app(name):
+def app_(name):
     for app_name in name:
         alembic_ini = get_alembic_ini()
         copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
@@ -208,7 +208,7 @@ def makerevision(app, message):
 
 
 cli.add_command(project)
-cli.add_command(app)
+cli.add_command(app_, "app")
 cli.add_command(upgrade)
 cli.add_command(makerevision)
 cli.add_command(jwk)
