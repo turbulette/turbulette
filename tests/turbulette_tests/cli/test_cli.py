@@ -58,3 +58,27 @@ def test_makerevision(create_project, create_db_cli, create_apps):
         runner = CliRunner()
         res = runner.invoke(cli, ["makerevision", APP_2])
         assert res.exit_code == 0
+
+
+def test_secret_key(create_project):
+    with working_directory(create_project):
+        runner = CliRunner()
+
+        res = runner.invoke(cli, ["secret-key", "--env"])
+        assert res.exit_code == 0
+
+        res = runner.invoke(cli, ["secret-key", "--kty", "OKP", "--crv", "Ed25519"])
+        assert res.exit_code == 0
+
+        res = runner.invoke(
+            cli, ["secret-key", "--kty", "RSA", "--size", 2048, "--exp", 12]
+        )
+        assert res.exit_code == 0
+
+        # Missing size param
+        res = runner.invoke(cli, ["secret-key", "--kty", "RSA"])
+        assert res.exit_code != 0
+
+        # Wrong crv param
+        res = runner.invoke(cli, ["secret-key", "--kty", "EC", "--crv", "X448"])
+        assert res.exit_code != 0

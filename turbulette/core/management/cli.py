@@ -2,16 +2,24 @@ import configparser
 from importlib import import_module
 from os import chdir, sep
 from pathlib import Path
+from pprint import pprint
 from shutil import copytree
 
 import click
 from alembic.command import revision
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
+from click.exceptions import ClickException
+from jwcrypto import jwk
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
 TEMPLATE_FILES = [Path("app.py"), Path("alembic") / "env.py"]
+
+CRV = {
+    "OKP": ["Ed25519", "Ed448", "X25519", "X448"],
+    "EC": ["P-256", "P-384", "P-521", "secp256k1"],
+}
 
 
 def process_tags(file: Path, tags: dict):
@@ -57,6 +65,77 @@ def create_project(ctx, name, app):
     if app:
         chdir(project_dir.as_posix())
         ctx.invoke(create_app, name=app)
+
+
+@click.command(help="Generate a JSON Web Key to put in the settings.py or .env")
+@click.option(
+    "--kty",
+    "-k",
+    type=click.Choice(["RSA", "EC", "OKP", "oct"]),
+    help="The key type",
+    default="EC",
+)
+@click.option(
+    "--size",
+    "-s",
+    help="The key size (RSA and oct only)",
+    type=int,
+    default=None,
+)
+@click.option(
+    "--crv",
+    "-c",
+    type=click.Choice(CRV["EC"] + CRV["OKP"]),
+    help=(f"The curve type (OKP and EC only). OKP : {CRV['OKP']} EC : {CRV['EC']}"),
+    default="P-256",
+)
+@click.option(
+    "--exp",
+    "-x",
+    help="The public exponent (RSA only)",
+    type=int,
+    default=None,
+)
+@click.option(
+    "--env", "-e", help="Display secret params as env variables", is_flag=True
+)
+def secret_key(kty, size, crv, exp, env):
+    """Generate a JSON Web key."""
+    payload = {}
+
+    # Validate options
+    if kty in CRV:
+        if crv not in CRV[kty]:
+            raise ClickException(
+                f"--crv is not a valid for the {kty} key type, please choose one of "
+                f"{CRV[kty]}"
+            )
+        payload["crv"] = crv
+
+    elif kty in ["RSA", "oct"]:
+        if not size:
+            raise ClickException(f"The {kty} key type require the --size option")
+
+        payload["size"] = size
+
+        if kty == "RSA" and exp:
+            payload["exp"] = exp
+
+    payload["kty"] = kty
+
+    # Generate the JWK
+    jwk_key = jwk.JWK.generate(**payload).export(as_dict=True)
+
+    if env:
+        # Normalize secret key params
+        env_keys = {}
+        for key in jwk_key:
+            env_keys[f"SECRET_KEY_{key.upper()}"] = jwk_key[key]
+
+        print(*[f"{key}={value}" for key, value in env_keys.items()], sep="\n")
+        print("\nBe sure to update both your .env and settings.py accordingly")
+    else:
+        pprint(jwk_key)
 
 
 @click.command(help="Create a Turbulette application")
@@ -131,3 +210,4 @@ cli.add_command(create_project)
 cli.add_command(create_app)
 cli.add_command(upgrade)
 cli.add_command(makerevision)
+cli.add_command(secret_key)
