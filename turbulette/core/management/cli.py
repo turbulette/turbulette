@@ -10,7 +10,7 @@ from alembic.command import revision
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 from click.exceptions import ClickException
-from jwcrypto import jwk as jwk
+from jwcrypto import jwk
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
