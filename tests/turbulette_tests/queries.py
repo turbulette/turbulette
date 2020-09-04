@@ -133,3 +133,19 @@ mutation_create_book = """
         }
     }
 """
+
+
+mutation_update_password = """
+    mutation updatePassword(
+        $username: String!
+        $password: String!
+    ) {
+        updatePassword(
+            username: $username
+            password: $password
+        ) {
+            success
+            errors
+        }
+    }
+"""

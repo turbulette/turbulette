@@ -10,6 +10,7 @@ from .queries import (
     mutation_create_user,
     mutation_borrow_books,
     query_refresh_jwt,
+    mutation_update_password,
 )
 
 
@@ -296,3 +297,41 @@ async def test_token_expired(tester, get_user_tokens):
             op_name="books",
         )
         assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
+
+
+async def test_fresh_token(tester, get_user_tokens):
+    from turbulette.conf.utils import settings_stub
+    from turbulette.core.errors import ErrorCode
+
+    with settings_stub(JWT_FRESH_DELTA=timedelta(microseconds=1)):
+        response = await tester.assert_query_success(
+            query=query_get_jwt,
+            jwt=get_user_tokens[0],
+            op_name="getJWT",
+            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+        )
+        await asyncio.sleep(0.05)
+        resp = await tester.assert_query_failed(
+            query=mutation_update_password,
+            jwt=response[1]["data"]["getJWT"]["accessToken"],
+            op_name="updatePassword",
+            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+        )
+        assert (
+            resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FRESH.name
+        )
+
+    with settings_stub(JWT_FRESH_DELTA=timedelta(minutes=5)):
+        response = await tester.assert_query_success(
+            query=query_get_jwt,
+            jwt=get_user_tokens[0],
+            op_name="getJWT",
+            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+        )
+        await asyncio.sleep(0.05)
+        resp = await tester.assert_query_success(
+            query=mutation_update_password,
+            jwt=response[1]["data"]["getJWT"]["accessToken"],
+            op_name="updatePassword",
+            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+        )

@@ -77,3 +77,8 @@ async def book(_, __, id):
 async def create_book(_, __, valid_input, **kwargs):
     book = await Book.create(**valid_input)
     return {"book": book.to_dict()}
+
+
+@mutation.field("updatePassword")
+async def change_password(_, __, claims, **kwargs):
+    return {"success": True}

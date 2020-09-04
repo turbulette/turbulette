@@ -1,8 +1,9 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
-  addBook: BookActionsPayload @scope(is_staff: true)
-  borrowBook: BookActionsPayload @scope(permissions:"book:borrow")
+  addBook: SuccessPayload @scope(is_staff: true)
+  borrowBook: SuccessPayload @scope(permissions:"book:borrow")
   createBook(input: CreateBookInput): BookPayload!
+  updatePassword(username: String!, password: String!): SuccessPayload @fresh_token_required
 }
 
 extend type Query {
@@ -64,7 +65,7 @@ type BooksPayload {
   errors: [String]
 }
 
-type BookActionsPayload {
+type SuccessPayload {
   success: Boolean
   errors: [String]
 }
