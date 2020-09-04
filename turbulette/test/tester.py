@@ -5,6 +5,16 @@ from ariadne.types import GraphQLResult, GraphQLSchema
 from turbulette.core.errors import error_formatter
 
 
+class TestRequest:
+    def __init__(self, headers: dict = None, jwt: str = None):
+        # Need to import here to make sure that settings are initialized
+        settings = getattr(import_module("turbulette.conf"), "settings")
+
+        self.headers = {} if not headers else headers
+        if jwt:
+            self.headers["authorization"] = f"{settings.JWT_PREFIX} {jwt}"
+
+
 class Tester:
     """Helper class to test GraphQL queries against a schema."""
 
@@ -19,15 +29,6 @@ class Tester:
         headers: dict = None,
         jwt: str = None,
     ) -> GraphQLResult:
-        class TestRequest:
-            def __init__(self, headers: dict = None, jwt: str = None):
-                # Need to import here to make sure that settings are initialized
-                settings = getattr(import_module("turbulette.conf"), "settings")
-
-                self.headers = {} if not headers else headers
-                if jwt:
-                    self.headers["authorization"] = f"{settings.JWT_PREFIX} {jwt}"
-
         return await graphql(
             self.schema,
             data={"query": query, "variables": variables, "operationName": op_name},
@@ -71,22 +72,22 @@ class Tester:
             assert not response[1]["data"][op_name]
         return response
 
-    def assert_status_200(self, response: dict):
+    def assert_status_200(self, response: GraphQLResult):
         assert response[0]
 
-    def assert_no_errors(self, response: dict):
+    def assert_no_errors(self, response: GraphQLResult):
         assert "errors" not in response[1]
 
-    def assert_errors(self, response: dict):
+    def assert_errors(self, response: GraphQLResult):
         assert "errors" in response[1]
 
     @classmethod
-    def assert_data_in_response(cls, response: GraphQLResult, data: Dict[str, Any]):
+    def assert_data_in_response(cls, response: dict, data: Dict[str, Any]):
         """Assert that the response contains the specified key with the corresponding values.
 
         Args:
-            response (GraphQLResult): Response to check
-            data (Dict[str, Any]): Data that should be present in query response
+            response (dict): Response data to check
+            data (Dict[str, Any]): Data that should be present in `response`
         """
         for key, value in data.items():
             if key in response:
