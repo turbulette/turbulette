@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime as dt
-from pydantic import BaseModel, EmailStr, root_validator, ValidationError
+from pydantic import BaseModel, EmailStr, root_validator
 
 
 class Token(BaseModel):
@@ -30,5 +30,5 @@ class BaseUserCreate(BaseModel):
     def check_passwords_match(cls, values):
         pw1, pw2 = values.get("password_one"), values.get("password_two")
         if pw1 and pw2 and pw1 != pw2:
-            raise ValidationError("Passwords do not match")
+            raise ValueError("Passwords do not match")
         return values
