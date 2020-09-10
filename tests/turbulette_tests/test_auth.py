@@ -241,11 +241,11 @@ async def test_permission(
     from turbulette.apps.auth.utils import create_user
     from turbulette.apps.auth import get_token_from_user
 
-    user_no_group = await create_user(
-        username="test_user_no_group",
+    user_no_role = await create_user(
+        username="test_user_no_role",
         first_name="test",
         last_name="user",
-        email="no_group@email.com",
+        email="no_role@email.com",
         password_one="1234",
         password_two="1234",
     )
@@ -268,7 +268,7 @@ async def test_permission(
         query=mutation_borrow_books,
         op_name="borrowBook",
         op_errors=True,
-        headers={"authorization": f"JWT {get_token_from_user(user_no_group)}"},
+        headers={"authorization": f"JWT {get_token_from_user(user_no_role)}"},
     )
     assert not response[1]["data"]["borrowBook"]["success"]
 

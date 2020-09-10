@@ -15,7 +15,7 @@ class AbstractUser:
     first_name = Column(String)
     last_name = Column(String)
     is_staff = Column(Boolean, default=False, nullable=False)
-    permission_group = Column(Integer, ForeignKey("auth_group.id"))
+    permission_role = Column(Integer, ForeignKey("auth_role.id"))
 
     # Used as the unique identifier.
     USERNAME_FIELD = "username"
@@ -50,12 +50,12 @@ class AbstractUser:
         return user
 
 
-class Group(Model):
+class Role(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
 
     def __repr__(self, key: str = None):
-        """Use the name to identify the Group object."""
+        """Use the name to identify the Role object."""
         return super().__repr__(self.name)
 
 
@@ -69,11 +69,11 @@ class Permission(Model):
         return super().__repr__(self.key)
 
 
-class GroupPermission(Model):
+class RolePermission(Model):
     id = Column(Integer, primary_key=True)
-    group = Column(Integer, ForeignKey("auth_group.id"), nullable=False)
+    role = Column(Integer, ForeignKey("auth_role.id"), nullable=False)
     permission = Column(Integer, ForeignKey("auth_permission.id"), nullable=False)
 
     def __repr__(self, key: str = None):
-        """Use the group and permission to identify the GroupPermission object."""
-        return super().__repr__(f"group: {self.group}, permission: {self.permission}")
+        """Use the role and permission to identify the RolePermission object."""
+        return super().__repr__(f"role: {self.role}, permission: {self.permission}")

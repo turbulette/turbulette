@@ -19,17 +19,17 @@ from .queries import query_get_jwt
 
 
 @pytest.fixture(scope="session")
-async def create_permission_group(turbulette_setup):
-    from turbulette.apps.auth.models import Group, GroupPermission, Permission
+async def create_permission_role(turbulette_setup):
+    from turbulette.apps.auth.models import Role, RolePermission, Permission
 
-    group = await Group.create(name="customer")
+    role = await Role.create(name="customer")
     permission = await Permission.create(key="book:borrow", name="Can borrow a book")
-    await GroupPermission.create(group=group.id, permission=permission.id)
-    return group
+    await RolePermission.create(role=role.id, permission=permission.id)
+    return role
 
 
 @pytest.fixture(scope="session")
-async def create_user(create_permission_group):
+async def create_user(create_permission_role):
     from turbulette.apps.auth.utils import create_user
 
     await create_user(
@@ -39,18 +39,18 @@ async def create_user(create_permission_group):
         email=f"{CUSTOMER_USERNAME}@example.com",
         password_one=DEFAULT_PASSWORD,
         password_two=DEFAULT_PASSWORD,
-        permission_group=create_permission_group.name,
+        permission_role=create_permission_role.name,
     )
 
 
 @pytest.fixture(scope="session")
 async def create_staff_user(turbulette_setup):
-    from turbulette.apps.auth.models import Group, GroupPermission, Permission
+    from turbulette.apps.auth.models import Role, RolePermission, Permission
     from turbulette.apps.auth.utils import create_user
 
-    group = await Group.create(name="admin")
+    role = await Role.create(name="admin")
     permission = await Permission.create(key="books:add", name="Can buy a product")
-    await GroupPermission.create(group=group.id, permission=permission.id)
+    await RolePermission.create(role=role.id, permission=permission.id)
     await create_user(
         username=STAFF_USERNAME,
         first_name="test",
@@ -58,7 +58,7 @@ async def create_staff_user(turbulette_setup):
         email=f"{STAFF_USERNAME}@example.com",
         password_one=DEFAULT_PASSWORD,
         password_two=DEFAULT_PASSWORD,
-        permission_group="admin",
+        permission_role="admin",
         is_staff=True,
     )
 

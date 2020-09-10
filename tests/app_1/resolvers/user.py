@@ -28,7 +28,7 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
 
         return ErrorField(message).dict()
 
-    new_user = await create_user(**user_data, permission_group="customer")
+    new_user = await create_user(**user_data, permission_role="customer")
     auth_token = get_token_from_user(new_user)
     return {
         "user": {**new_user.to_dict()},

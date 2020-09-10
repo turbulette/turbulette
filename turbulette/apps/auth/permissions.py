@@ -1,5 +1,5 @@
 from . import user_model
-from .models import Group, GroupPermission, Permission
+from .models import Role, RolePermission, Permission
 
 
 async def has_scope(username, permissions: list, is_staff=False) -> bool:
@@ -15,13 +15,13 @@ async def has_scope(username, permissions: list, is_staff=False) -> bool:
     authorized = True
     user = await user_model.get_by_username(username)
     if permissions:
-        query = GroupPermission.load(permission=Permission, group=Group).query.where(
-            Group.id == user.permission_group
+        query = RolePermission.load(permission=Permission, role=Role).query.where(
+            Role.id == user.permission_role
         )
-        group_permissions = await query.gino.all()
-        if len(group_permissions) > 0:
+        role_permissions = await query.gino.all()
+        if len(role_permissions) > 0:
             authorized = all(
-                any(p == gp.permission.key for gp in group_permissions)
+                any(p == gp.permission.key for gp in role_permissions)
                 for p in permissions
             )
         else:
