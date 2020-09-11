@@ -16,7 +16,7 @@ async def has_scope(username, permissions: list, is_staff=False) -> bool:
     user = await user_model.get_by_username(username)
     if permissions:
         query = RolePermission.load(permission=Permission, role=Role).query.where(
-            Role.id == user.permission_role
+            Role.id == user.role
         )
         role_permissions = await query.gino.all()
         if len(role_permissions) > 0:

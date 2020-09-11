@@ -17,7 +17,7 @@ class AbstractUser:
     first_name = Column(String)
     last_name = Column(String)
     is_staff = Column(Boolean, default=False, nullable=False)
-    permission_role = Column(Integer, ForeignKey("auth_role.id"))
+    role = Column(Integer, ForeignKey("auth_role.id"))
 
     # Used as the unique identifier.
     USERNAME_FIELD = "username"

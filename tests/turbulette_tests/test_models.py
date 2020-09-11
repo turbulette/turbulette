@@ -15,7 +15,7 @@ async def create_custom_user(create_permission_role):
         last_name="user",
         email=f"{CUSTOMER_USERNAME}@example.com",
         hashed_password=DEFAULT_PASSWORD,
-        permission_role=create_permission_role.id,
+        role=create_permission_role.id,
     )
 
 

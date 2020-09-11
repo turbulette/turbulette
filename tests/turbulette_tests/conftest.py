@@ -39,7 +39,7 @@ async def create_user(create_permission_role):
         email=f"{CUSTOMER_USERNAME}@example.com",
         password_one=DEFAULT_PASSWORD,
         password_two=DEFAULT_PASSWORD,
-        permission_role=create_permission_role.name,
+        role=create_permission_role.name,
     )
 
 
@@ -58,7 +58,7 @@ async def create_staff_user(turbulette_setup):
         email=f"{STAFF_USERNAME}@example.com",
         password_one=DEFAULT_PASSWORD,
         password_two=DEFAULT_PASSWORD,
-        permission_role="admin",
+        role="admin",
         is_staff=True,
     )
 
