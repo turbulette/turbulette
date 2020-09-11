@@ -8,7 +8,11 @@ async def create_user(permission_role=None, **user_data):
 
     It will create the user with the hashed password add it in the given `role`
     """
-    user_role = await Role.query.where(Role.name == permission_role).gino.first()
+    user_role = (
+        await Role.query.where(Role.name == permission_role).gino.first()
+        if permission_role
+        else None
+    )
     password = user_data.pop("password_one")
     del user_data["password_two"]
     return await user_model.create(
