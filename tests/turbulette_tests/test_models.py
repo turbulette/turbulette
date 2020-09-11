@@ -1,5 +1,6 @@
 import pytest
 from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD
+from .queries import mutation_create_comic
 
 pytestmark = pytest.mark.asyncio
 
@@ -45,3 +46,18 @@ async def test_repr(tester, create_user_data, create_custom_user):
     )
     assert repr(role_perm.role) == f"<Role: {role_perm.role.name}>"
     assert repr(role_perm.permission) == f"<Permission: {role_perm.permission.key}>"
+
+
+async def test_validate_models(tester):
+    """Test validate decorator with multiple models."""
+    await tester.assert_query_success(
+        query=mutation_create_comic,
+        op_name="createComic",
+        variables={
+            "title": "The Adventures of Tintin",
+            "author": "Hergé",
+            "publicationDate": "1929-07-20T12:00:12",
+            "profile": '{"genre": ["action", "adventure"]}',
+            "artist": "Hergé",
+        },
+    )

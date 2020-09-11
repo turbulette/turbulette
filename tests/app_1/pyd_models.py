@@ -7,3 +7,7 @@ class CreateBook(BaseModel):
     author: str
     publication_date: datetime
     profile: dict = None
+
+
+class CreateComics(BaseModel):
+    artist: str

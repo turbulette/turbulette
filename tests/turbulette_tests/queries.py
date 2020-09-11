@@ -149,3 +149,35 @@ mutation_update_password = """
         }
     }
 """
+
+mutation_create_comic = """
+    mutation createComic(
+        $title: String!
+        $author: String!
+        $artist: String!
+        $publicationDate: DateTime!
+        $profile: JSON
+    ) {
+        createComic(
+            input: {
+                title: $title
+                author: $author
+                artist: $artist
+                publicationDate: $publicationDate
+                profile: $profile
+            }
+        ) {
+            comic {
+                id
+                title
+                author
+                artist
+                publicationDate
+                profile {
+                    genre
+                    awards
+                }
+            }
+        }
+    }
+"""

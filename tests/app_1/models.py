@@ -1,5 +1,5 @@
 from gino.json_support import ObjectProperty
-from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy import Column, DateTime, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.sqltypes import String
 
@@ -22,3 +22,9 @@ class Book(Model):
     publication_date = Column(DateTime(), nullable=False)
     book_profile = Column(JSONB, nullable=False, server_default="{}")
     profile = ObjectProperty(prop_name="book_profile")
+
+
+class Comics(Model):
+    id = Column(Integer, primary_key=True)
+    book = Column(Integer, ForeignKey("app_1_book.id"), nullable=False)
+    artist = Column(String)
