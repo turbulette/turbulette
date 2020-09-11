@@ -170,7 +170,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def get_user_by_payload(claims):
+async def get_user_by_claims(claims):
     username = claims.get("sub")
 
     if not username:

@@ -2,7 +2,9 @@ import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 
+from turbulette.apps import auth
 from turbulette.db import Model
+
 from .exceptions import UserDoesNotExists
 
 
@@ -48,6 +50,12 @@ class AbstractUser:
         if not user:
             raise UserDoesNotExists
         return user
+
+    @classmethod
+    async def set_password(cls, username: str, password: str):
+        user = await cls.get_by_username(username)
+        hashed_password = auth.get_password_hash(password)
+        await user.update(hashed_password=hashed_password).apply()
 
 
 class Role(Model):

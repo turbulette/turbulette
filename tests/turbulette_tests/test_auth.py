@@ -159,26 +159,26 @@ async def test_get_token_from_user(tester, create_user):
 
 
 async def test_get_user_by_payload(tester, create_user, get_user_tokens):
-    from turbulette.apps.auth.core import get_user_by_payload, decode_jwt
+    from turbulette.apps.auth.core import get_user_by_claims, decode_jwt
     from turbulette.apps.auth.exceptions import JWTNoUsername, UserDoesNotExists
     from turbulette.apps.auth.core import jwt_payload_from_id, encode_jwt, TokenType
 
     claims = decode_jwt(get_user_tokens[1])[1]
-    user = await get_user_by_payload(claims)
+    user = await get_user_by_claims(claims)
 
     assert user.username == CUSTOMER_USERNAME
 
     # Invalid payload
     claims["sub"] = None
     with pytest.raises(JWTNoUsername):
-        user = await get_user_by_payload(claims)
+        user = await get_user_by_claims(claims)
 
     # Invalid user
     false_access_jwt = encode_jwt(jwt_payload_from_id("unknown_id"), TokenType.ACCESS)
 
     claims = decode_jwt(false_access_jwt)[1]
     with pytest.raises(UserDoesNotExists):
-        user = await get_user_by_payload(claims)
+        user = await get_user_by_claims(claims)
 
 
 async def test_create_user(tester, create_user, create_user_data):
@@ -315,7 +315,7 @@ async def test_fresh_token(tester, get_user_tokens):
             query=mutation_update_password,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="updatePassword",
-            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+            variables={"password": DEFAULT_PASSWORD},
         )
         assert (
             resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FRESH.name
@@ -333,5 +333,5 @@ async def test_fresh_token(tester, get_user_tokens):
             query=mutation_update_password,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="updatePassword",
-            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+            variables={"password": DEFAULT_PASSWORD},
         )

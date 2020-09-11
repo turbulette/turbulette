@@ -7,4 +7,6 @@ from .core import (  # noqa
     decode_jwt,
     get_token_from_user,
     TokenType,
+    get_user_by_claims,
+    get_password_hash,
 )

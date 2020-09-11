@@ -4,7 +4,7 @@ extend type Mutation {
   borrowBook: SuccessPayload @scope(permissions:"book:borrow")
   createBook(input: CreateBookInput): BookPayload!
   createComic(input: CreateBookInput): ComicPayload!
-  updatePassword(username: String!, password: String!): SuccessPayload @fresh_token_required
+  updatePassword(password: String!): SuccessPayload @fresh_token_required
 }
 
 extend type Query {

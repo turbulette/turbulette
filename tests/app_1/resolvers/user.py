@@ -78,7 +78,8 @@ async def create_book(_, __, valid_input, **kwargs):
 
 
 @mutation.field("updatePassword")
-async def change_password(_, __, claims, **kwargs):
+async def update_password(_, __, claims, **kwargs):
+    await user_model.set_password(claims["sub"], kwargs["password"])
     return {"success": True}
 
 
