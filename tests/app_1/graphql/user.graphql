@@ -1,7 +1,8 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
   addBook: SuccessPayload @scope(is_staff: true)
-  borrowBook: SuccessPayload @scope(permissions:"book:borrow")
+  borrowBook: SuccessPayload @scope(permissions: "book:borrow", roles: "customer")
+  borrowUnlimitedBooks: SuccessPayload @scope(permissions: "book:borrow-unlimited")
   createBook(input: CreateBookInput): BookPayload!
   createComic(input: CreateBookInput): ComicPayload!
   updatePassword(password: String!): SuccessPayload @fresh_token_required

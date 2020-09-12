@@ -179,3 +179,12 @@ mutation_create_comic = """
         }
     }
 """
+
+mutation_borrow_unlimited = """
+    mutation borrowUnlimitedBooks {
+        borrowUnlimitedBooks {
+            success
+            errors
+        }
+    }
+"""

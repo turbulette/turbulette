@@ -8,15 +8,21 @@ pytestmark = pytest.mark.asyncio
 @pytest.fixture(scope="session")
 async def create_custom_user(create_permission_role):
     from tests.app_1.models import CustomUser
+    from turbulette.apps.auth.models import UserRole
 
-    await CustomUser.create(
+    custom_user = await CustomUser.create(
         username=CUSTOMER_USERNAME,
         first_name="test",
         last_name="user",
         email=f"{CUSTOMER_USERNAME}@example.com",
         hashed_password=DEFAULT_PASSWORD,
-        role=create_permission_role.id,
     )
+
+    user_role = await UserRole.create(
+        user=custom_user.id, role=create_permission_role.id
+    )
+
+    return custom_user, user_role
 
 
 async def test_repr(tester, create_user_data, create_custom_user):
@@ -37,7 +43,7 @@ async def test_repr(tester, create_user_data, create_custom_user):
 
     role_perm = (
         await RolePermission.load(permission=Permission, role=Role)
-        .query.where(Role.id == user.permission_role)
+        .query.where(Role.id == create_custom_user[1].role)
         .gino.first()
     )
     assert (
@@ -61,3 +67,7 @@ async def test_validate_models(tester):
             "artist": "Hergé",
         },
     )
+
+
+async def test_generate_table_name(tester):
+    pass

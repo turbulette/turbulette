@@ -95,3 +95,8 @@ async def create_cartoon(_, __, valid_input, **kwargs):
     book = await Book.create(**book_input)
     comic = await Comics.create(**comics_input, book=book.id)
     return {"comic": {**book.to_dict(), **comic.to_dict()}}
+
+
+@mutation.field("borrowUnlimitedBooks")
+async def borrow_unlimited(_, __, user, **kwargs):
+    return {"success": True}
