@@ -44,7 +44,9 @@ class ScopeDirective(SchemaDirectiveVisitor):
         original_resolver = field.resolve or default_field_resolver
 
         @scope_required(
-            permissions=self.args.get("permissions"), is_staff=self.args.get("is_staff")
+            roles=self.args.get("roles"),
+            permissions=self.args.get("permissions"),
+            is_staff=self.args.get("is_staff"),
         )
         async def resolve_scope(obj, info, user, **kwargs):
             return await original_resolver(obj, info, user, **kwargs)

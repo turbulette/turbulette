@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any, Callable, List
 from turbulette.core.errors import PermissionDenied
 from .core import TokenType, decode_jwt, process_jwt_header, settings
 from .permissions import has_scope
 from .exceptions import JWTInvalidTokenType, JWTNotFresh
 
 
-def scope_required(permissions: list, is_staff=False):
+def scope_required(roles: List[str], permissions: List[str], is_staff=False):
     """Scope decorator.
 
     Log a user and check if it has the required permissions
@@ -20,7 +20,7 @@ def scope_required(permissions: list, is_staff=False):
     def wrap(func: Callable[..., Any]):
         @access_token_required
         async def wrapped_func(obj, info, claims, **kwargs):
-            authorized = await has_scope(claims["sub"], permissions, is_staff)
+            authorized = await has_scope(claims["sub"], roles, permissions, is_staff)
             if authorized:
                 return await func(obj, info, claims, **kwargs)
             return PermissionDenied().dict()

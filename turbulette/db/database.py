@@ -1,6 +1,6 @@
 from inspect import getmodule
 from gino.declarative import ModelType
-from turbulette.conf import registry, db
+from turbulette.conf import reg, db
 from turbulette.utils.normalize import camel_to_snake
 
 
@@ -26,10 +26,7 @@ class BaseModelMeta(ModelType):
 
                 package = getmodule(model).__name__.rsplit(".", maxsplit=1)[-2]
                 # Generate the snake_case name using the app name and class name
-                table_name = (
-                    f"{registry.get_app_by_package(package).label}"
-                    f"_{camel_to_snake(name)}"
-                )
+                table_name = get_tablename(package, name)
 
                 model.__tablename__ = table_name
                 # Add namespace to make GINO aware of the new name
@@ -52,3 +49,16 @@ class Model(db.Model, metaclass=BaseModelMeta):
         if not key:
             key = getattr(self, str(self.query.primary_key[0]))
         return f"<{type(self).__name__}: {key}>"
+
+
+def get_tablename(package: str, name: str) -> str:
+    """Generate a camel case table name.
+
+    Args:
+        package (str): Model's package
+        name (str): Model name (usually the class name)
+
+    Returns:
+        str: The camel case table name
+    """
+    return f"{reg().get_app_by_package(package).label}" f"_{camel_to_snake(name)}"

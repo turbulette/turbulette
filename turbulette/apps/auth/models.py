@@ -3,9 +3,18 @@ import datetime
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 
 from turbulette.apps import auth
-from turbulette.db import Model
+from turbulette.conf import settings
+from turbulette.db import Model, get_tablename
 
 from .exceptions import UserDoesNotExists
+
+
+def auth_user_tablename() -> str:
+    """Get the auth table name from settings or generate it."""
+    return settings.AUTH_USER_MODEL_TABLENAME or get_tablename(
+        settings.AUTH_USER_MODEL.rsplit(".", 3)[-3],
+        settings.AUTH_USER_MODEL.split(".")[-1],
+    )
 
 
 class AbstractUser:
@@ -17,7 +26,6 @@ class AbstractUser:
     first_name = Column(String)
     last_name = Column(String)
     is_staff = Column(Boolean, default=False, nullable=False)
-    role = Column(Integer, ForeignKey("auth_role.id"))
 
     # Used as the unique identifier.
     USERNAME_FIELD = "username"
@@ -85,3 +93,41 @@ class RolePermission(Model):
     def __repr__(self, key: str = None):
         """Use the role and permission to identify the RolePermission object."""
         return super().__repr__(f"role: {self.role}, permission: {self.permission}")
+
+
+class UserPermission(Model):
+    """Link users to permissions.
+
+    This allow to control user's permissions on a more granular level
+    by giving additional permissions to specific users, in addition to
+    those already granted by roles.
+
+    Note that we dynamically generate `AUTH_USER_MODEL` table name to reference it
+    in the `ForeignKey`, so the alembic migration won't work
+    if `__tablename__` is set on `AUTH_USER_MODEL`.
+    """
+
+    id = Column(Integer, primary_key=True)
+    user = Column(
+        Integer,
+        ForeignKey(auth_user_tablename() + ".id"),
+        nullable=False,
+    )
+    permission = Column(Integer, ForeignKey("auth_permission.id"), nullable=False)
+
+
+class UserRole(Model):
+    """Link users to roles.
+
+    Note that we dynamically generate `AUTH_USER_MODEL` table name to reference it
+    in the `ForeignKey`, so the alembic migration won't work
+    if `__tablename__` is set on `AUTH_USER_MODEL`.
+    """
+
+    id = Column(Integer, primary_key=True)
+    user = Column(
+        Integer,
+        ForeignKey(auth_user_tablename() + ".id"),
+        nullable=False,
+    )
+    role = Column(Integer, ForeignKey("auth_role.id"), nullable=False)
