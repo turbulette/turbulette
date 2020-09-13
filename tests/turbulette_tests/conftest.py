@@ -14,7 +14,12 @@ from turbulette.test.pytest_plugin import (
 )
 from turbulette.utils.crypto import get_random_string
 
-from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD, STAFF_USERNAME
+from .constants import (
+    CUSTOMER_USERNAME,
+    DEFAULT_PASSWORD,
+    STAFF_USERNAME,
+    CUSTOMER_PERMISSION,
+)
 from .queries import query_get_jwt
 
 
@@ -23,7 +28,9 @@ async def create_permission_role(turbulette_setup):
     from turbulette.apps.auth.models import Role, RolePermission, Permission
 
     role = await Role.create(name="customer")
-    permission = await Permission.create(key="book:borrow", name="Can borrow a book")
+    permission = await Permission.create(
+        key=CUSTOMER_PERMISSION, name="Can borrow a book"
+    )
     await RolePermission.create(role=role.id, permission=permission.id)
     return role
 

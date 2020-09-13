@@ -50,7 +50,16 @@ def _jwt_payload(user_id: str) -> dict:
 
 
 def jwt_payload(user: user_model) -> dict:
-    return _jwt_payload(user.get_username())
+    payload = {"sub": user.get_username()}
+
+    if settings.JWT_AUDIENCE is not None:
+        payload["aud"] = settings.JWT_AUDIENCE
+
+    if settings.JWT_ISSUER is not None:
+        payload["iss"] = settings.JWT_ISSUER
+
+    return payload
+    # return _jwt_payload(user.get_username())
 
 
 def jwt_payload_from_id(user_id: str) -> dict:

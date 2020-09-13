@@ -1,8 +1,8 @@
 """initial revision
 
-Revision ID: 2e1c09af9378
+Revision ID: 9608f7793a25
 Revises: 69604d4ceebf
-Create Date: 2020-09-12 15:42:39.309109
+Create Date: 2020-09-13 15:45:45.290088
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "2e1c09af9378"
+revision = "9608f7793a25"
 down_revision = "69604d4ceebf"
 branch_labels = None
 depends_on = None
@@ -103,22 +103,16 @@ def upgrade():
     )
     op.create_table(
         "auth_role_permission",
-        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("role", sa.Integer(), nullable=False),
         sa.Column("permission", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["permission"],
-            ["auth_permission.id"],
+            ["permission"], ["auth_permission.id"], name="permission_fk"
         ),
-        sa.ForeignKeyConstraint(
-            ["role"],
-            ["auth_role.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
+        sa.ForeignKeyConstraint(["role"], ["auth_role.id"], name="role_fk"),
+        sa.PrimaryKeyConstraint("role", "permission"),
     )
     op.create_table(
         "auth_user_permission",
-        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user", sa.Integer(), nullable=False),
         sa.Column("permission", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -126,25 +120,30 @@ def upgrade():
             ["auth_permission.id"],
         ),
         sa.ForeignKeyConstraint(
+            ["permission"], ["auth_permission.id"], name="permission_fk"
+        ),
+        sa.ForeignKeyConstraint(
             ["user"],
             ["app_1_base_user.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
+        sa.ForeignKeyConstraint(["user"], ["app_1_base_user.id"], name="user_fk"),
+        sa.PrimaryKeyConstraint("user", "permission"),
     )
     op.create_table(
         "auth_user_role",
-        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user", sa.Integer(), nullable=False),
         sa.Column("role", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["role"],
             ["auth_role.id"],
         ),
+        sa.ForeignKeyConstraint(["role"], ["auth_role.id"], name="role_fk"),
         sa.ForeignKeyConstraint(
             ["user"],
             ["app_1_base_user.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
+        sa.ForeignKeyConstraint(["user"], ["app_1_base_user.id"], name="user_fk"),
+        sa.PrimaryKeyConstraint("user", "role"),
     )
     # ### end Alembic commands ###
 

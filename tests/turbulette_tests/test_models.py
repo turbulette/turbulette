@@ -1,5 +1,5 @@
 import pytest
-from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD
+from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD, CUSTOMER_PERMISSION
 from .queries import mutation_create_comic
 
 pytestmark = pytest.mark.asyncio
@@ -11,18 +11,14 @@ async def create_custom_user(create_permission_role):
     from turbulette.apps.auth.models import UserRole
 
     custom_user = await CustomUser.create(
-        username=CUSTOMER_USERNAME,
+        username="custom_user",
         first_name="test",
         last_name="user",
-        email=f"{CUSTOMER_USERNAME}@example.com",
+        email="custom_user@example.com",
         hashed_password=DEFAULT_PASSWORD,
     )
 
-    user_role = await UserRole.create(
-        user=custom_user.id, role=create_permission_role.id
-    )
-
-    return custom_user, user_role
+    return custom_user
 
 
 async def test_repr(tester, create_user_data, create_custom_user):
@@ -43,7 +39,7 @@ async def test_repr(tester, create_user_data, create_custom_user):
 
     role_perm = (
         await RolePermission.load(permission=Permission, role=Role)
-        .query.where(Role.id == create_custom_user[1].role)
+        .query.where(Role.name == "customer")
         .gino.first()
     )
     assert (
