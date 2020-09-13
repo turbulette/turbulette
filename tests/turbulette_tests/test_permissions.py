@@ -104,6 +104,7 @@ async def test_get_role_permissions(tester, create_user):
 async def test_perm_crud(tester):
     from turbulette.apps.auth.utils import create_user
     from turbulette.apps.auth.models import Permission
+    from turbulette.db.exceptions import DoesNotExist
 
     user = await create_user(
         username="test_user_add_permission",
@@ -132,7 +133,7 @@ async def test_perm_crud(tester):
         await user.add_perm()
 
     # Invalid permission key
-    with pytest.raises(Exception):
+    with pytest.raises(DoesNotExist):
         await user.add_perm(key="unknown_perm")
 
     # Remove perm using key

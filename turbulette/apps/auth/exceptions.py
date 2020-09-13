@@ -31,7 +31,3 @@ class JWTNotFresh(BaseError):
 
 class JWTInvalidTokenType(BaseError):
     error_code = ErrorCode.JWT_INVALID_TOKEN_TYPE
-
-
-class UserDoesNotExists(Exception):
-    pass

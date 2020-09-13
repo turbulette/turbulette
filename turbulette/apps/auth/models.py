@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, List, Optional, Tuple, Type, Union
+from typing import List, Optional, Type
 from sqlalchemy import (
     Boolean,
     Column,
@@ -13,8 +13,7 @@ from sqlalchemy import (
 from turbulette.apps import auth
 from turbulette.conf import settings
 from turbulette.db import Model, get_tablename
-
-from .exceptions import UserDoesNotExists
+from turbulette.db.exceptions import DoesNotExist
 
 
 def auth_user_tablename() -> str:
@@ -171,7 +170,7 @@ class AbstractUser:
                 getattr(obj_class, key) == identifier
             ).gino.first()
             if not obj_:
-                raise Exception(f"{obj_class.__name__} does not exists")
+                raise DoesNotExist(self)
         if not obj_:
             raise Exception(
                 f"You must provide either a {obj_class.__name__} object or a {key}"
@@ -187,7 +186,7 @@ class AbstractUser:
             getattr(cls, cls.USERNAME_FIELD) == username
         ).gino.first()
         if not user:
-            raise UserDoesNotExists
+            raise DoesNotExist(cls)
         return user
 
     @classmethod

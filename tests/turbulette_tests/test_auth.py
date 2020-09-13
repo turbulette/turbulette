@@ -158,8 +158,9 @@ async def test_get_token_from_user(tester, create_user):
 
 async def test_get_user_by_payload(tester, create_user, get_user_tokens):
     from turbulette.apps.auth.core import get_user_by_claims, decode_jwt
-    from turbulette.apps.auth.exceptions import JWTNoUsername, UserDoesNotExists
+    from turbulette.apps.auth.exceptions import JWTNoUsername
     from turbulette.apps.auth.core import jwt_payload_from_id, encode_jwt, TokenType
+    from turbulette.db.exceptions import DoesNotExist
 
     claims = decode_jwt(get_user_tokens[1])[1]
     user = await get_user_by_claims(claims)
@@ -175,7 +176,7 @@ async def test_get_user_by_payload(tester, create_user, get_user_tokens):
     false_access_jwt = encode_jwt(jwt_payload_from_id("unknown_id"), TokenType.ACCESS)
 
     claims = decode_jwt(false_access_jwt)[1]
-    with pytest.raises(UserDoesNotExists):
+    with pytest.raises(DoesNotExist):
         user = await get_user_by_claims(claims)
 
 
