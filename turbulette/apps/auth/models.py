@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple, Type, Union
 from sqlalchemy import (
     Boolean,
     Column,
@@ -155,6 +155,29 @@ class AbstractUser:
         """
         return super().__repr__(self.get_username())
 
+    async def _get_object(
+        self,
+        obj_class: Model,
+        key: str,
+        obj: Type[Model] = None,
+        identifier: str = None,
+    ) -> Model:
+        """Lazy getter for model objects."""
+        obj_ = None
+        if obj:
+            obj_ = obj
+        elif identifier:
+            obj_ = await obj_class.query.where(
+                getattr(obj_class, key) == identifier
+            ).gino.first()
+            if not obj_:
+                raise Exception(f"{obj_class.__name__} does not exists")
+        if not obj_:
+            raise Exception(
+                f"You must provide either a {obj_class.__name__} object or a {key}"
+            )
+        return obj_
+
     def get_username(self) -> str:
         return str(getattr(self, self.USERNAME_FIELD))
 
@@ -193,31 +216,43 @@ class AbstractUser:
             .gino.all()
         )
 
-    async def _get_permission(
-        self, permission: Optional[Permission] = None, key: Optional[str] = None
-    ):
-        if not permission and not key:
-            raise Exception("You must provide either a Permission object or a key")
-        if permission:
-            return permission
+    async def get_roles(self) -> List[Role]:
+        """Get all the roles to which the user belongs."""
+        query = UserRole.join(Role).select()
+        return (
+            await query.gino.load(Role.load())
+            .query.where(UserRole.user == self.id)
+            .gino.all()
+        )
 
-        permission_ = await Permission.query.where(Permission.key == key).gino.first()
-        if not permission_:
-            raise Exception("Permission does not exists")
-        return permission_
+    async def add_role(
+        self, role: Optional[Permission] = None, name: Optional[str] = None
+    ):
+        """Add a role to the user."""
+        role_ = await self._get_object(Role, "name", role, name)
+        await UserRole.create(user=self.id, role=role_.id)
+
+    async def remove_role(
+        self, role: Optional[Permission] = None, name: Optional[str] = None
+    ):
+        """Remove a user role."""
+        role_ = await self._get_object(Role, "name", role, name)
+        await UserRole.delete.where(
+            UserRole.user == self.id and UserRole.role == role_.id
+        ).gino.status()
 
     async def add_perm(
         self, permission: Optional[Permission] = None, key: Optional[str] = None
     ):
         """Add a permission to the user."""
-        permission_ = await self._get_permission(permission, key)
+        permission_ = await self._get_object(Permission, "key", permission, key)
         await UserPermission.create(user=self.id, permission=permission_.id)
 
     async def remove_perm(
         self, permission: Optional[Permission] = None, key: Optional[str] = None
     ):
         """Remove a permission to the user."""
-        permission_ = await self._get_permission(permission, key)
+        permission_ = await self._get_object(Permission, "key", permission, key)
         await UserPermission.delete.where(
             UserPermission.user == self.id
             and UserPermission.permission == permission_.id

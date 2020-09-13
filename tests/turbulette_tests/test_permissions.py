@@ -139,3 +139,34 @@ async def test_perm_crud(tester):
     await user.remove_perm(key=perm_key)
     user_perm = await user.get_perms()
     assert not user_perm
+
+
+async def test_role_crud(tester):
+    from turbulette.apps.auth.utils import create_user
+    from turbulette.apps.auth.models import Role
+
+    user = await create_user(
+        username="test_user_crud_role",
+        first_name="test",
+        last_name="user",
+        email="crud_role@email.com",
+        password_one="1234",
+        password_two="1234",
+    )
+
+    role_name = "employee"
+    role = await Role.create(name=role_name)
+
+    user_roles = await user.get_roles()
+    assert len(user_roles) == 0
+
+    # Add role
+    await user.add_role(name=role_name)
+    user_roles = await user.get_roles()
+    assert len(user_roles) == 1
+    assert user_roles[0].name == role_name
+
+    # Remove role
+    await user.remove_role(role=role)
+    user_roles = await user.get_roles()
+    assert len(user_roles) == 0
