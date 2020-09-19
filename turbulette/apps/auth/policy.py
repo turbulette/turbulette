@@ -104,8 +104,7 @@ async def is_involved(claims: dict, statement: str) -> bool:
                         break
 
         elif type_key == "user":
-            user = await user_model.get_by_username(claims["sub"])
-            involved = user.get_username() == type_val
+            involved = claims["sub"] == type_val
     return involved
 
 
