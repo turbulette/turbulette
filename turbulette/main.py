@@ -40,11 +40,12 @@ def setup(project_settings: str = None) -> GraphQL:
     # Now that the database connection is established, we can use `settings`
 
     extensions = [PolicyExtension]
-    if settings.APOLLO_TRACING:
+    for ext in settings.ARIADNE_EXTENSIONS:
+        module_class = ext.rsplit(".", 1)
         extensions.append(
             getattr(
-                import_module("ariadne.contrib.tracing.apollotracing"),
-                "ApolloTracingExtension",
+                import_module(module_class[0]),
+                module_class[1],
             )
         )
 

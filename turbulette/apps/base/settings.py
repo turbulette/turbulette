@@ -6,6 +6,9 @@
 # to process the rules
 # SIMPLE_SETTINGS = simple_settings
 
+from tests.settings import ARIADNE_EXTENSIONS
+
+
 OVERRIDE_BY_ENV = True
 
 # Base settings rules
@@ -32,8 +35,7 @@ SETTINGS_RULES = {
 # DEFAULT SETTINGS
 ###########################
 
-# Enable ariadne apollo tracing extension
-APOLLO_TRACING = False
+ARIADNE_EXTENSIONS = []
 
 
 # Tell ariadne to create schema with federation support
