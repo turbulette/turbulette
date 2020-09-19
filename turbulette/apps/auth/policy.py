@@ -81,34 +81,39 @@ def authorize(info: GraphQLResolveInfo, policies: List[dict]) -> List[bool]:
     return applied_apolicies
 
 
+async def is_involved(claims: dict, statement: str) -> bool:
+    involved = False
+    if statement == "*":
+        involved = True
+
+    elif statement == "staff":
+        involved = "_staff" in claims["scopes"]
+
+    else:
+        type_key, type_val = statement.split(":", 1)
+
+        if type_key == "role" and type_val in claims["scopes"]:
+            involved = True
+
+        elif type_key == "perm":
+            for role in claims["scopes"]:
+                if not role.startswith("_"):
+                    cached_role = await cache.get(role)
+                    if any(type_val == perm["key"] for perm in cached_role):
+                        involved = True
+                        break
+
+        elif type_key == "user":
+            user = await user_model.get_by_username(claims["sub"])
+            involved = user.get_username() == type_val
+    return involved
+
+
 async def involved_policies(claims: dict, policies: List[dict]):
     res = []
     for policy in policies:
         for statement in policy["principal"]:
-            involved = False
-            if statement == "*":
-                involved = True
-
-            elif statement == "staff":
-                involved = "_staff" in claims["scopes"]
-
-            else:
-                type_key, type_val = statement.split(":", 1)
-
-                if type_key == "role" and type_val in claims["scopes"]:
-                    involved = True
-
-                elif type_key == "perm":
-                    for role in claims["scopes"]:
-                        if not role.startswith("_"):
-                            cached_role = await cache.get(role)
-                            if any(type_val == perm["key"] for perm in cached_role):
-                                involved = True
-                                break
-                elif type_key == "user":
-                    user = await user_model.get_by_username(claims["sub"])
-                    involved = user.get_username() == type_val
-            if involved:
+            if is_involved(claims, statement):
                 res.append(policy)
     return res
 
