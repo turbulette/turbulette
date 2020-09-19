@@ -113,7 +113,7 @@ async def involved_policies(claims: dict, policies: List[dict]):
     res = []
     for policy in policies:
         for statement in policy["principal"]:
-            if is_involved(claims, statement):
+            if await is_involved(claims, statement):
                 res.append(policy)
     return res
 
