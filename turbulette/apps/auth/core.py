@@ -1,26 +1,25 @@
 from enum import Enum
 from importlib import import_module
 from typing import Tuple
-from turbulette.db import db
+
 from gino.declarative import Model
 from jwcrypto.jwk import JWK
-from jwcrypto.jws import InvalidJWSSignature, InvalidJWSObject
+from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from passlib.context import CryptContext
 from python_jwt import generate_jwt, process_jwt, verify_jwt
-from turbulette.core.cache import cache
+
 from turbulette.conf import settings
-from .models import Permission, Role, RolePermission, UserRole
-from gino.loader import TupleLoader
+from turbulette.core.cache import cache
 
 from .exceptions import (
-    JWTInvalidSignature,
     JWTDecodeError,
     JWTExpired,
-    JWTNoUsername,
     JWTInvalidPrefix,
+    JWTInvalidSignature,
     JWTNotFound,
+    JWTNoUsername,
 )
-
+from .models import Permission, Role, RolePermission, UserRole
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
