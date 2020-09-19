@@ -1,15 +1,16 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
-  addBook: SuccessPayload @scope(is_staff: true)
-  borrowBook: SuccessPayload @scope(permissions: "book:borrow", roles: "customer")
-  borrowUnlimitedBooks: SuccessPayload @scope(permissions: "book:borrow-unlimited")
+  addBook: SuccessPayload @scope
+  borrowBook(id: ID!): SuccessPayload @scope
+  borrowUnlimitedBooks: SuccessPayload @scope
   createBook(input: CreateBookInput): BookPayload!
   createComic(input: CreateBookInput): ComicPayload!
   updatePassword(password: String!): SuccessPayload @fresh_token_required
+  destroyLibrary: SuccessPayload @scope
 }
 
 extend type Query {
-  books: BooksPayload @access_token_required
+  books: BooksPayload @scope
   book(id: ID!): BookPayload
   exclusiveBooks: BooksPayload @access_token_required
 }
@@ -53,9 +54,10 @@ type Profile {
 type Book {
   id: ID!
   title: String!
-  author: String!
+  author: String
   publicationDate: DateTime!
   profile: Profile
+  borrowings: Int @scope
 }
 
 type Comic {

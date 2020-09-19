@@ -1,8 +1,9 @@
 from importlib import import_module
-from typing import Dict, Any
+from typing import Dict, Any, List
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
-from turbulette.core.errors import error_formatter
+from turbulette.core.errors import error_formatter, ErrorCode
+from turbulette.core.extensions import PolicyExtension
 
 
 class TestRequest:
@@ -35,6 +36,7 @@ class Tester:
             context_value={"request": TestRequest(headers, jwt)},
             debug=True,
             error_formatter=error_formatter,
+            extensions=[PolicyExtension],
         )
 
     async def assert_query_success(
@@ -45,11 +47,16 @@ class Tester:
         headers: dict = None,
         jwt: str = None,
         op_errors=False,
+        error_codes: List[ErrorCode] = None,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_no_errors(response)
         assert response[1]["data"][op_name]
+        if error_codes:
+            for val in list(response[1]["extensions"].values()):
+                if isinstance(val, dict):
+                    assert any(code.name in val for code in error_codes)
         if op_errors:
             assert response[1]["data"][op_name]["errors"]
         else:
@@ -64,12 +71,19 @@ class Tester:
         variables: dict = None,
         headers: dict = None,
         jwt: str = None,
+        errors=False,
+        error_codes: List[ErrorCode] = None,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
-        self.assert_errors(response)
+        if errors:
+            self.assert_errors(response)
         if response[1]["data"]:
             assert not response[1]["data"][op_name]
+        if error_codes:
+            for val in list(response[1]["extensions"].values()):
+                if isinstance(val, dict):
+                    assert any(code.name in val for code in error_codes)
         return response
 
     def assert_status_200(self, response: GraphQLResult):

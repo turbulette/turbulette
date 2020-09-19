@@ -13,7 +13,6 @@ query_books = """
             books {
                 books {
                     title
-                    author
                 }
                 errors
             }
@@ -31,6 +30,16 @@ query_book = """
                     genre
                     awards
                 }
+            }
+        }
+    }
+"""
+
+query_borrowings = """
+    query book($id: ID!) {
+        book(id: $id) {
+            book {
+                borrowings
             }
         }
     }
@@ -87,9 +96,13 @@ mutation_create_user = """
     }
 """
 
-mutation_borrow_books = """
-    mutation borrowBook {
-        borrowBook {
+mutation_borrow_book = """
+    mutation borrowBook(
+        $id: ID!
+    ) {
+        borrowBook(
+            id: $id
+        ) {
             success
             errors
         }
@@ -187,4 +200,12 @@ mutation_borrow_unlimited = """
             errors
         }
     }
+"""
+
+mutation_destroy_library = """
+mutation destroyLibrary {
+    destroyLibrary {
+        success
+    }
+}
 """

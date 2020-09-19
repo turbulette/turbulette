@@ -82,3 +82,5 @@ CSRF_FORM_PARAM = False
 ALLOWED_HOSTS: list = []
 
 CONFIGURE_LOGGING = False
+
+QUERY_CACHE = "locmem://null"

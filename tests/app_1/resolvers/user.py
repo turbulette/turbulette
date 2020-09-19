@@ -27,7 +27,7 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
         return ErrorField(message).dict()
 
     new_user = await user_model.create(**valid_input)
-    auth_token = get_token_from_user(new_user)
+    auth_token = await get_token_from_user(new_user)
     return {
         "user": {**new_user.to_dict()},
         "token": auth_token,
@@ -35,27 +35,33 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
 
 
 @query.field("books")
-async def resolve_books(_, info, user, **kwargs):
+async def resolve_books(_, info, **kwargs):
     return {
         "books": [
-            {"title": "Harry Potter", "author": "J.K Rowling"},
-            {"title": "The Lord of the Rings", "author": "J.R.R Tolkien"},
+            {"title": "Harry Potter", "author": "J.K Rowling", "borrowings": 1345},
+            {
+                "title": "The Lord of the Rings",
+                "author": "J.R.R Tolkien",
+                "borrowings": 2145,
+            },
         ]
     }
 
 
 @mutation.field("addBook")
-async def add_books(_, __, user, **kwargs):
+async def add_books(_, __, **kwargs):
     return {"success": True}
 
 
 @mutation.field("borrowBook")
-async def borrow_book(_, __, user, **kwargs):
+async def borrow_book(_, __, **kwargs):
+    book = await Book.get(int(kwargs["id"]))
+    await book.update(borrowings=book.borrowings + 1).apply()
     return {"success": True}
 
 
 @query.field("exclusiveBooks")
-async def is_logged(_, __, claims, **kwargs):
+async def is_logged(_, __, **kwargs):
     return {
         "books": [
             {"title": "Game Of Thrones", "author": "G.R.R Martin"},
@@ -64,7 +70,7 @@ async def is_logged(_, __, claims, **kwargs):
 
 
 @query.field("book")
-async def book(_, __, id):
+async def resolve_book(_, __, id):
     book = await Book.query.where(Book.id == int(id)).gino.first()
     return {"book": book.to_dict()}
 
@@ -100,3 +106,8 @@ async def create_cartoon(_, __, valid_input, **kwargs):
 @mutation.field("borrowUnlimitedBooks")
 async def borrow_unlimited(_, __, user, **kwargs):
     return {"success": True}
+
+
+@mutation.field("destroyLibrary")
+async def destroy_library(_, __, **kwargs):
+    return {"sucess": True}

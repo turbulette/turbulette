@@ -1,0 +1,60 @@
+[
+  {
+    "principal": ["staff"],
+    "allow": {
+      "mutation": {
+        "fields": ["addBook"]
+      },
+      "book": {
+        "fields": ["borrowings"],
+        "query": ["book*"]
+      }
+    }
+  },
+  {
+    "principal": ["perm:book:borrow"],
+    "allow": {
+      "mutation": {
+        "fields": ["borrowBook"]
+      }
+    }
+  },
+  {
+    "principal": ["perm:book:borrow-unlimited"],
+    "allow": {
+      "mutation": {
+        "fields": ["borrowUnlimitedBooks"]
+      }
+    }
+  },
+  {
+    "principal": ["role:customer"],
+    "allow": {
+      "query": {
+        "fields": ["book"]
+      }
+    },
+    "deny": {
+      "book": {
+        "fields": ["borrowings"],
+        "query": ["*book"]
+      }
+    }
+  },
+  {
+    "principal": ["*"],
+    "allow": {
+      "query": {
+        "fields": ["books"]
+      }
+    }
+  },
+  {
+    "principal": ["user:test_user_staff"],
+    "allow": {
+      "mutation": {
+        "fields": ["destroyLibrary"]
+      }
+    }
+  }
+]

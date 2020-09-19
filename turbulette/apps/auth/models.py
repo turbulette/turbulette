@@ -59,41 +59,21 @@ class Role(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
 
+    def __init__(self, **values):
+        super().__init__(**values)
+        self._permissions = []
+
     def __repr__(self, key: str = None):
         """Use the name to identify the Role object."""
         return super().__repr__(self.name)
 
+    @property
+    def permissions(self) -> list:
+        return self._permissions
 
-class UserPermission(Model):
-    """Link users to permissions.
-
-    This allow to control user's permissions on a more granular level
-    by giving additional permissions to specific users, in addition to
-    those already granted by roles.
-
-    Note that we dynamically generate `AUTH_USER_MODEL` table name to reference it
-    in the `ForeignKey`, so the alembic migration won't work
-    if `__tablename__` is set on `AUTH_USER_MODEL`.
-    """
-
-    user = Column(
-        Integer,
-        ForeignKey(auth_user_tablename() + ".id"),
-        primary_key=True,
-    )
-    permission = Column(Integer, ForeignKey("auth_permission.id"), primary_key=True)
-
-    user_fk = ForeignKeyConstraint(
-        ["user"],
-        [auth_user_tablename() + ".id"],
-        name="user_fk",
-    )
-
-    permission_fk = ForeignKeyConstraint(
-        ["permission"],
-        ["auth_permission.id"],
-        name="permission_fk",
-    )
+    @permissions.setter  # type: ignore [attr-defined]
+    def add_permission(self, permission):
+        self._permissions.append(permission)
 
 
 class UserRole(Model):
@@ -195,23 +175,13 @@ class AbstractUser:
         hashed_password = auth.get_password_hash(password)
         await user.update(hashed_password=hashed_password).apply()
 
-    async def get_role_perms(self) -> List[Permission]:
+    async def get_perms(self) -> List[Permission]:
         """Get permissions that this user has through their roles."""
         query = UserRole.join(Role).join(RolePermission).join(Permission).select()
 
         return (
             await query.gino.load(Permission.load())
             .query.where(UserRole.user == self.id)
-            .gino.all()
-        )
-
-    async def get_perms(self) -> List[Permission]:
-        """Get all custom user permissions, not belonging to the user roles."""
-        query = UserPermission.join(Permission).select()
-
-        return (
-            await query.gino.load(Permission.load())
-            .query.where(UserPermission.user == self.id)
             .gino.all()
         )
 
@@ -238,21 +208,4 @@ class AbstractUser:
         role_ = await self._get_object(Role, "name", role, name)
         await UserRole.delete.where(
             UserRole.user == self.id and UserRole.role == role_.id
-        ).gino.status()
-
-    async def add_perm(
-        self, permission: Optional[Permission] = None, key: Optional[str] = None
-    ):
-        """Add a permission to the user."""
-        permission_ = await self._get_object(Permission, "key", permission, key)
-        await UserPermission.create(user=self.id, permission=permission_.id)
-
-    async def remove_perm(
-        self, permission: Optional[Permission] = None, key: Optional[str] = None
-    ):
-        """Remove a permission to the user."""
-        permission_ = await self._get_object(Permission, "key", permission, key)
-        await UserPermission.delete.where(
-            UserPermission.user == self.id
-            and UserPermission.permission == permission_.id
         ).gino.status()

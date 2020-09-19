@@ -22,6 +22,7 @@ class Book(Model):
     publication_date = Column(DateTime(), nullable=False)
     book_profile = Column(JSONB, nullable=False, server_default="{}")
     profile = ObjectProperty(prop_name="book_profile")
+    borrowings = Column(Integer, default=0)
 
 
 class Comics(Model):

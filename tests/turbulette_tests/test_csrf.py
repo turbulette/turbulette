@@ -10,7 +10,10 @@ async def test_csrf(blank_conf):
     app = turbulette_starlette("tests.settings_csrf")
     from turbulette.conf import settings
     from turbulette.conf.utils import settings_stub
+    from turbulette.core.cache import cache
 
+    # Drop cache connection because app startup already handle it
+    await cache.disconnect()
     async with TestClient(app) as client:
 
         resp = await client.get("/csrf")
@@ -96,3 +99,6 @@ async def test_csrf(blank_conf):
                     scheme="http",
                 )
                 assert resp.status_code == 403
+
+    # Reconnect to cache to not perturb other tests
+    await cache.connect()

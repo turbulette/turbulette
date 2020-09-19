@@ -31,3 +31,7 @@ class JWTNotFresh(BaseError):
 
 class JWTInvalidTokenType(BaseError):
     error_code = ErrorCode.JWT_INVALID_TOKEN_TYPE
+
+
+class FieldNotAllowed(BaseError):
+    error_code = ErrorCode.FIELD_NOT_ALLOWED

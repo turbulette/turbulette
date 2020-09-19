@@ -81,6 +81,14 @@ def turbulette_starlette(project_settings: str):
     )
     graphql_route = setup(project_settings)
 
+    from turbulette.core.cache import cache
+
+    async def startup():
+        await cache.connect()
+
+    async def shutdown():
+        await cache.disconnect()
+
     middleware_list = list(conf.settings.MIDDLEWARES)
 
     # Register middlewares
@@ -115,6 +123,8 @@ def turbulette_starlette(project_settings: str):
             debug=getattr(project_settings_module, "DEBUG"),
             routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
             middleware=middlewares,
+            on_startup=[startup],
+            on_shutdown=[shutdown],
         )
 
         conf.app = app

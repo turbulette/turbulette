@@ -1,3 +1,4 @@
+from datetime import datetime
 from string import ascii_lowercase
 from typing import Any, Dict
 
@@ -116,3 +117,16 @@ async def create_user_data() -> Dict[str, Any]:
         "passwordOne": DEFAULT_PASSWORD,
         "passwordTwo": DEFAULT_PASSWORD,
     }
+
+
+@pytest.fixture(scope="session")
+async def create_book():
+    from tests.app_1.models import Book
+
+    book = await Book.create(
+        title="The Lord of the Rings",
+        author="J.R.R Tolkien",
+        publication_date=datetime.fromisoformat("1999-07-20T12:00:12"),
+        profile={"genre": ["fantasy"], "awards": []},
+    )
+    return book

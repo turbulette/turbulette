@@ -1,12 +1,16 @@
 from datetime import datetime
-from typing import Any, Callable, List
-from turbulette.core.errors import PermissionDenied
+from typing import Any, Callable
+
+from turbulette.core.errors import ErrorCode, PermissionDenied, add_error
+from turbulette.core.utils import is_query
+
 from .core import TokenType, decode_jwt, process_jwt_header, settings
-from .permissions import has_scope
 from .exceptions import JWTInvalidTokenType, JWTNotFresh
+from .policy import has_scope_
+from turbulette.core.cache import cache
 
 
-def scope_required(roles: List[str], permissions: List[str], is_staff=False):
+def scope_required(func: Callable[..., Any]):
     """Scope decorator.
 
     Log a user and check if it has the required permissions
@@ -17,17 +21,17 @@ def scope_required(roles: List[str], permissions: List[str], is_staff=False):
     with the key ``user``
     """
 
-    def wrap(func: Callable[..., Any]):
-        @access_token_required
-        async def wrapped_func(obj, info, claims, **kwargs):
-            authorized = await has_scope(claims["sub"], roles, permissions, is_staff)
-            if authorized:
-                return await func(obj, info, claims, **kwargs)
-            return PermissionDenied().dict()
+    @access_token_required
+    async def wrapper(obj, info, claims, **kwargs):
+        if await has_scope_(claims, info):
+            return await func(obj, info, claims, **kwargs)
+        if is_query(info):
+            add_error("scope", ErrorCode.QUERY_NOT_ALLOWED)
+            return None
+        add_error("scope", ErrorCode.FIELD_NOT_ALLOWED, info.field_name)
+        return None
 
-        return wrapped_func
-
-    return wrap
+    return wrapper
 
 
 def access_token_required(func: Callable[..., Any]):
