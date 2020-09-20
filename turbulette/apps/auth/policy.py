@@ -4,13 +4,12 @@ from typing import Dict, List
 from ariadne.types import GraphQLResolveInfo
 from turbulette.conf import settings
 from turbulette.core.cache import cache
-from . import user_model
 
 
 def c_claim(claims: Dict[str, str], statement: dict) -> bool:
-    if not claims.get(statement["claim"]):
-        return False
-    return set(claims[statement["claim"]]).issubset(statement["includes"])
+    return bool(claims.get(statement["claim"])) and all(
+        inc in claims[statement["claim"]] for inc in statement["includes"]
+    )
 
 
 def c_is_claim_present(claims: Dict[str, str], statement: dict) -> bool:
@@ -36,7 +35,7 @@ def ctx_is_valid(claims: Dict[str, str], policies: List[dict]) -> List[dict]:
     """Given a list of policies, return only those with valid conditions."""
     valid_policies = []
     for policy in policies:
-        if "condition" not in policy or all(
+        if "conditions" not in policy or all(
             CONDITIONS[list(st.keys())[0]](claims, st) for st in policy["conditions"]
         ):
             valid_policies.append(policy)
@@ -120,10 +119,12 @@ async def involved_policies(claims: dict, policies: List[dict]):
 async def has_scope_(claims: dict, info: GraphQLResolveInfo) -> bool:
     policies = get_policy_config()
     policies = await involved_policies(claims, policies)
-    if not policies:
+    if not policies:  # pragma: no cover ### can't cover both all policy types and none
         return False
     valid_ctx = ctx_is_valid(claims, policies)
-    if not valid_ctx:
+    if (
+        not valid_ctx
+    ):  # pragma: no cover ### can't cover both all context types and none
         return False
     applied_policies = authorize(info, valid_ctx)
     authorized = bool(applied_policies) and all(applied_policies)
