@@ -71,7 +71,7 @@ class Tester:
         variables: dict = None,
         headers: dict = None,
         jwt: str = None,
-        errors=False,
+        errors=True,
         error_codes: List[ErrorCode] = None,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
