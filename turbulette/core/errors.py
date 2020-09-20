@@ -67,17 +67,6 @@ class ErrorField:
         self.errors_list.append(f"{nature}: {message}" if nature else message)
 
 
-class PermissionDenied(ErrorField):
-    """Wrap BaseError with a default message for permission errors.
-
-    Args:
-        BaseError (class): Inherits from BaseError class
-    """
-
-    def __init__(self, message="You are not allowed to perform this action"):
-        super().__init__(message=message)
-
-
 class PydanticsValidationError(ErrorField):
     """Handle pydantic error messages when trying to validate a model.
 
