@@ -127,6 +127,7 @@ async def test_field_permission(
     get_staff_tokens,
     create_book,
 ):
+    # Only staff members can see `borrowings` field
     await tester.assert_query_success(
         query=query_borrowings,
         jwt=get_staff_tokens[0],
@@ -134,6 +135,7 @@ async def test_field_permission(
         variables={"id": create_book.id},
     )
 
+    # Only customer role can see `artist` field
     await tester.assert_query_success(
         query=query_comics, jwt=get_user_tokens[0], op_name="comics"
     )
@@ -147,6 +149,7 @@ async def test_deny_field_permission(tester, create_user, get_user_tokens, creat
         variables={"id": create_book.id},
         error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
     )
+
     # Only one field is denied
     assert len(resp[1]["extensions"]["scope"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 1
 
@@ -156,6 +159,7 @@ async def test_deny_field_permission(tester, create_user, get_user_tokens, creat
         op_name="books",
         error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
     )
+
     # Two fields are denied
     assert len(resp[1]["extensions"]["scope"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 2
 
@@ -174,6 +178,7 @@ async def test_no_policies_involved(
     create_user_no_role,
     get_no_role_user_tokens,
 ):
+    # This user doesn't have any role, so he can't see `borrowings` field
     await tester.assert_query_success(
         query=query_borrowings,
         jwt=get_no_role_user_tokens[0],
@@ -181,3 +186,41 @@ async def test_no_policies_involved(
         variables={"id": create_book.id},
         error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
     )
+
+
+async def test_policy_decorator(tester):
+    from turbulette.apps.auth import policy
+
+    # The decorator must be given a name as argument
+
+    @policy.condition("foo")
+    def good(parameter_list):
+        return True
+
+    with pytest.raises(ValueError):
+
+        @policy.condition
+        async def foo():
+            return True
+
+    with pytest.raises(ValueError):
+
+        @policy.principal
+        async def foo():
+            return True
+
+
+async def test_conditions(tester, create_book, create_staff_user):
+    from turbulette.conf.utils import settings_stub
+    from turbulette.apps.auth import get_token_from_user
+
+    # Principal is good, but not all conditions are satisfied
+    # This break the iss condition from `policies.json`
+    with settings_stub(JWT_ISSUER=None):
+        token = await get_token_from_user(create_staff_user)
+        await tester.assert_query_success(
+            query=query_borrowings_price_bought,
+            jwt=token,
+            op_name="books",
+            error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
+        )

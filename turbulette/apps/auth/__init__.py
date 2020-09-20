@@ -10,3 +10,5 @@ from .core import (  # noqa
     get_user_by_claims,
     get_password_hash,
 )
+
+from .policy import policy  # noqa

@@ -12,7 +12,6 @@ from turbulette.apps.auth.core import (
 )
 from turbulette.apps.auth.decorators import refresh_token_required
 from turbulette.apps.auth.pyd_models import AccessToken, Token
-from turbulette.core.cache import cache
 
 
 @query.field("getJWT")

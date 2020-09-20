@@ -60,7 +60,7 @@ async def create_staff_user(turbulette_setup):
     role = await Role.create(name="admin")
     permission = await Permission.create(key="books:add", name="Can buy a product")
     await RolePermission.create(role=role.id, permission=permission.id)
-    await create_user(
+    return await create_user(
         username=STAFF_USERNAME,
         first_name="test",
         last_name="user",

@@ -94,10 +94,9 @@ class TurbuletteApp:
         this folder.
         """
         resolver_modules = [
-            m.as_posix()
+            m.as_posix()[:-3]
             .replace(sep, ".")
             .split(f"{self.package_name}.{self.resolvers_package}.")[1]
-            .strip(".py")
             for m in (self.package_path / f"{self.resolvers_package}").rglob("*.py")
         ]
 

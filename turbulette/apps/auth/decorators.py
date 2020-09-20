@@ -6,7 +6,7 @@ from turbulette.core.utils import is_query
 
 from .core import TokenType, decode_jwt, process_jwt_header, settings
 from .exceptions import JWTInvalidTokenType, JWTNotFresh
-from .policy import has_scope_
+from .policy import authorized
 
 
 def scope_required(func: Callable[..., Any]):
@@ -22,7 +22,7 @@ def scope_required(func: Callable[..., Any]):
 
     @access_token_required
     async def wrapper(obj, info, claims, **kwargs):
-        if await has_scope_(claims, info):
+        if await authorized(claims, info):
             return await func(obj, info, claims, **kwargs)
         if is_query(info):
             add_error("scope", ErrorCode.QUERY_NOT_ALLOWED)
