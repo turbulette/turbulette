@@ -38,11 +38,17 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
 async def resolve_books(_, info, **kwargs):
     return {
         "books": [
-            {"title": "Harry Potter", "author": "J.K Rowling", "borrowings": 1345},
+            {
+                "title": "Harry Potter",
+                "author": "J.K Rowling",
+                "borrowings": 1345,
+                "price_bought": 15.5,
+            },
             {
                 "title": "The Lord of the Rings",
                 "author": "J.R.R Tolkien",
                 "borrowings": 2145,
+                "price_bought": 23.89,
             },
         ]
     }
@@ -111,3 +117,17 @@ async def borrow_unlimited(_, __, user, **kwargs):
 @mutation.field("destroyLibrary")
 async def destroy_library(_, __, **kwargs):
     return {"sucess": True}
+
+
+@query.field("comics")
+async def resolve_comics(_, __, **kwargs):
+    return {
+        "comics": [
+            {"title": "The Blue Lotus", "author": "Hergé", "artist": "Hergé"},
+            {
+                "title": "Asterix and Cleopatra",
+                "author": "René Goscinny",
+                "artist": "Albert Uderzo",
+            },
+        ]
+    }

@@ -12,6 +12,7 @@ extend type Mutation {
 extend type Query {
   books: BooksPayload @scope
   book(id: ID!): BookPayload
+  comics: ComicsPayload
   exclusiveBooks: BooksPayload @access_token_required
 }
 
@@ -58,6 +59,7 @@ type Book {
   publicationDate: DateTime!
   profile: Profile
   borrowings: Int @scope
+  priceBought: Float @scope
 }
 
 type Comic {
@@ -66,7 +68,7 @@ type Comic {
   author: String!
   publicationDate: DateTime!
   profile: Profile
-  artist: String!
+  artist: String @scope
 }
 
 type BookPayload {
@@ -77,6 +79,11 @@ type BookPayload {
 type ComicPayload {
   comic: Comic
   errors: [String]
+}
+
+type ComicsPayload {
+  comics: [Comic]
+  error: [String]
 }
 
 type BooksPayload {

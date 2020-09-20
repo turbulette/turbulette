@@ -1,12 +1,21 @@
 [
   {
     "principal": ["staff"],
+    "conditions": [
+      {
+        "is_claim_present": "iss"
+      },
+      {
+        "claim": "scopes",
+        "includes": ["_staff"]
+      }
+    ],
     "allow": {
       "mutation": {
         "fields": ["addBook"]
       },
       "book": {
-        "fields": ["borrowings"],
+        "fields": ["borrowings", "priceBought"],
         "query": ["book*"]
       }
     }
@@ -32,6 +41,10 @@
     "allow": {
       "query": {
         "fields": ["book"]
+      },
+      "comic": {
+        "fields": ["artist"],
+        "query": ["comics"]
       }
     },
     "deny": {

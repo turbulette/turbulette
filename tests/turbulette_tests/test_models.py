@@ -21,7 +21,7 @@ async def create_custom_user(create_permission_role):
     return custom_user
 
 
-async def test_repr(tester, create_user_data, create_custom_user):
+async def test_repr(tester, create_user, create_user_data, create_custom_user):
     from turbulette.apps.auth.models import Role, RolePermission, Permission
     from tests.app_1.models import BaseUser, CustomUser
 
@@ -50,7 +50,7 @@ async def test_repr(tester, create_user_data, create_custom_user):
     assert repr(role_perm.permission) == f"<Permission: {role_perm.permission.key}>"
 
 
-async def test_validate_models(tester):
+async def test_validate_models(tester, create_user, get_user_tokens):
     """Test validate decorator with multiple models."""
     await tester.assert_query_success(
         query=mutation_create_comic,
@@ -62,6 +62,7 @@ async def test_validate_models(tester):
             "profile": '{"genre": ["action", "adventure"]}',
             "artist": "Hergé",
         },
+        jwt=get_user_tokens[0],
     )
 
 

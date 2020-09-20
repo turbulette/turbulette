@@ -1,12 +1,16 @@
 import pytest
-from .queries import (
-    mutation_borrow_book,
-    mutation_add_book,
-    query_borrowings,
-    mutation_destroy_library,
-)
-from .constants import CUSTOMER_USERNAME, CUSTOMER_PERMISSION
+
 from turbulette.core.errors import ErrorCode
+
+from .constants import CUSTOMER_PERMISSION, CUSTOMER_USERNAME
+from .queries import (
+    mutation_add_book,
+    mutation_borrow_book,
+    mutation_destroy_library,
+    query_borrowings,
+    query_borrowings_price_bought,
+    query_comics,
+)
 
 pytestmark = pytest.mark.asyncio
 
@@ -16,21 +20,11 @@ async def test_role_permission(
     create_user,
     create_book,
     create_staff_user,
+    create_user_no_role,
+    get_no_role_user_tokens,
     get_staff_tokens,
     get_user_tokens,
 ):
-    from turbulette.apps.auth.utils import create_user
-    from turbulette.apps.auth import get_token_from_user
-
-    user_no_role = await create_user(
-        username="test_user_no_role",
-        first_name="test",
-        last_name="user",
-        email="no_role@email.com",
-        password_one="1234",
-        password_two="1234",
-    )
-
     response = await tester.assert_query_success(
         query=mutation_borrow_book,
         jwt=get_user_tokens[0],
@@ -44,6 +38,7 @@ async def test_role_permission(
         query=mutation_borrow_book,
         jwt=get_staff_tokens[0],
         op_name="borrowBook",
+        errors=False,
         variables={"id": create_book.id},
         error_codes=[ErrorCode.QUERY_NOT_ALLOWED],
     )
@@ -51,8 +46,9 @@ async def test_role_permission(
     response = await tester.assert_query_failed(
         query=mutation_borrow_book,
         op_name="borrowBook",
-        headers={"authorization": f"JWT {await get_token_from_user(user_no_role)}"},
+        jwt=get_no_role_user_tokens[0],
         variables={"id": create_book.id},
+        errors=False,
         error_codes=[ErrorCode.QUERY_NOT_ALLOWED],
     )
 
@@ -70,6 +66,8 @@ async def test_staff_member(
         query=mutation_add_book,
         jwt=get_user_tokens[0],
         op_name="addBook",
+        errors=False,
+        error_codes=[ErrorCode.QUERY_NOT_ALLOWED],
     )
 
 
@@ -122,7 +120,12 @@ async def test_role_crud(tester):
 
 
 async def test_field_permission(
-    tester, create_staff_user, get_staff_tokens, create_book
+    tester,
+    create_user,
+    get_user_tokens,
+    create_staff_user,
+    get_staff_tokens,
+    create_book,
 ):
     await tester.assert_query_success(
         query=query_borrowings,
@@ -131,22 +134,50 @@ async def test_field_permission(
         variables={"id": create_book.id},
     )
 
+    await tester.assert_query_success(
+        query=query_comics, jwt=get_user_tokens[0], op_name="comics"
+    )
+
 
 async def test_deny_field_permission(tester, create_user, get_user_tokens, create_book):
-    await tester.assert_query_success(
+    resp = await tester.assert_query_success(
         query=query_borrowings,
         jwt=get_user_tokens[0],
         op_name="book",
         variables={"id": create_book.id},
         error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
     )
+    # Only one field is denied
+    assert len(resp[1]["extensions"]["scope"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 1
+
+    resp = await tester.assert_query_success(
+        query=query_borrowings_price_bought,
+        jwt=get_user_tokens[0],
+        op_name="books",
+        error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
+    )
+    # Two fields are denied
+    assert len(resp[1]["extensions"]["scope"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 2
 
 
-async def test_allow_specific_user(
-    tester, create_staff_user, get_staff_tokens, create_book
-):
+async def test_allow_specific_user(tester, create_staff_user, get_staff_tokens):
     await tester.assert_query_success(
         query=mutation_destroy_library,
         jwt=get_staff_tokens[0],
         op_name="destroyLibrary",
+    )
+
+
+async def test_no_policies_involved(
+    tester,
+    create_book,
+    create_user_no_role,
+    get_no_role_user_tokens,
+):
+    await tester.assert_query_success(
+        query=query_borrowings,
+        jwt=get_no_role_user_tokens[0],
+        op_name="book",
+        variables={"id": create_book.id},
+        error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
     )

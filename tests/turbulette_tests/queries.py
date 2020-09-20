@@ -45,6 +45,31 @@ query_borrowings = """
     }
 """
 
+query_borrowings_price_bought = """
+    query books {
+        books {
+            books {
+                title
+                author
+                priceBought
+                borrowings
+            }
+        }
+    }
+"""
+
+query_comics = """
+    query comics {
+        comics {
+            comics {
+                author
+                artist
+            }
+        }
+    }
+"""
+
+
 query_exclusive_books = """
     query exclusiveBooks {
         exclusiveBooks {

@@ -21,9 +21,11 @@ CORSMiddleware = {
 
 DEBUG = config("DEBUG", cast=bool, default=True)
 # Enable ariadne apollo tracing extension
-APOLLO_TRACING = config("APOLLO_TRACING", cast=bool, default=False)
 APOLLO_FEDERATION = config("APOLLO_FEDERATION", cast=bool, default=False)
 
+ARIADNE_EXTENSIONS = config(
+    "ARIADNE_EXTENSIONS", cast=CommaSeparatedStrings, default=[]
+)
 
 ###########################
 # AUTH

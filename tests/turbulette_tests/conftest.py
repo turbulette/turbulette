@@ -20,6 +20,7 @@ from .constants import (
     DEFAULT_PASSWORD,
     STAFF_USERNAME,
     CUSTOMER_PERMISSION,
+    NO_ROLE_USERNAME,
 )
 from .queries import query_get_jwt
 
@@ -130,3 +131,35 @@ async def create_book():
         profile={"genre": ["fantasy"], "awards": []},
     )
     return book
+
+
+@pytest.fixture(scope="session")
+async def create_user_no_role():
+    from turbulette.apps.auth.utils import create_user
+
+    user_no_role = await create_user(
+        username=NO_ROLE_USERNAME,
+        first_name="test",
+        last_name="user",
+        email=f"{NO_ROLE_USERNAME}@email.com",
+        password_one="1234",
+        password_two="1234",
+    )
+
+
+@pytest.fixture
+async def get_no_role_user_tokens(tester):
+    response = await tester.assert_query_success(
+        query=query_get_jwt,
+        variables={"username": NO_ROLE_USERNAME, "password": DEFAULT_PASSWORD},
+        op_name="getJWT",
+    )
+
+    assert response[1]["data"]["getJWT"]["accessToken"]
+    assert response[1]["data"]["getJWT"]["refreshToken"]
+    assert not response[1]["data"]["getJWT"]["errors"]
+
+    return (
+        response[1]["data"]["getJWT"]["accessToken"],
+        response[1]["data"]["getJWT"]["refreshToken"],
+    )

@@ -1,5 +1,5 @@
 from sqlalchemy.engine.url import URL, make_url
-from starlette.datastructures import Secret
+from starlette.datastructures import Secret, CommaSeparatedStrings
 from turbulette.conf import get_config_from_paths
 
 config = get_config_from_paths(["tests/.env.example", "../tests/.env.example"])
@@ -21,7 +21,9 @@ CONFIGURE_LOGGING = False
 DEBUG = True
 
 # Enable ariadne apollo tracing extension
-APOLLO_TRACING = False
+ARIADNE_EXTENSIONS = config(
+    "ARIADNE_EXTENSIONS", cast=CommaSeparatedStrings, default=[]
+)
 
 APOLLO_FEDERATION = False
 
