@@ -21,6 +21,8 @@ from .exceptions import (
 )
 from .models import Permission, Role, RolePermission, UserRole
 
+STAFF_SCOPE = "_staff"
+
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
 
@@ -41,7 +43,7 @@ class TokenType(Enum):
 
 def _jwt_payload(user_id: str, scopes: list, is_staff: bool) -> dict:
     if is_staff:
-        scopes.append("_staff")
+        scopes.append(STAFF_SCOPE)
     payload = {"sub": user_id, "scopes": scopes}
 
     if settings.JWT_AUDIENCE is not None:
@@ -58,7 +60,9 @@ async def jwt_payload(user: user_model) -> dict:
 
 
 def jwt_payload_from_claims(claims: dict) -> dict:
-    return _jwt_payload(claims["sub"], claims["scopes"], "_staff" in claims["scopes"])
+    return _jwt_payload(
+        claims["sub"], claims["scopes"], STAFF_SCOPE in claims["scopes"]
+    )
 
 
 def encode_jwt(payload: dict, token_type: TokenType) -> str:
