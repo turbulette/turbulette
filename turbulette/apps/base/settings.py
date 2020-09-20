@@ -1,14 +1,3 @@
-# from turbulette.conf import (
-#     SIMPLE_SETTINGS
-# )
-
-# `simple_settings` need the SIMPLE_SETTINGS settings
-# to process the rules
-# SIMPLE_SETTINGS = simple_settings
-
-from tests.settings import ARIADNE_EXTENSIONS
-
-
 OVERRIDE_BY_ENV = True
 
 # Base settings rules
@@ -35,7 +24,7 @@ SETTINGS_RULES = {
 # DEFAULT SETTINGS
 ###########################
 
-ARIADNE_EXTENSIONS = []
+ARIADNE_EXTENSIONS: list = []
 
 
 # Tell ariadne to create schema with federation support
