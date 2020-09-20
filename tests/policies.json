@@ -53,7 +53,7 @@
     }
   },
   {
-    "principal": ["*"],
+    "principal": ["authenticated"],
     "allow": {
       "query": {
         "fields": ["books"]

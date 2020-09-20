@@ -31,10 +31,10 @@ async def authorized(claims: dict, info: GraphQLResolveInfo) -> bool:
         bool: True if authorized, False otherwise
     """
     policies = get_policy_config()
-    policies = await policy.involved(claims, policies)
+    policies = await policy.involved(claims, policies, info)
     if not policies:  # pragma: no cover ### can't cover both all policy types and none
         return False
-    valid_policies = await policy.with_valid_conditions(claims, policies)
+    valid_policies = await policy.with_valid_conditions(claims, policies, info)
     if (
         not valid_policies
     ):  # pragma: no cover ### can't cover both all context types and none

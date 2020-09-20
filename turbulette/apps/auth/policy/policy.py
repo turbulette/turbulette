@@ -109,7 +109,9 @@ class PolicyType:
 
         return register_resolver
 
-    async def involved(self, claims: Claims, policies: List[Policy]) -> List[Policy]:
+    async def involved(
+        self, claims: Claims, policies: List[Policy], info: GraphQLResolveInfo
+    ) -> List[Policy]:
         """Given a list of policies, return only those where one of the principal patterns match.
 
         All principal resolvers will be tested. For a policy to be involved,
@@ -127,12 +129,13 @@ class PolicyType:
             for statement in policy[KEY_PRINCIPAL]:
                 parsed = statement.split(":", 1)
                 val = parsed[0] if len(parsed) == 1 else parsed[1]
-                if await self._principals[parsed[0]](val, claims):
+                if await self._principals[parsed[0]](val, claims, info):
                     res.append(policy)
+                    break
         return res
 
     async def with_valid_conditions(
-        self, claims: Claims, policies: List[Policy]
+        self, claims: Claims, policies: List[Policy], info: GraphQLResolveInfo
     ) -> List[Policy]:
         """Given a list of policies, return only those with valid conditions.
 
@@ -152,7 +155,7 @@ class PolicyType:
                 valid_policies.append(policy)
             else:
                 for statement, val in policy[KEY_CONDITIONS].items():
-                    if not await self._conditions[statement](val, claims):
+                    if not await self._conditions[statement](val, claims, info):
                         break
                 else:
                     valid_policies.append(policy)
