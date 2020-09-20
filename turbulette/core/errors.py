@@ -96,10 +96,6 @@ def error_formatter(error: GraphQLError, debug: bool = False):
     else:
         formatted = error.formatted  # pragma: no cover
 
-    # if error.extensions:
-    #     if error.extensions.get("code"):
-    #         return {"code": error.extensions["code"], "message": error.message}
-
     return formatted
 
 
@@ -108,7 +104,5 @@ def add_error(err_type: str, code: ErrorCode, message: str = None):
         message = code.value
     if err_type not in errors:
         errors[err_type] = {code.name: [message]}
-    elif code.name in errors and message not in errors[code.name][err_type]:
+    elif code.name in errors[err_type] and message not in errors[err_type][code.name]:
         errors[err_type][code.name].append(message)
-    else:
-        errors[err_type][code.name] = [message]
