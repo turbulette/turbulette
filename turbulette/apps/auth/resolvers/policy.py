@@ -5,15 +5,13 @@ from turbulette.apps.auth import policy
 
 
 @policy.condition("claim")
-async def claim(statement: dict, claims: Claims) -> bool:
-    return bool(claims.get(statement["claim"])) and all(
-        inc in claims[statement["claim"]] for inc in statement["includes"]
-    )
+async def claim(val, claims: Claims) -> bool:
+    return all(inc in claims[val["name"]] for inc in val["includes"])
 
 
 @policy.condition("is_claim_present")
-async def is_claim_present(statement: dict, claims: Claims) -> bool:
-    return statement["is_claim_present"] in claims
+async def is_claim_present(val, claims: Claims) -> bool:
+    return val in claims
 
 
 @policy.principal("perm")

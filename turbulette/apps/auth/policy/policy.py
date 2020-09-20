@@ -151,10 +151,8 @@ class PolicyType:
             if KEY_CONDITIONS not in policy:
                 valid_policies.append(policy)
             else:
-                for statement in policy[KEY_CONDITIONS]:
-                    if not await self._conditions[list(statement.keys())[0]](
-                        statement, claims
-                    ):
+                for statement, val in policy[KEY_CONDITIONS].items():
+                    if not await self._conditions[statement](val, claims):
                         break
                 else:
                     valid_policies.append(policy)

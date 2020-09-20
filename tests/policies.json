@@ -1,15 +1,13 @@
 [
   {
     "principal": ["staff"],
-    "conditions": [
-      {
-        "is_claim_present": "iss"
-      },
-      {
-        "claim": "scopes",
+    "conditions": {
+      "is_claim_present": "iss",
+      "claim": {
+        "name": "scopes",
         "includes": ["_staff"]
       }
-    ],
+    },
     "allow": {
       "mutation": {
         "fields": ["addBook"]
