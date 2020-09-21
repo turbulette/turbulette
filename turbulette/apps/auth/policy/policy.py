@@ -1,14 +1,17 @@
 from typing import Callable, Dict, List
 
+from graphql.pyutils import Path
 from graphql.type.definition import GraphQLResolveInfo
-from turbulette.type import ConditionResolver, Policy, PrincipalResolver, Claims
+
+from turbulette.type import Claims, ConditionResolver, Policy, PrincipalResolver
+
 from .constants import (
     KEY_ALLOW,
     KEY_ALLOW_FIELDS,
     KEY_ALLOW_QUERY,
+    KEY_CONDITIONS,
     KEY_DENY,
     KEY_PRINCIPAL,
-    KEY_CONDITIONS,
 )
 
 
@@ -25,6 +28,16 @@ class PolicyType:
     def __init__(self):
         self._principals = {}
         self._conditions = {}
+
+    def _parse_query_string(self, pattern: str, field: Path) -> bool:
+        match = False
+        if pattern.endswith("*"):
+            match = str(field.key).startswith(pattern.split("*")[0])
+        elif pattern.startswith("*"):
+            match = str(field.key).endswith(pattern.split("*")[1])
+        else:
+            match = str(field.key) == pattern
+        return match
 
     def _match(self, type_: str, values: dict, info: GraphQLResolveInfo) -> bool:
         """Check if the current query match any of the given patterns.
@@ -52,15 +65,11 @@ class PolicyType:
                 while root_field.prev is not None:
                     root_field = root_field.prev
 
-                for pattern in values[KEY_ALLOW_QUERY]:
-                    if pattern.endswith("*"):
-                        match_ = str(root_field.key).startswith(pattern.split("*")[0])
-                    elif pattern.startswith("*"):
-                        match_ = str(root_field.key).endswith(pattern.split("*")[1])
-                    else:
-                        match_ = str(root_field.key) == pattern
-                    if match_:
-                        break
+                match_ = any(
+                    self._parse_query_string(pattern, root_field)
+                    for pattern in values[KEY_ALLOW_QUERY]
+                )
+
             else:
                 match_ = True
         return match_
@@ -161,6 +170,19 @@ class PolicyType:
                     valid_policies.append(policy)
         return valid_policies
 
+    def _apply(self, info: GraphQLResolveInfo, key: str, policy: Policy) -> bool:
+        """Return True if any of the policy allow statements match.
+
+        Args:
+            info (GraphQLResolveInfo): GraphQL infos for the current query
+            key (str): Should be either `KEY_ALLOW` or `KEY_DENY`
+            policy (Policy): The policy to check
+
+        Returns:
+            bool: [description]
+        """
+        return any(self._match(key, val, info) for key, val in policy[key].items())
+
     def apply(self, info: GraphQLResolveInfo, policies: List[Policy]) -> List[bool]:
         """Given a list of policies, return wether not each of them allow or deny the access.
 
@@ -174,18 +196,10 @@ class PolicyType:
         applied_apolicies = []
         for policy_ in policies:
             allowed = None
-            if KEY_ALLOW in policy_:
-                if any(
-                    self._match(key, val, info)
-                    for key, val in policy_[KEY_ALLOW].items()
-                ):
-                    allowed = True
-            if KEY_DENY in policy_:
-                if any(
-                    self._match(key, val, info)
-                    for key, val in policy_[KEY_DENY].items()
-                ):
-                    allowed = False
+            if KEY_ALLOW in policy_ and self._apply(info, KEY_ALLOW, policy_):
+                allowed = True
+            if KEY_DENY in policy_ and self._apply(info, KEY_DENY, policy_):
+                allowed = False
             if allowed is not None:
                 applied_apolicies.append(allowed)
         return applied_apolicies
