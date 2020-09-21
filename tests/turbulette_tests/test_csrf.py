@@ -12,8 +12,6 @@ async def test_csrf(blank_conf):
     from turbulette.conf.utils import settings_stub
     from turbulette.core.cache import cache
 
-    # Drop cache connection because app startup already handle it
-    await cache.disconnect()
     async with TestClient(app) as client:
 
         resp = await client.get("/csrf")

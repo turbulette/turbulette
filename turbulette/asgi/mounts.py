@@ -18,6 +18,7 @@ from turbulette.conf.constants import (
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
+from turbulette.core.cache import cache
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
@@ -59,6 +60,14 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
     return database
 
 
+async def startup():
+    await cache.connect()
+
+
+async def shutdown():
+    await cache.disconnect()
+
+
 def turbulette_starlette(project_settings: str):
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
@@ -80,14 +89,6 @@ def turbulette_starlette(project_settings: str):
         getattr(project_settings_module, SETTINGS_DB_DSN),
     )
     graphql_route = setup(project_settings)
-
-    from turbulette.core.cache import cache
-
-    async def startup():
-        await cache.connect()
-
-    async def shutdown():
-        await cache.disconnect()
 
     middleware_list = list(conf.settings.MIDDLEWARES)
 

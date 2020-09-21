@@ -76,7 +76,8 @@ async def turbulette_setup(project_settings, create_db):
         cache = getattr(import_module("turbulette.core.cache"), "cache")
         await cache.connect()
         yield conf_module
-        await cache.disconnect()
+        if cache.is_connected:
+            await cache.disconnect()
     await engine.close()
 
 

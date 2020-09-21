@@ -1,7 +1,10 @@
+from importlib import reload
 from os import environ
+
 import pytest
 from ariadne.asgi import GraphQL
 from starlette.applications import Starlette
+
 from turbulette import setup as turbulette_setup
 from turbulette import turbulette_starlette
 from turbulette.apps import Registry
@@ -52,3 +55,13 @@ def test_reg_not_initialized():
 
     with pytest.raises(RegistryError):
         reg()
+
+
+@pytest.mark.asyncio
+async def test_lazy_init_mixin():
+    from turbulette.core import cache
+    from turbulette.core.exceptions import NotReady
+
+    reload(cache)
+    with pytest.raises(NotReady):
+        await cache.cache.connect()

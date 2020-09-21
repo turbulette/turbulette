@@ -1,5 +1,9 @@
-from typing import Any
-from caches import Cache
-from turbulette.conf import settings
+from caches import Cache as AsyncCache
+from turbulette.core.utils import LazyInitMixin
 
-cache = Cache(settings.QUERY_CACHE)
+
+class LazyCache(LazyInitMixin, AsyncCache):
+    pass
+
+
+cache = LazyCache("cache")

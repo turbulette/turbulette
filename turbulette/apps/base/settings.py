@@ -74,4 +74,4 @@ ALLOWED_HOSTS: list = []
 
 CONFIGURE_LOGGING = False
 
-QUERY_CACHE = "locmem://null"
+CACHE = "locmem://null"

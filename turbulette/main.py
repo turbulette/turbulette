@@ -1,9 +1,11 @@
 from importlib import import_module
 
 from ariadne.asgi import GraphQL
+from caches import Cache
 from gino import Gino  # type: ignore [attr-defined]
 
 from turbulette import conf
+from turbulette.core.cache import cache
 from turbulette.core.errors import error_formatter
 from turbulette.core.extensions import PolicyExtension
 
@@ -38,6 +40,8 @@ def setup(project_settings: str = None) -> GraphQL:
     settings = conf.settings
 
     # Now that the database connection is established, we can use `settings`
+
+    cache.__setup__(Cache(settings.CACHE))
 
     extensions = [PolicyExtension]
     for ext in settings.ARIADNE_EXTENSIONS:
