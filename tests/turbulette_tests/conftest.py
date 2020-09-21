@@ -127,7 +127,7 @@ async def create_book():
     book = await Book.create(
         title="The Lord of the Rings",
         author="J.R.R Tolkien",
-        publication_date=datetime.fromisoformat("1999-07-20T12:00:12"),
+        publication_date=datetime(year=1999, month=7, day=20, hour=12, second=12),
         profile={"genre": ["fantasy"], "awards": []},
     )
     return book
