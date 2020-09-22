@@ -32,7 +32,9 @@ class LazyInitMixin:
     instance of `Foo`
     """
 
-    lazy_attributes = frozenset(("obj", "name", "_initialized", "__setup__"))
+    lazy_attributes = frozenset(
+        ("obj", "name", "_initialized", "initialized", "__setup__")
+    )
 
     def __init__(self, name: str):
         """Initialize a Lazy instance.
@@ -51,10 +53,14 @@ class LazyInitMixin:
         if name in object.__getattribute__(self, "lazy_attributes"):
             return object.__getattribute__(self, name)
         if not self._initialized:
-            raise NotReady(f"{self.name} not yet initialized")
+            raise NotReady(f"{self.name} is not ready yet")
         return object.__getattribute__(self.obj, name)
 
     def __setup__(self, obj: Type):
         """Actually initialize the wrapped object."""
         self._initialized = True
         self.obj = obj
+
+    @property
+    def initialized(self) -> bool:
+        return self._initialized

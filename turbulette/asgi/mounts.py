@@ -56,7 +56,7 @@ def gino_starlette(settings: DatabaseSettings, dsn: URL):
         raise ImproperlyConfigured(
             f"You did not set {error.args[0]} in {SETTINGS_DATABASE_SETTINGS}"
         ) from error
-    conf.db = database
+    conf.db.__setup__(database)
     return database
 
 
@@ -128,7 +128,7 @@ def turbulette_starlette(project_settings: str):
             on_shutdown=[shutdown],
         )
 
-        conf.app = app
+        conf.app.__setup__(app)
         conf.db.init_app(app)
         return app
     raise ImproperlyConfigured(

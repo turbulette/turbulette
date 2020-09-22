@@ -3,7 +3,8 @@ from turbulette.core.utils import LazyInitMixin
 
 
 class LazyCache(LazyInitMixin, AsyncCache):
-    pass
+    def __init__(self):
+        super().__init__("cache")
 
 
-cache = LazyCache("cache")
+cache = LazyCache()

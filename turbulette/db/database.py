@@ -1,6 +1,6 @@
 from inspect import getmodule
 from gino.declarative import ModelType
-from turbulette.conf import reg, db
+from turbulette.conf import registry, db
 from turbulette.utils.normalize import camel_to_snake
 
 
@@ -35,7 +35,7 @@ class BaseModelMeta(ModelType):
         return model
 
 
-class Model(db.Model, metaclass=BaseModelMeta):
+class Model(db.Model, metaclass=BaseModelMeta):  # type: ignore
     """Base model class for gino models."""
 
     def __repr__(self, key: str = None):
@@ -61,4 +61,4 @@ def get_tablename(package: str, name: str) -> str:
     Returns:
         str: The camel case table name
     """
-    return f"{reg().get_app_by_package(package).label}" f"_{camel_to_snake(name)}"
+    return f"{registry.get_app_by_package(package).label}" f"_{camel_to_snake(name)}"

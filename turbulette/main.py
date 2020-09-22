@@ -14,10 +14,10 @@ from .apps.config import get_project_settings_by_env
 
 
 def get_gino_instance() -> Gino:
-    if conf.db:
+    if conf.db.initialized:
         return conf.db
     database = Gino()
-    conf.db = database
+    conf.db.__setup__(database)
     return database
 
 
@@ -34,7 +34,7 @@ def setup(project_settings: str = None) -> GraphQL:
     get_gino_instance()
 
     registry = Registry(project_settings_module=project_settings_module)
-    conf.registry = registry
+    conf.registry.__setup__(registry)
     schema = registry.setup()
     # At this point, settings are now available through `settings` from `turbulette.conf` module
     settings = conf.settings

@@ -7,8 +7,6 @@ from starlette.applications import Starlette
 
 from turbulette import setup as turbulette_setup
 from turbulette import turbulette_starlette
-from turbulette.apps import Registry
-from turbulette.apps.exceptions import RegistryError
 from turbulette.conf.constants import ENV_TURBULETTE_SETTINGS
 from turbulette.conf.exceptions import ImproperlyConfigured
 
@@ -38,23 +36,6 @@ def test_wrong_env_file():
 def test_starlette_setup(settings):
     app = turbulette_starlette(settings)
     assert isinstance(app, Starlette)
-
-
-@pytest.mark.usefixtures("reload_resources")
-def test_reg(settings):
-    from turbulette.conf import reg
-
-    turbulette_setup(settings)
-    registry = reg()
-    assert isinstance(registry, Registry)
-
-
-@pytest.mark.usefixtures("reload_resources")
-def test_reg_not_initialized():
-    from turbulette.conf import reg
-
-    with pytest.raises(RegistryError):
-        reg()
 
 
 @pytest.mark.asyncio
