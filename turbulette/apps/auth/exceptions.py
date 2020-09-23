@@ -35,3 +35,11 @@ class JWTInvalidTokenType(BaseError):
 
 class FieldNotAllowed(BaseError):
     error_code = ErrorCode.FIELD_NOT_ALLOWED
+
+
+class JWEInvalidToken(BaseError):
+    error_code = ErrorCode.JWE_INVALID_TOKEN
+
+
+class JWEDecryptionError(BaseError):
+    error_code = ErrorCode.JWE_DECRYPTION_ERROR

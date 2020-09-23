@@ -4,6 +4,7 @@ from typing import Tuple
 
 from gino.declarative import Model
 from jwcrypto.jwk import JWK
+from jwcrypto.jwe import JWE, InvalidJWEData
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from passlib.context import CryptContext
 from python_jwt import generate_jwt, process_jwt, verify_jwt
@@ -18,10 +19,13 @@ from .exceptions import (
     JWTInvalidSignature,
     JWTNotFound,
     JWTNoUsername,
+    JWEInvalidToken,
+    JWEDecryptionError,
 )
 from .models import Permission, Role, RolePermission, UserRole
 
 STAFF_SCOPE = "_staff"
+
 
 # Create crypto context
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
@@ -34,6 +38,11 @@ user_model: Model = getattr(
 
 # Cast secrets to str
 _secret_key = JWK(**{key: str(value) for key, value in settings.SECRET_KEY.items()})
+
+if settings.JWT_ENCRYPT:
+    _encryption_key = JWK(
+        **{key: str(value) for key, value in settings.ENCRYPTION_KEY.items()}
+    )
 
 
 class TokenType(Enum):
@@ -81,13 +90,26 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
     )
 
     payload["type"] = token_type.value
-    return generate_jwt(
+    token = generate_jwt(
         payload,
         _secret_key,
         algorithm=settings.JWT_ALGORITHM,
         lifetime=exp,
         jti_size=jti_size,
     )
+
+    if settings.JWT_ENCRYPT:
+        token = JWE(
+            plaintext=token.encode("utf-8"),
+            protected={
+                "alg": settings.JWE_ALGORITHM,
+                "enc": settings.JWE_ENCRYPTION,
+                "typ": "JWE",
+            },
+        )
+        token.add_recipient(_encryption_key)
+        token = token.serialize()
+    return token
 
 
 async def _get_scopes(user: user_model) -> list:
@@ -146,6 +168,18 @@ def decode_jwt(jwt: str) -> Tuple:
     Returns:
         int: The user id
     """
+    if settings.JWT_ENCRYPT:
+        token = JWE()
+        try:
+            token.deserialize(jwt.replace("\\", ""))
+        except InvalidJWEData as error:
+            raise JWEInvalidToken from error
+        try:
+            token.decrypt(_encryption_key)
+        except InvalidJWEData as error:
+            raise JWEDecryptionError from error
+        jwt = token.payload.decode("utf-8")
+
     if not settings.JWT_VERIFY:
         return process_jwt(jwt)
 

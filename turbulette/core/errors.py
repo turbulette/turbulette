@@ -24,6 +24,8 @@ class ErrorCode(Enum):
     FIELD_NOT_ALLOWED = "Some fields are not allowed"
     SERVER_ERROR = "Internal server error"
     QUERY_NOT_ALLOWED = "You are not allowed to perform this query"
+    JWE_INVALID_TOKEN = "JWE token is invalid"
+    JWE_DECRYPTION_ERROR = "JWE payload can't be decrypted or object is malformed"
 
 
 class BaseError(Exception):

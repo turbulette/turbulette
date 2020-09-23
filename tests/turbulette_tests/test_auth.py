@@ -1,4 +1,5 @@
 import asyncio
+from importlib import reload
 from datetime import timedelta
 import pytest
 from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD
@@ -243,7 +244,7 @@ async def test_token_expired(tester, get_user_tokens):
         assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
 
-async def test_fresh_token(tester, get_user_tokens):
+async def test_fresh_token(tester, create_user, get_user_tokens):
     from turbulette.conf.utils import settings_stub
     from turbulette.core.errors import ErrorCode
 
@@ -278,4 +279,49 @@ async def test_fresh_token(tester, get_user_tokens):
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="updatePassword",
             variables={"password": DEFAULT_PASSWORD},
+        )
+
+
+async def test_jwe(tester, create_user):
+    from turbulette.conf.utils import settings_stub
+    from turbulette.core.errors import ErrorCode
+    from turbulette.apps.auth import core
+
+    with settings_stub(JWT_ENCRYPT=True):
+
+        # Reload core module to make `_encryption_key` available
+        reload(core)
+
+        response = await tester.assert_query_success(
+            query=query_get_jwt,
+            op_name="getJWT",
+            variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
+        )
+
+        jwe = response[1]["data"]["getJWT"]["accessToken"]
+
+        await tester.assert_query_success(
+            query=query_exclusive_books,
+            jwt=jwe,
+            op_name="exclusiveBooks",
+        )
+
+        # Invalid JWE
+        resp = await tester.assert_query_failed(
+            query=query_exclusive_books, jwt=jwe + "invalid", op_name="exclusiveBooks"
+        )
+        assert (
+            resp[1]["errors"][0]["extensions"]["code"]
+            == ErrorCode.JWE_INVALID_TOKEN.name
+        )
+
+        # Invalid ciphertext - append invalid string before the actual encrypted payload
+        resp = await tester.assert_query_failed(
+            query=query_exclusive_books,
+            jwt=jwe.replace('{"ciphertext":"', '{"ciphertext":"--'),
+            op_name="exclusiveBooks",
+        )
+        assert (
+            resp[1]["errors"][0]["extensions"]["code"]
+            == ErrorCode.JWE_DECRYPTION_ERROR.name
         )

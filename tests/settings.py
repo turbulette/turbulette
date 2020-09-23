@@ -59,6 +59,8 @@ SECRET_KEY = {
     "y": config("SECRET_KEY_Y", cast=Secret),
 }
 
+ENCRYPTION_KEY = {"kty": "oct", "k": config("ENCRYPTION_KEY_K", cast=Secret)}
+
 ###########################
 # DATABASE
 ###########################
