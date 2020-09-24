@@ -1,19 +1,24 @@
 from importlib import import_module
 from importlib.util import find_spec
+from inspect import getmembers, isclass
 from os import sep
 from pathlib import Path
 from typing import Dict, List, Type
-from inspect import getmembers, isclass
 
 from ariadne import SchemaDirectiveVisitor, load_schema_from_path
-from .exceptions import TurbuletteAppError
+from pydantic import BaseModel
+
+from turbulette.core.validation.pyd_model import GraphQLToPydantic
+
 from .constants import (
     FOLDER_SCHEMA,
-    PACKAGE_RESOLVERS,
-    MODULE_MODELS,
     MODULE_DIRECTIVES,
+    MODULE_MODELS,
+    MODULE_PYDANTIC,
     MODULE_SETTINGS,
+    PACKAGE_RESOLVERS,
 )
+from .exceptions import TurbuletteAppError
 
 
 def _star_import(module_path: str):
@@ -50,6 +55,7 @@ class TurbuletteApp:
         "models_module",
         "settings_module",
         "ready",
+        "pydantic_module",
     )
 
     def __init__(
@@ -63,6 +69,7 @@ class TurbuletteApp:
         models_module: str = MODULE_MODELS,
         directives_module: str = MODULE_DIRECTIVES,
         settings_module: str = MODULE_SETTINGS,
+        pydantic_module: str = MODULE_PYDANTIC,
     ):
         self.package_name = package
         self.label = package.rsplit(".", maxsplit=1)[-1] if label is None else label
@@ -84,6 +91,7 @@ class TurbuletteApp:
         self.models_module = models_module
         self.directives_module = directives_module
         self.settings_module = settings_module
+        self.pydantic_module = pydantic_module
         self.ready = False
 
     def load_resolvers(self):
@@ -147,6 +155,20 @@ class TurbuletteApp:
         self.load_directives()
         self.load_resolvers()
         self.ready = True
+
+    def load_pydantic_models(self) -> Dict[str, Type[GraphQLToPydantic]]:
+        models: Dict[str, Type[GraphQLToPydantic]] = {}
+        if (self.package_path / f"{self.pydantic_module}.py").is_file():
+            module = import_module(f".{self.pydantic_module}", f"{self.package_name}")
+            for _, member in getmembers(module, isclass):
+                if (
+                    issubclass(member, BaseModel)
+                    and hasattr(member, "__type__")
+                    and member is not BaseModel
+                    and member is not GraphQLToPydantic
+                ):
+                    models[member.__type__] = member
+        return models
 
     def __bool__(self):
         """An app is True if it's ready."""

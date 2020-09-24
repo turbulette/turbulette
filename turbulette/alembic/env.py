@@ -54,8 +54,8 @@ def run_migrations_online(metadata, config):  # pragma: no cover
 def run_migrations(project_settings: str):
     settings = import_module(project_settings)
     registry = Registry(project_settings_module=settings)
-    if not conf.registry:  # pragma: no cover
-        conf.registry = registry
+    if not conf.registry.__initialized__:
+        conf.registry.__setup__(registry)
     registry.load_settings()
 
     database = get_gino_instance()
@@ -73,7 +73,7 @@ def run_migrations(project_settings: str):
     metadata = database
     print(registry.apps.values())
     registry.load_models()
-    alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))
+    alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))  # type: ignore
 
     if context.is_offline_mode():  # pragma: no cover
         run_migrations_offline(metadata, alembic_config)

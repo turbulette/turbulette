@@ -1,12 +1,14 @@
 import logging
+
 from ariadne import convert_kwargs_to_snake_case
+
+from tests.app_1.models import Book, Comics
+from tests.app_1.pyd_models import CreateBook, CreateComics
 from turbulette import mutation, query
-from turbulette.apps.auth import user_model, get_token_from_user
+from turbulette.apps.auth import get_token_from_user, user_model
 from turbulette.apps.auth.pyd_models import BaseUserCreate
 from turbulette.core.errors import ErrorField
 from turbulette.core.validation.decorators import validate
-from ..models import Book, Comics
-from ..pyd_models import CreateBook, CreateComics
 
 
 @mutation.field("createUser")
@@ -97,13 +99,13 @@ async def update_password(_, __, claims, **kwargs):
 
 @mutation.field("createComic")
 @convert_kwargs_to_snake_case
-@validate(models=[CreateBook, CreateComics])
+@validate(CreateComics)
 async def create_cartoon(_, __, valid_input, **kwargs):
     """Validate input data against multiple models.
     This can be useful to add entries in multiple tables linked
     with a foreign key
     """
-    book_input, comics_input = valid_input[0], valid_input[1]
+    book_input, comics_input = valid_input.pop("book"), valid_input
     book = await Book.create(**book_input)
     comic = await Comics.create(**comics_input, book=book.id)
     return {"comic": {**book.to_dict(), **comic.to_dict()}}

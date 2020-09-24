@@ -4,7 +4,7 @@ extend type Mutation {
   borrowBook(id: ID!): SuccessPayload @scope
   borrowUnlimitedBooks: SuccessPayload @scope
   createBook(input: CreateBookInput): BookPayload!
-  createComic(input: CreateBookInput): ComicPayload!
+  createComic(input: CreateComicInput): ComicPayload!
   updatePassword(password: String!): SuccessPayload @fresh_token_required
   destroyLibrary: SuccessPayload @scope
 }
@@ -42,13 +42,17 @@ input ProfileInput {
 input CreateBookInput {
   title: String!
   author: String!
-  artist: String
   publicationDate: DateTime!
   profile: JSON
 }
 
+input CreateComicInput {
+  book: CreateBookInput!
+  artist: String
+}
+
 type Profile {
-  genre: [String]
+  genre: [String!]
   awards: [String]
 }
 

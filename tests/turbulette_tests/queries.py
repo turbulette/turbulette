@@ -190,17 +190,19 @@ mutation_create_comic = """
     mutation createComic(
         $title: String!
         $author: String!
-        $artist: String!
+        $artist: String
         $publicationDate: DateTime!
         $profile: JSON
     ) {
         createComic(
             input: {
-                title: $title
-                author: $author
+                book: {
+                    title: $title
+                    author: $author
+                    publicationDate: $publicationDate
+                    profile: $profile
+                }
                 artist: $artist
-                publicationDate: $publicationDate
-                profile: $profile
             }
         ) {
             comic {

@@ -33,7 +33,7 @@ class LazyInitMixin:
     """
 
     lazy_attributes = frozenset(
-        ("obj", "name", "_initialized", "initialized", "__setup__")
+        ("obj", "name", "__initialized__", "initialized", "__setup__")
     )
 
     def __init__(self, name: str):
@@ -45,22 +45,22 @@ class LazyInitMixin:
         """
         self.obj: Optional[Type] = None
         self.name = name
-        self._initialized = False
+        self.__initialized__ = False
 
     def __getattribute__(self, name: str) -> Any:
         """Proxy that delegates attribute accesses to the wrapped object after initialization."""
         # Don't delegate when accessing `LazyInitMixin` attributes
         if name in object.__getattribute__(self, "lazy_attributes"):
             return object.__getattribute__(self, name)
-        if not self._initialized:
+        if not self.__initialized__:
             raise NotReady(f"{self.name} is not ready yet")
         return object.__getattribute__(self.obj, name)
 
     def __setup__(self, obj: Type):
         """Actually initialize the wrapped object."""
-        self._initialized = True
+        self.__initialized__ = True
         self.obj = obj
 
     @property
     def initialized(self) -> bool:
-        return self._initialized
+        return self.__initialized__
