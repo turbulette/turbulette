@@ -1,7 +1,7 @@
 import pytest
 from ariadne import make_executable_schema, snake_case_fallback_resolvers, gql
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
-from turbulette.core.validation import GraphQLToPydantic, PydanticBindable
+from turbulette.core.validation import GraphQLModel, PydanticBindable
 from turbulette.core.validation.exceptions import PydanticBindError
 
 
@@ -51,7 +51,7 @@ type User {
 def test_graphql_types():
     """Test pydantic bindings."""
 
-    class GraphQLTypes(GraphQLToPydantic):
+    class GraphQLTypes(GraphQLModel):
         __type__ = "GraphQLTypes"
 
     bindable = PydanticBindable({"GraphQLTypes": GraphQLTypes})
@@ -84,10 +84,10 @@ def test_graphql_types():
 
 
 def test_referencing():
-    class Book(GraphQLToPydantic):
+    class Book(GraphQLModel):
         __type__ = "Book"
 
-    class User(GraphQLToPydantic):
+    class User(GraphQLModel):
         __type__ = "User"
 
     bindable = PydanticBindable({"Book": Book, "User": User})
@@ -115,10 +115,10 @@ def test_referencing():
     ],
 )
 def test_referencing_error(has_borrowed, fav_book):
-    class Book(GraphQLToPydantic):
+    class Book(GraphQLModel):
         __type__ = "Book"
 
-    class User(GraphQLToPydantic):
+    class User(GraphQLModel):
         __type__ = "User"
 
     bindable = PydanticBindable({"Book": Book, "User": User})
@@ -136,10 +136,10 @@ def test_referencing_error(has_borrowed, fav_book):
     "book_type,user_type", [("Unknow", "Unknow"), ("User", "User"), (None, None)]
 )
 def test_binding_errors(book_type, user_type):
-    class Book(GraphQLToPydantic):
+    class Book(GraphQLModel):
         __type__ = book_type
 
-    class User(GraphQLToPydantic):
+    class User(GraphQLModel):
         __type__ = user_type
 
     bindable = PydanticBindable({book_type: Book, user_type: User})

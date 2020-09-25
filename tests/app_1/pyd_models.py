@@ -1,23 +1,23 @@
-from turbulette.core.validation.pyd_model import GraphQLToPydantic
+from turbulette.core.validation.pyd_model import GraphQLModel
 
 
-class CreateBook(GraphQLToPydantic):
+class CreateBook(GraphQLModel):
     __type__ = "CreateBookInput"
 
 
-class CreateComics(GraphQLToPydantic):
+class CreateComics(GraphQLModel):
     __type__ = "CreateComicInput"
 
 
-class BookPayload(GraphQLToPydantic):
+class BookPayload(GraphQLModel):
     __type__ = "BookPayload"
     # __type__ = "CreateUser"
 
 
-class Book(GraphQLToPydantic):
+class Book(GraphQLModel):
     __type__ = "Book"
     # __type__ = "CreateUser"
 
 
-class Profile(GraphQLToPydantic):
+class Profile(GraphQLModel):
     __type__ = "Profile"

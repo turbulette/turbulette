@@ -26,7 +26,7 @@ TYPE_MAP = {
 }
 
 
-class GraphQLToPydantic(BaseModel):
+class GraphQLModel(BaseModel):
     __type__: Optional[str] = None
     __initialized__: bool = False
 
@@ -61,7 +61,7 @@ class GraphQLToPydantic(BaseModel):
 
 class PydanticBindable(SchemaBindable):
     def __init__(
-        self, models: Dict[str, Type[GraphQLToPydantic]]
+        self, models: Dict[str, Type[GraphQLModel]]
     ):  # pylint: disable=super-init-not-called
         self.models = models
 
@@ -72,9 +72,7 @@ class PydanticBindable(SchemaBindable):
         default_value = None
 
         if isinstance(gql_field, (GraphQLObjectType, GraphQLInputObjectType)):
-            sub_model: Optional[Type[GraphQLToPydantic]] = self.models.get(
-                gql_field.name
-            )
+            sub_model: Optional[Type[GraphQLModel]] = self.models.get(gql_field.name)
             if not sub_model:
                 raise PydanticBindError(
                     f'There is no pydantic model binded to "{gql_field.name}" GraphQL type'
@@ -113,9 +111,7 @@ class PydanticBindable(SchemaBindable):
             pyd_fields[camel_to_snake(name)] = (field_type, default_value)
         return pyd_fields
 
-    def process_model(
-        self, model: Type[GraphQLToPydantic], schema: GraphQLSchema
-    ) -> None:
+    def process_model(self, model: Type[GraphQLModel], schema: GraphQLSchema) -> None:
         if not model.__type__:
             raise PydanticBindError(
                 f"Can't find __type__ on pydantic model {model.__name__}."

@@ -8,7 +8,7 @@ from typing import Dict, List, Type
 from ariadne import SchemaDirectiveVisitor, load_schema_from_path
 from pydantic import BaseModel
 
-from turbulette.core.validation.pyd_model import GraphQLToPydantic
+from turbulette.core.validation.pyd_model import GraphQLModel
 
 from .constants import (
     FOLDER_SCHEMA,
@@ -156,8 +156,8 @@ class TurbuletteApp:
         self.load_resolvers()
         self.ready = True
 
-    def load_pydantic_models(self) -> Dict[str, Type[GraphQLToPydantic]]:
-        models: Dict[str, Type[GraphQLToPydantic]] = {}
+    def load_pydantic_models(self) -> Dict[str, Type[GraphQLModel]]:
+        models: Dict[str, Type[GraphQLModel]] = {}
         if (self.package_path / f"{self.pydantic_module}.py").is_file():
             module = import_module(f".{self.pydantic_module}", f"{self.package_name}")
             for _, member in getmembers(module, isclass):
@@ -165,7 +165,7 @@ class TurbuletteApp:
                     issubclass(member, BaseModel)
                     and hasattr(member, "__type__")
                     and member is not BaseModel
-                    and member is not GraphQLToPydantic
+                    and member is not GraphQLModel
                 ):
                     models[member.__type__] = member
         return models
