@@ -84,6 +84,12 @@ class PydanticBindable(SchemaBindable):
         self._type_map = {**TYPE_MAP}
 
     def register_scalar(self, name: str, typing: Any) -> None:
+        """Register a custom scalar to use when binding pydantic models.
+
+        Args:
+            name (str): Scalar name, must match the one the schema
+            typing (Any): Python typing for the scalar
+        """
         self._type_map[name] = typing
 
     def resolve_field_typing(
