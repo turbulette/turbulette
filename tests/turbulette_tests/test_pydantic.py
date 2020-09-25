@@ -4,7 +4,6 @@ from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.core.validation import GraphQLModel, PydanticBindable
 from turbulette.core.validation.exceptions import PydanticBindError
 
-
 schema = gql(
     """
 
@@ -44,6 +43,10 @@ type User {
     profile: JSON
 }
 
+type Foo {
+    json: JSON
+}
+
 """
 )
 
@@ -62,6 +65,7 @@ def test_graphql_types():
         bindable,
     )
     book_schema = GraphQLTypes.schema()
+    book_schema.pop("description")
     assert book_schema == {
         "properties": {
             "id": {
@@ -152,40 +156,27 @@ def test_binding_errors(book_type, user_type):
         )
 
 
-# @pytest.mark.parametrize(
-#     "value,result",
-#     [
-#         (
-#             "Book",
-#             {
-#                 "properties": {
-#                     "id": {
-#                         "title": "Id",
-#                         "anyOf": [{"type": "integer"}, {"type": "string"}],
-#                     },
-#                     "title": {"title": "Title", "type": "string"},
-#                     "author": {"title": "Author", "type": "string"},
-#                     "borrowings": {"title": "Borrowings", "type": "integer"},
-#                 },
-#                 "required": ["title"],
-#                 "title": "Type",
-#                 "type": "object",
-#             },
-#         ),
-#         (
-#             "User",
-#             {
-#                 "properties": {
-#                     "username": {"title": "Title", "type": "string"},
-#                     "isStaff": {"title": "Title", "type": "boolean"},
-#                     "hasBorrowed": {"title": "Author", "type": "List[Book]"},
-#                     "dateJoined": {"title": "Borrowings", "type": "datetime"},
-#                     "profile": {"title": "Borrowings", "type": "dict"},
-#                 },
-#                 "required": ["username"],
-#                 "title": "Type",
-#                 "type": "object",
-#             },
-#         )
-#     ],
-# )
+def test_register_type():
+    class Foo(GraphQLModel):
+        __type__ = "Foo"
+
+    bindable = PydanticBindable({"Foo": Foo})
+
+    # Remove JSON type
+    bindable._type_map.pop("JSON")
+    with pytest.raises(PydanticBindError):
+        make_executable_schema(
+            schema,
+            base_scalars_resolvers,
+            snake_case_fallback_resolvers,
+            bindable,
+        )
+
+    # Bring it back through `register` method
+    bindable.register_scalar("JSON", dict)
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )

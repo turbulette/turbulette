@@ -72,7 +72,7 @@ class PydanticBindable(SchemaBindable):
     """Hold logic to bind GraphQL types to pydantic model."""
 
     def __init__(
-        self, models: Dict[str, Type[GraphQLModel]]
+        self, models: Dict[str, Type[GraphQLModel]] = None
     ):  # pylint: disable=super-init-not-called
         """Instantiate the bindable with all pydantic models.
 
@@ -80,7 +80,11 @@ class PydanticBindable(SchemaBindable):
             models (Dict[str, Type[GraphQLModel]]): A mapping with GraphQL types as keys
                 and pydantic models as values
         """
-        self.models = models
+        self.models = models if models else {}
+        self._type_map = {**TYPE_MAP}
+
+    def register_scalar(self, name: str, typing: Any) -> None:
+        self._type_map[name] = typing
 
     def resolve_field_typing(
         self, gql_field, schema: GraphQLSchema
@@ -115,7 +119,7 @@ class PydanticBindable(SchemaBindable):
             # Ellipsis as default value in the pydantic model mark the field as required
             default_value = ...
         elif isinstance(gql_field, GraphQLScalarType):
-            field_type = TYPE_MAP[gql_field.name]
+            field_type = self._type_map.get(gql_field.name)
         elif isinstance(gql_field, GraphQLList):
             of_type, default_of_type = self.resolve_field_typing(
                 gql_field.of_type, schema

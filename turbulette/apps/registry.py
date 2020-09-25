@@ -17,7 +17,7 @@ from turbulette.conf.constants import (
     SETTINGS_RULES,
     TURBULETTE_CORE_APPS,
 )
-from turbulette.core.validation import PydanticBindable
+from turbulette.core.validation import pydantic_binder
 
 from .app import TurbuletteApp
 from .config import get_project_settings_by_env
@@ -134,11 +134,11 @@ class Registry:
             )
         else:
             make_schema = getattr(import_module("ariadne"), "make_executable_schema")
-        schema, pyd_models, directives = [], {}, {}
+        schema, directives = [], {}
         for app in self.apps.values():
             app.load_graphql_ressources()
             app.load_models()
-            pyd_models.update(app.load_pydantic_models())
+            pydantic_binder.models.update(app.load_pydantic_models())
             if app.schema:
                 schema.extend([*app.schema])
             directives.update(app.directives)
@@ -152,7 +152,7 @@ class Registry:
             root_query,
             base_scalars_resolvers,
             snake_case_fallback_resolvers,
-            PydanticBindable(pyd_models),
+            pydantic_binder,
             directives=None if directives == {} else directives,
         )
         self.ready = True
