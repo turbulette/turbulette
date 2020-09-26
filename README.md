@@ -1,6 +1,7 @@
 # Turbulette
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/gazorby/turbulette/test?label=test)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/270c9d9c70174a8db18241b5141a1632)](https://app.codacy.com/gh/python-turbulette/turbulette?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/62b7b6287b844cf9beee6135a3c6c0f0)](https://www.codacy.com/manual/gazorby/turbulette?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gazorby/turbulette&amp;utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/62b7b6287b844cf9beee6135a3c6c0f0)](https://www.codacy.com/manual/gazorby/turbulette?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gazorby/turbulette&amp;utm_campaign=Badge_Grade)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
