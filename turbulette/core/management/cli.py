@@ -186,7 +186,7 @@ def app_(name):
 
         revision(
             config,
-            message=f"create app {app_name} branch",
+            message=f"create {app_name} branch",
             head="base",
             branch_label=app_name,
             version_path=(Path(app_name) / FOLDER_MIGRATIONS).as_posix(),
