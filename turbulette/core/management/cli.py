@@ -1,6 +1,6 @@
 import configparser
 from importlib import import_module
-from os import chdir, sep
+from os import chdir, sep, remove
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
@@ -168,7 +168,8 @@ def app_(name):
     for app_name in name:
         alembic_ini = get_alembic_ini()
         copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
-
+        for gitkeep in (Path.cwd() / app_name).rglob(".gitkeep"):
+            remove(gitkeep)
         alembic_config = configparser.ConfigParser(interpolation=None)
         alembic_config.read(alembic_ini)
         migration_dir = f"%(here)s{sep}{app_name}{sep}{FOLDER_MIGRATIONS}"
