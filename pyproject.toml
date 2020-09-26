@@ -62,6 +62,8 @@ coverage = {extras = ["toml"], version = "^5.2.1"}
 async-asgi-testclient = "^1.4.4"
 python-multipart = "^0.0.5"
 mypy = "^0.782"
+mkdocs-material = "^5.5.14"
+mkdocs-git-revision-date-plugin = "^0.3"
 
 [tool.poetry.plugins."pytest11"]
 "turbulette" = "turbulette.test.pytest_plugin"
