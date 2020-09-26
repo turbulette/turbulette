@@ -14,6 +14,7 @@ from turbulette.conf.constants import (
     SETTINGS_DATABASE_SETTINGS,
     SETTINGS_DB_DSN,
     TURBULETTE_ROUTING_MODULE,
+    SETTINGS_DATABASE_CONNECTION,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
@@ -82,13 +83,20 @@ def turbulette_starlette(project_settings: str):
     """
     middlewares, routes = [], []
 
-    project_settings_module = import_module(project_settings)
+    settings_module = import_module(project_settings)
 
-    gino_starlette(
-        getattr(project_settings_module, SETTINGS_DATABASE_SETTINGS),
-        getattr(project_settings_module, SETTINGS_DB_DSN),
+    is_database = (
+        hasattr(settings_module, SETTINGS_DATABASE_CONNECTION)
+        and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)["DB_HOST"]  # type: ignore
     )
-    graphql_route = setup(project_settings)
+
+    if is_database:
+        gino_starlette(
+            getattr(settings_module, SETTINGS_DATABASE_SETTINGS),
+            getattr(settings_module, SETTINGS_DB_DSN),
+        )
+
+    graphql_route = setup(project_settings, is_database)
 
     middleware_list = list(conf.settings.MIDDLEWARES)
 
@@ -121,7 +129,7 @@ def turbulette_starlette(project_settings: str):
             )
 
         app = Starlette(
-            debug=getattr(project_settings_module, "DEBUG"),
+            debug=getattr(settings_module, "DEBUG"),
             routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
             middleware=middlewares,
             on_startup=[startup],
@@ -129,8 +137,10 @@ def turbulette_starlette(project_settings: str):
         )
 
         conf.app.__setup__(app)
-        conf.db.init_app(app)
+        if is_database:
+            conf.db.init_app(app)
         return app
+
     raise ImproperlyConfigured(
         f"Cannot find spec for module {project_settings}"
     )  # pragma: no cover

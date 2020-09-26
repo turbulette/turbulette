@@ -21,7 +21,7 @@ def get_gino_instance() -> Gino:
     return database
 
 
-def setup(project_settings: str = None) -> GraphQL:
+def setup(project_settings: str = None, database: bool = False) -> GraphQL:
     """Load Turbulette applications and return the GraphQL route."""
     project_settings_module = (
         get_project_settings_by_env()
@@ -31,7 +31,8 @@ def setup(project_settings: str = None) -> GraphQL:
 
     # The database connection has to be initialized before the LazySettings object to be setup
     # so we have to connect to the database before the registry to be setup
-    get_gino_instance()
+    if database:
+        get_gino_instance()
 
     registry = Registry(project_settings_module=project_settings_module)
     conf.registry.__setup__(registry)

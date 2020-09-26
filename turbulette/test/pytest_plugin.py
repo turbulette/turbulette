@@ -61,7 +61,7 @@ def db_name():
 @pytest.fixture(scope="session")
 async def turbulette_setup(project_settings, create_db):
     conf_module = reload(import_module("turbulette.conf"))
-    setup(project_settings.__name__)
+    setup(project_settings.__name__, database=True)
     async with conf.db.with_bind(bind=project_settings.DB_DSN) as engine:
         settings_file = Path(find_spec(project_settings.__name__).origin)
         alembic_config = (settings_file.parent / "alembic.ini").as_posix()
