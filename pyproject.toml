@@ -58,7 +58,7 @@ pytest = "^6.0.1"
 pytest-cov = "^2.10.0"
 pytest-asyncio = "^0.14.0"
 gunicorn = "^20.0.4"
-coverage = {extras = ["toml"], version = "^5.2.1"}
+coverage = {extras = ["toml"], version = "^5.3"}
 async-asgi-testclient = "^1.4.4"
 python-multipart = "^0.0.5"
 mypy = "^0.782"
