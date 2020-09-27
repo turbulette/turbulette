@@ -14,7 +14,7 @@ from jwcrypto import jwk
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
-TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env"]
+TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env", "settings.py"]
 
 CRV = {
     "OKP": ["Ed25519", "Ed448", "X25519", "X448"],
@@ -72,6 +72,7 @@ def project(ctx, name, first_app):
         process_tags(
             path,
             {
+                "project": name,
                 "settings": f"{name}.settings",
                 "SECRET_KEY_KTY": f"SECRET_KEY_KTY={jwk_key['kty']}",
                 "SECRET_KEY_CRV": f"SECRET_KEY_CRV={jwk_key['crv']}",

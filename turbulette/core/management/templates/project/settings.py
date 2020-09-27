@@ -2,7 +2,7 @@ from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret, CommaSeparatedStrings
 from starlette.config import Config
 
-config = Config(".env")
+config = Config("{{ project }}/.env")
 
 ###########################
 # TURBULETTE
