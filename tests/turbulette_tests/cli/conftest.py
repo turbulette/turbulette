@@ -1,14 +1,14 @@
+import contextlib
 import sys
 from datetime import datetime
 from importlib import import_module
-import contextlib
-from pathlib import Path
-from shutil import rmtree
 from os import chdir
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import pytest
 from click.testing import CliRunner
 from gino import create_engine
-from tempfile import TemporaryDirectory
 
 from turbulette.core.management.cli import cli
 
@@ -56,7 +56,7 @@ def db_name_cli():
 @pytest.fixture(scope="session")
 def project_settings_cli(create_env, create_project):
     sys.path.insert(1, create_project.parent.as_posix())
-    with working_directory(create_project):
+    with working_directory(create_project.parent.as_posix()):
         return import_module(f"{PROJECT}.settings")
 
 
@@ -64,6 +64,7 @@ def project_settings_cli(create_env, create_project):
 def create_env(db_name_cli, create_project):
     env_file = (create_project / ".env").read_text()
     env_file = env_file.replace("DB_DATABASE=", f"DB_DATABASE={db_name_cli}")
+    env_file = env_file.replace("DB_HOST=", "DB_HOST=localhost")
     (create_project / ".env").write_text(env_file)
 
 

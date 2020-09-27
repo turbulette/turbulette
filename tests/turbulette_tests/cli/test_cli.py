@@ -1,8 +1,10 @@
 from tempfile import TemporaryDirectory
+
 from click.testing import CliRunner
+
 from turbulette.core.management.cli import cli
 
-from .conftest import APP_1, APP_2, APP_3, working_directory
+from .conftest import APP_1, APP_2, working_directory
 
 
 def test_create_project():
