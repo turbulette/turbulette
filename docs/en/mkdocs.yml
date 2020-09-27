@@ -22,7 +22,8 @@ markdown_extensions:
   - attr_list
 nav:
 - Turbulette: index.md
-- FAQ: faq.md
-- Release Notes: changelogs.md
 - Languages:
   - en: /
+- User Guide: user-guide.md
+- FAQ: faq.md
+- Release Notes: changelogs.md
