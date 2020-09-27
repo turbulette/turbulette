@@ -37,6 +37,9 @@ class GraphQLModel(BaseModel):
     """
 
     __type__: Optional[str] = None
+    __type_fields__: Optional[Dict[str, Any]] = {}
+    __include__: Optional[List[str]] = None
+    __exclude__: List[str] = []
     __initialized__: bool = False
 
     class Config:
@@ -45,7 +48,7 @@ class GraphQLModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def add_fields(cls, **field_definitions: Tuple) -> None:
+    def add_fields(cls, **field_definitions: Tuple[str, Any]) -> None:
         """Add fields to the model.
 
         Adapted from here :
@@ -137,7 +140,7 @@ class PydanticBindable(SchemaBindable):
         return field_type, default_value
 
     def resolve_model_fields(
-        self, gql_type: Any, schema: GraphQLSchema
+        self, model: Type[GraphQLModel], gql_type: Any, schema: GraphQLSchema
     ) -> Dict[str, Any]:
         """Translate fields from a GraphQL type into pydantic ones.
 
@@ -154,16 +157,35 @@ class PydanticBindable(SchemaBindable):
         All field names are converted to snake_case
         """
         pyd_fields = {}
-        for name, field in gql_type.fields.items():
-            field_type, default_value = self.resolve_field_typing(field.type, schema)
-            if field_type is None:
+        input_fields: List[str] = gql_type.fields.keys()
+        if model.__include__ is not None:
+            input_fields = model.__include__
+            if model.__exclude__:
                 raise PydanticBindError(
-                    f'Don\'t know how to map "{name}" field from GraphQL type {gql_type.name}'
+                    "You cannot use __include__ and __exclude__ on a GraphQLModel"
                 )
-            if default_value is None:
-                field_type = Optional[field_type]
-                # Convert names to snake case
-            pyd_fields[camel_to_snake(name)] = (field_type, default_value)
+
+        for name in input_fields:
+            if name not in model.__exclude__:
+                try:
+                    field = gql_type.fields[name]
+                except KeyError as error:
+                    raise PydanticBindError(
+                        f'field "{name}" does not exist on type {gql_type.name}'
+                    ) from error
+                field_type, default_value = self.resolve_field_typing(
+                    field.type, schema
+                )
+                if model.__type_fields__ and name in model.__type_fields__:
+                    field_type = model.__type_fields__[name]
+                if field_type is None:
+                    raise PydanticBindError(
+                        f'Don\'t know how to map "{name}" field from GraphQL type {gql_type.name}'
+                    )
+                if default_value is None:
+                    field_type = Optional[field_type]
+                    # Convert names to snake case
+                pyd_fields[camel_to_snake(name)] = (field_type, default_value)
         return pyd_fields
 
     def process_model(self, model: Type[GraphQLModel], schema: GraphQLSchema) -> None:
@@ -189,7 +211,7 @@ class PydanticBindable(SchemaBindable):
                 f"The GraphQL type {model.__type__} does not exists"
             )
         if not model.__initialized__:
-            fields = self.resolve_model_fields(type_, schema)
+            fields = self.resolve_model_fields(model, type_, schema)
             model.__initialized__ = True
             model.add_fields(**fields)
 
