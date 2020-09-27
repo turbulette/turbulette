@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "turbulette"
-version = "0.1.2"
+version = "0.2.0"
 description = "A Framework to build async GraphQL APIs with Ariadne and GINO"
 license = "MIT"
 authors = ["Matthieu MN <matthieu.macnab@pm.me>"]

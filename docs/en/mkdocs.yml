@@ -23,5 +23,6 @@ markdown_extensions:
 nav:
 - Turbulette: index.md
 - FAQ: faq.md
+- Release Notes: changelogs.md
 - Languages:
   - en: /
