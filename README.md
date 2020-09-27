@@ -117,14 +117,15 @@ Let's break down the structure :
 - `📄 app.py` : Your API entrypoint, it contains the ASGI app
 - `📄 settings.py` : Will load settings from `.env` file
 
-!!! question
-    Why have both `.env` and `settings.py`?
 
-    You don't *have to*. You can also put all your settings in `settings.py`.
-    But Turbulette encourage you to follow the [twelve-factor methodology](https://12factor.net),
-    that recommend to separate settings from code because config varies substantially across deploys, *code does not*.
-    This way, you can untrack `.env` from version control and only keep tracking `settings.py`, which will load settings
-    from `.env` using Starlette's `Config` object.
+Why have both `.env` and `settings.py`?
+
+
+You don't *have to*. You can also put all your settings in `settings.py`.
+But Turbulette encourage you to follow the [twelve-factor methodology](https://12factor.net),
+that recommend to separate settings from code because config varies substantially across deploys, *code does not*.
+This way, you can untrack `.env` from version control and only keep tracking `settings.py`, which will load settings
+from `.env` using Starlette's `Config` object.
 
 ### 2: Create the first app
 
