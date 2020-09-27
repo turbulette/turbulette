@@ -35,7 +35,7 @@ Features :
 - CSRF middleware
 - 100% test coverage
 - 100% typed, your IDE will thank you ;)
-- Handcrafted with ❤️, from
+- Handcrafted with ❤️, from 🇫🇷
 
 ## Requirements
 
