@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "turbulette"
 version = "0.2.0"
-description = "A Framework to build async GraphQL APIs with Ariadne and GINO"
-license = "MIT"
+description = "A batteries-included framework to build high performance, async GraphQL APIs"
+license = "BSD-3-Clause"
 authors = ["Matthieu MN <matthieu.macnab@pm.me>"]
 maintainers = ["Matthieu MN <matthieu.macnab@pm.me>"]
-homepage = "https://github.com/gazorby/turbulette"
-repository = "https://github.com/gazorby/turbulette"
+homepage = "https://python-turbulette.github.io/turbulette/"
+documentation = "https://python-turbulette.github.io/turbulette/"
+repository = "https://github.com/python-turbulette/turbulette/"
 keywords = ["grapql", "api", "asyncio", "gino", "ariadne"]
 readme = "README.md"
 classifiers = [
@@ -28,6 +29,9 @@ classifiers = [
 [tool.poetry.urls]
 "Ariadne" = "https://ariadnegraphql.org/"
 "GINO" = "https://python-gino.org/docs/en/master/index.html"
+"Starlette" = "https://www.starlette.io/"
+"Pydantic" = "https://pydantic-docs.helpmanual.io/"
+"Alembic" = "https://alembic.sqlalchemy.org/en/latest/"
 
 [tool.poetry.dependencies]
 python = "^3.6"
