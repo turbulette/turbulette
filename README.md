@@ -137,8 +137,7 @@ Run this command under the project directory (`my-project`) :
 turb app --name hello-world
 ```
 
-!!! info
-    You need to run `turb app` under the project dir because the CLI needs to access the `almebic.ini` file to create the initial database migration.
+You need to run `turb app` under the project dir because the CLI needs to access the `almebic.ini` file to create the initial database migration.
 
 You should see your new app under the project folder :
 
@@ -181,8 +180,7 @@ type User {
 }
 ```
 
-!!! info
-    Note that we *extend* the type `Query` because Turbulette already defines it. The same goes for `Mutation` type
+Note that we *extend* the type `Query` because Turbulette already defines it. The same goes for `Mutation` type
 
 ### 4: Add a resolver
 
@@ -251,5 +249,3 @@ Should give you the following expected result :
 ```
 
 Good job! That was a straightforward example, showing off the bare minimum needed to set up a Turbulette API. To get the most of it, follow the User Guide.
-
-*[ASGI]: Asynchronous Server Gateway Interface
