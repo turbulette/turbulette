@@ -44,9 +44,6 @@ python-jwt = "^3.2.6"
 gino = {extras = ["starlette"], version = "^1.0.1"}
 click = "^7.1.2"
 psycopg2 = "^2.8.5"
-
-# Optional
-gino-enum-tables = {version = "^1.0.7", optional = true}
 argon2-cffi = {version = "^20.1.0", optional = true}
 async-caches = "^0.3.0"
 ciso8601 = "^2.1.3"
