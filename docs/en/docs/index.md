@@ -7,6 +7,9 @@
 <a href="https://github.com/gazorby/turbulette/actions?query=workflow%3Atest">
     <img src="https://github.com/python-turbulette/turbulette/workflows/test/badge.svg"/>
 </a>
+<a href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
+    <img src="https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc"/>
+</a>
 <a href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=python-turbulette/turbulette&amp;utm_campaign=Badge_Grade">
     <img src="https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc"/>
 </a>
@@ -42,7 +45,7 @@ Features :
 - CSRF middleware
 - 100% test coverage
 - 100% typed, your IDE will thank you ;)
-- Handcrafted with ❤️, from
+- Handcrafted with ❤️, from 🇫🇷
 
 ## Requirements
 
