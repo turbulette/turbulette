@@ -1,4 +1,5 @@
 scalar DateTime
+scalar Date
 scalar JSON
 
 type Query {

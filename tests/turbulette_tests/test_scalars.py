@@ -1,6 +1,17 @@
-from tests.turbulette_tests.queries import mutation_create_book, query_book
-import pytest
 from datetime import datetime
+
+import pytest
+from ariadne import (
+    MutationType,
+    QueryType,
+    gql,
+    graphql,
+    make_executable_schema,
+    snake_case_fallback_resolvers,
+)
+
+from tests.turbulette_tests.queries import mutation_create_book, query_book
+from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 
 pytestmark = pytest.mark.asyncio
 
@@ -30,7 +41,7 @@ async def test_book(tester, profile, profile_output):
         variables={
             "title": "A Game of Thrones",
             "author": "George R. R. Martin",
-            "publicationDate": datetime(year=1996, month=8, day=1),
+            "publicationDate": datetime(year=1996, month=8, day=1).isoformat(),
             "profile": profile,
         },
         op_name="createBook",
@@ -51,3 +62,63 @@ async def test_book(tester, profile, profile_output):
     assert response[1]["data"]["book"]["book"]["author"]
     assert response[1]["data"]["book"]["book"]["publicationDate"]
     assert response[1]["data"]["book"]["book"]["profile"] == profile_output
+
+
+async def test_date():
+    schema = gql(
+        """
+        scalar Date
+        scalar DateTime
+        scalar JSON
+
+        type Query {
+            event: Event!
+        }
+        type Mutation {
+            createEvent(date: Date!): Boolean!
+        }
+        type Event {
+            date: Date!
+        }
+    """
+    )
+
+    query_event = """
+    query {
+        event {
+            date
+        }
+    }
+    """
+
+    mutation_event = """
+    mutation createEvent($date: Date!) {
+        createEvent(date: $date)
+    }
+    """
+
+    query_type = QueryType()
+    mutation_type = MutationType()
+
+    @mutation_type.field("createEvent")
+    async def createEvent(obj, parent, **kwargs):
+        return True
+
+    @query_type.field("event")
+    async def event(obj, parent, **kwargs):
+        return {"date": datetime.now()}
+
+    schema = make_executable_schema(
+        schema, query_type, base_scalars_resolvers, snake_case_fallback_resolvers
+    )
+
+    await graphql(schema=schema, data={"query": query_event})
+    await graphql(
+        schema=schema,
+        data={
+            "query": mutation_event,
+            "variables": {
+                "date": "1789-07-07T12:00:00+02:00"
+            },  # ISO 8601 datetime string
+        },
+    )

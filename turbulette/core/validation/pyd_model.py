@@ -23,6 +23,7 @@ TYPE_MAP = {
     "Boolean": bool,
     "Float": float,
     "DateTime": datetime,
+    "Date": datetime,
     "JSON": dict,
 }
 

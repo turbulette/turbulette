@@ -6,7 +6,7 @@ from turbulette.core.validation.exceptions import PydanticBindError
 
 schema = gql(
     """
-
+scalar Date
 scalar DateTime
 scalar JSON
 
