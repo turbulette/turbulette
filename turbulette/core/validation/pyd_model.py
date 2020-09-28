@@ -11,7 +11,7 @@ from graphql.type.definition import (
 )
 from graphql.type.schema import GraphQLSchema
 from pydantic.fields import ModelField
-from pydantic.main import BaseModel
+from pydantic.main import BaseModel, ModelMetaclass
 from turbulette.utils.normalize import camel_to_snake
 from .exceptions import PydanticBindError
 
@@ -28,7 +28,25 @@ TYPE_MAP = {
 }
 
 
-class GraphQLModel(BaseModel):
+class GraphQLConfig:
+    gql_type: Optional[str] = None
+    fields: Optional[Dict[str, Any]] = {}
+    include: Optional[List[str]] = None
+    exclude: List[str] = []
+
+
+class GraphQLMetaclass(ModelMetaclass):
+    def __new__(cls, name, bases, namespace, **kwargs):
+        model = super().__new__(cls, name, bases, namespace, **kwargs)
+        for attr_name, val in GraphQLConfig.__dict__.items():
+            if not hasattr(model.GraphQL, attr_name):
+                setattr(model.GraphQL, attr_name, val)
+        return model
+
+
+class GraphQLModel(
+    BaseModel, metaclass=GraphQLMetaclass
+):  # pylint: disable=invalid-metaclass
     """Base pydantic model for GraphQL type binding.
 
     The GraphQL type must be assigned to `__type__` when subclassing.
@@ -41,6 +59,8 @@ class GraphQLModel(BaseModel):
     __include__: Optional[List[str]] = None
     __exclude__: List[str] = []
     __initialized__: bool = False
+
+    GraphQL = GraphQLConfig
 
     class Config:
         """Needed to reference custom GraphQL types."""
@@ -158,15 +178,15 @@ class PydanticBindable(SchemaBindable):
         """
         pyd_fields = {}
         input_fields: List[str] = gql_type.fields.keys()
-        if model.__include__ is not None:
-            input_fields = model.__include__
-            if model.__exclude__:
+        if model.GraphQL.include is not None:
+            input_fields = model.GraphQL.include
+            if model.GraphQL.exclude:
                 raise PydanticBindError(
                     "You cannot use __include__ and __exclude__ on a GraphQLModel"
                 )
 
         for name in input_fields:
-            if name not in model.__exclude__:
+            if name not in model.GraphQL.exclude:
                 try:
                     field = gql_type.fields[name]
                 except KeyError as error:
@@ -176,8 +196,8 @@ class PydanticBindable(SchemaBindable):
                 field_type, default_value = self.resolve_field_typing(
                     field.type, schema
                 )
-                if model.__type_fields__ and name in model.__type_fields__:
-                    field_type = model.__type_fields__[name]
+                if model.GraphQL.fields and name in model.GraphQL.fields:
+                    field_type = model.GraphQL.fields[name]
                 if field_type is None:
                     raise PydanticBindError(
                         f'Don\'t know how to map "{name}" field from GraphQL type {gql_type.name}'
@@ -199,16 +219,16 @@ class PydanticBindable(SchemaBindable):
             PydanticBindError: Raised if `__type__` is None or
                 if no corresponding GraphQL type has been found.
         """
-        if not model.__type__:
+        if not model.GraphQL.gql_type:
             raise PydanticBindError(
                 f"Can't find __type__ on pydantic model {model.__name__}."
                 " You must define __type__ when subclassing GraphQLToPydantic"
                 " to bind the model to a GraphQL type."
             )
-        type_ = schema.type_map.get(model.__type__)
+        type_ = schema.type_map.get(model.GraphQL.gql_type)
         if not type_:
             raise PydanticBindError(
-                f"The GraphQL type {model.__type__} does not exists"
+                f"The GraphQL type {model.GraphQL.gql_type} does not exists"
             )
         if not model.__initialized__:
             fields = self.resolve_model_fields(model, type_, schema)

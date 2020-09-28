@@ -163,11 +163,11 @@ class TurbuletteApp:
             for _, member in getmembers(module, isclass):
                 if (
                     issubclass(member, BaseModel)
-                    and hasattr(member, "__type__")
+                    and hasattr(member, "GraphQL")
                     and member is not BaseModel
                     and member is not GraphQLModel
                 ):
-                    models[member.__type__] = member
+                    models[member.GraphQL.gql_type] = member
         return models
 
     def __bool__(self):

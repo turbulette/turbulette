@@ -55,7 +55,8 @@ def test_graphql_types():
     """Test pydantic bindings."""
 
     class GraphQLTypes(GraphQLModel):
-        __type__ = "GraphQLTypes"
+        class GraphQL:
+            gql_type = "GraphQLTypes"
 
     bindable = PydanticBindable({"GraphQLTypes": GraphQLTypes})
     make_executable_schema(
@@ -89,10 +90,12 @@ def test_graphql_types():
 
 def test_referencing():
     class Book(GraphQLModel):
-        __type__ = "Book"
+        class GraphQL:
+            gql_type = "Book"
 
     class User(GraphQLModel):
-        __type__ = "User"
+        class GraphQL:
+            gql_type = "User"
 
     bindable = PydanticBindable({"Book": Book, "User": User})
     make_executable_schema(
@@ -120,10 +123,12 @@ def test_referencing():
 )
 def test_referencing_error(has_borrowed, fav_book):
     class Book(GraphQLModel):
-        __type__ = "Book"
+        class GraphQL:
+            gql_type = "Book"
 
     class User(GraphQLModel):
-        __type__ = "User"
+        class GraphQL:
+            gql_type = "User"
 
     bindable = PydanticBindable({"Book": Book, "User": User})
     make_executable_schema(
@@ -141,10 +146,12 @@ def test_referencing_error(has_borrowed, fav_book):
 )
 def test_binding_errors(book_type, user_type):
     class Book(GraphQLModel):
-        __type__ = book_type
+        class GraphQL:
+            gql_type = book_type
 
     class User(GraphQLModel):
-        __type__ = user_type
+        class GraphQL:
+            gql_type = user_type
 
     bindable = PydanticBindable({book_type: Book, user_type: User})
     with pytest.raises(PydanticBindError):
@@ -158,7 +165,8 @@ def test_binding_errors(book_type, user_type):
 
 def test_register_type():
     class Foo(GraphQLModel):
-        __type__ = "Foo"
+        class GraphQL:
+            gql_type = "Foo"
 
     bindable = PydanticBindable({"Foo": Foo})
 
