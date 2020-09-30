@@ -39,7 +39,7 @@ ariadne = ">=0.11,<0.13"
 alembic = "^1.4.2"
 pydantic = {extras = ["email"], version = "^1.6.1"}
 passlib = {extras = ["bcrypt"], version = "^1.7.2"}
-simple-settings = "^0.19.1"
+simple-settings = ">=0.19.1,<1.1.0"
 python-jwt = "^3.2.6"
 gino = {extras = ["starlette"], version = "^1.0.1"}
 click = "^7.1.2"
