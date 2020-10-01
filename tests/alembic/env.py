@@ -1,7 +1,7 @@
 import sys
 from os.path import abspath, join
-from os import getcwd, environ
-from turbulette.alembic.env import run_migrations
+from os import getcwd
+from turbulette.core.management.alembic_env import run_migrations
 
 
 # Add project folder to python path

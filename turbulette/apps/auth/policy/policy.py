@@ -3,7 +3,7 @@ from typing import Callable, Dict, List
 from graphql.pyutils import Path
 from graphql.type.definition import GraphQLResolveInfo
 
-from turbulette.type import Claims, ConditionResolver, Policy, PrincipalResolver
+from turbulette.types import Claims, ConditionResolver, Policy, PrincipalResolver
 
 from .constants import (
     KEY_ALLOW,

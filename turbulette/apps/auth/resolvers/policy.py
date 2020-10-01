@@ -1,5 +1,5 @@
 from graphql.type.definition import GraphQLResolveInfo
-from turbulette.type import Claims
+from turbulette.types import Claims
 from turbulette.apps.auth.core import STAFF_SCOPE
 from turbulette.core.cache import cache
 from turbulette.apps.auth import policy
