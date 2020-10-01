@@ -44,10 +44,12 @@ python-jwt = "^3.2.6"
 gino = {extras = ["starlette"], version = "^1.0.1"}
 click = "^7.1.2"
 psycopg2 = "^2.8.5"
-argon2-cffi = {version = "^20.1.0", optional = true}
 async-caches = "^0.3.0"
 ciso8601 = "^2.1.3"
+argon2-cffi = {version = "^20.1.0", optional = true}
 
+[tool.poetry.extras]
+argon2 = ["argon2-cffi"]
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
