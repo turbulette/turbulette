@@ -1,4 +1,4 @@
-directive @scope on FIELD_DEFINITION
+directive @policy on FIELD_DEFINITION
 directive @access_token_required on FIELD_DEFINITION
 directive @fresh_token_required on FIELD_DEFINITION
 

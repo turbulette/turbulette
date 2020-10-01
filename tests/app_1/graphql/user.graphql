@@ -1,16 +1,16 @@
 extend type Mutation {
   createUser(input: CreateUser!): CreateUserPayload
-  addBook: SuccessPayload @scope
-  borrowBook(id: ID!): SuccessPayload @scope
-  borrowUnlimitedBooks: SuccessPayload @scope
+  addBook: SuccessPayload @policy
+  borrowBook(id: ID!): SuccessPayload @policy
+  borrowUnlimitedBooks: SuccessPayload @policy
   createBook(input: CreateBookInput): BookPayload!
   createComic(input: CreateComicInput): ComicPayload!
   updatePassword(password: String!): SuccessPayload @fresh_token_required
-  destroyLibrary: SuccessPayload @scope
+  destroyLibrary: SuccessPayload @policy
 }
 
 extend type Query {
-  books: BooksPayload @scope
+  books: BooksPayload @policy
   book(id: ID!): BookPayload
   comics: ComicsPayload
   exclusiveBooks: BooksPayload @access_token_required
@@ -62,8 +62,8 @@ type Book {
   author: String
   publicationDate: DateTime!
   profile: Profile
-  borrowings: Int @scope
-  priceBought: Float @scope
+  borrowings: Int @policy
+  priceBought: Float @policy
 }
 
 type Comic {
@@ -72,7 +72,7 @@ type Comic {
   author: String!
   publicationDate: DateTime!
   profile: Profile
-  artist: String @scope
+  artist: String @policy
 }
 
 type BookPayload {

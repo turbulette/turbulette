@@ -36,8 +36,8 @@ class FreshTokenRequiredDirective(SchemaDirectiveVisitor):
         return field
 
 
-class ScopeDirective(SchemaDirectiveVisitor):
-    name = "scope"
+class PolicyDirective(SchemaDirectiveVisitor):
+    name = "policy"
 
     def visit_field_definition(
         self, field, object_type
