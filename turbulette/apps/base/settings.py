@@ -75,3 +75,5 @@ ALLOWED_HOSTS: list = []
 CONFIGURE_LOGGING = False
 
 CACHE = "locmem://null"
+
+ERROR_FIELD = "errors"

@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Dict, List
 from ariadne import format_error
 from graphql import GraphQLError
+from turbulette import conf
 
 errors: Dict[str, Dict[str, List]] = {}
 
@@ -46,8 +47,6 @@ class ErrorField:
     intended for the end user in a dedicated field
     """
 
-    errors_field_name = "errors"
-
     def __init__(
         self, message: str = None, nature: str = None, errors_list: list = None
     ):
@@ -59,7 +58,7 @@ class ErrorField:
             self.errors_list = []
 
     def dict(self) -> dict:
-        return {self.errors_field_name: self.errors_list}
+        return {conf.settings.ERROR_FIELD: self.errors_list}
 
     def __str__(self) -> str:
         """Format errors array to a string."""

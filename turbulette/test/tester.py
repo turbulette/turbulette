@@ -4,6 +4,7 @@ from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
 from turbulette.core.errors import error_formatter, ErrorCode
 from turbulette.core.extensions import PolicyExtension
+from turbulette import conf
 
 
 class TestRequest:
@@ -21,6 +22,7 @@ class Tester:
 
     def __init__(self, schema: GraphQLSchema):
         self.schema = schema
+        self.error_field = conf.settings.ERROR_FIELD
 
     async def query(
         self,
@@ -58,10 +60,10 @@ class Tester:
                 if isinstance(val, dict):
                     assert any(code.name in val for code in error_codes)
         if op_errors:
-            assert response[1]["data"][op_name]["errors"]
+            assert response[1]["data"][op_name][self.error_field]
         else:
             # If no errors, will assert to None
-            assert not response[1]["data"][op_name].get("errors")
+            assert not response[1]["data"][op_name].get(self.error_field)
         return response
 
     async def assert_query_failed(
@@ -73,6 +75,7 @@ class Tester:
         jwt: str = None,
         errors=True,
         error_codes: List[ErrorCode] = None,
+        raises: ErrorCode = None,
     ) -> GraphQLResult:
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
@@ -80,6 +83,8 @@ class Tester:
             self.assert_errors(response)
         if response[1]["data"]:
             assert not response[1]["data"][op_name]
+        if raises:
+            assert response[1]["errors"][0]["extensions"]["code"] == raises.name
         if error_codes:
             for val in list(response[1]["extensions"].values()):
                 if isinstance(val, dict):
@@ -90,10 +95,10 @@ class Tester:
         assert response[0]
 
     def assert_no_errors(self, response: GraphQLResult):
-        assert "errors" not in response[1]
+        assert self.error_field not in response[1]
 
     def assert_errors(self, response: GraphQLResult):
-        assert "errors" in response[1]
+        assert self.error_field in response[1]
 
     @classmethod
     def assert_data_in_response(cls, response: dict, data: Dict[str, Any]):
