@@ -3,6 +3,7 @@ from ariadne import make_executable_schema, snake_case_fallback_resolvers, gql
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.core.validation import GraphQLModel, PydanticBindable
 from turbulette.core.validation.exceptions import PydanticBindError
+from pydantic import Json
 
 schema = gql(
     """
@@ -182,6 +183,71 @@ def test_register_type():
 
     # Bring it back through `register` method
     bindable.register_scalar("JSON", dict)
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )
+
+
+def test_graphql_options():
+    class Book(GraphQLModel):
+        class GraphQL:
+            gql_type = "Book"
+
+    class User_1(GraphQLModel):
+        class GraphQL:
+            gql_type = "User"
+            include = ["username"]
+
+    class User_2(GraphQLModel):
+        class GraphQL:
+            gql_type = "User"
+            include = ["username"]
+            exclude = ["profile"]
+
+    class User_3(GraphQLModel):
+        class GraphQL:
+            gql_type = "User"
+            include = ["unknow"]
+
+    class User_4(GraphQLModel):
+        class GraphQL:
+            gql_type = "User"
+            fields = {"profile": Json}
+
+    bindable = PydanticBindable({"User_1": User_1, "Book": Book})
+
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )
+
+    bindable = PydanticBindable({"User_2": User_2, "Book": Book})
+
+    with pytest.raises(PydanticBindError):
+        make_executable_schema(
+            schema,
+            base_scalars_resolvers,
+            snake_case_fallback_resolvers,
+            bindable,
+        )
+
+    bindable = PydanticBindable({"User_3": User_3, "Book": Book})
+
+    with pytest.raises(PydanticBindError):
+        make_executable_schema(
+            schema,
+            base_scalars_resolvers,
+            snake_case_fallback_resolvers,
+            bindable,
+        )
+
+    bindable = PydanticBindable({"User_4": User_4, "Book": Book})
+
     make_executable_schema(
         schema,
         base_scalars_resolvers,
