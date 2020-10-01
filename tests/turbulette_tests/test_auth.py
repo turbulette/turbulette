@@ -54,14 +54,12 @@ async def test_refresh_jwt(tester, create_user, get_user_tokens):
 
     assert response[1]["data"]["refreshJWT"]["accessToken"]
 
-    resp = await tester.assert_query_failed(
-        query=query_refresh_jwt, jwt=access_token, op_name="refreshJWT"
+    await tester.assert_query_failed(
+        query=query_refresh_jwt,
+        jwt=access_token,
+        op_name="refreshJWT",
+        raises=ErrorCode.JWT_INVALID_TOKEN_TYPE,
     )
-    assert (
-        resp[1]["errors"][0]["extensions"]["code"]
-        == ErrorCode.JWT_INVALID_TOKEN_TYPE.name
-    )
-    assert "accessToken" not in response[1]["data"]
 
 
 async def test_login_required(tester, create_user, get_user_tokens):
@@ -77,12 +75,11 @@ async def test_login_required(tester, create_user, get_user_tokens):
 async def test_wrong_signature(tester, get_user_tokens):
     from turbulette.core.errors import ErrorCode
 
-    resp = await tester.assert_query_failed(
-        query=query_books, jwt=get_user_tokens[0] + "wrong", op_name="books"
-    )
-    assert (
-        resp[1]["errors"][0]["extensions"]["code"]
-        == ErrorCode.JWT_INVALID_SINATURE.name
+    await tester.assert_query_failed(
+        query=query_books,
+        jwt=get_user_tokens[0] + "wrong",
+        op_name="books",
+        raises=ErrorCode.JWT_INVALID_SINATURE,
     )
 
 
@@ -90,46 +87,44 @@ async def test_jwt_not_properly_formatted(tester, get_user_tokens):
     from turbulette.core.errors import ErrorCode
 
     # Invalid JWT
-    resp = await tester.assert_query_failed(
-        query=query_books, jwt="invalid", op_name="books"
+    await tester.assert_query_failed(
+        query=query_books, jwt="invalid", op_name="books", raises=ErrorCode.JWT_EXPIRED
     )
-    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
     # Empty JWT
-    resp = await tester.assert_query_failed(query=query_books, jwt=" ", op_name="books")
-    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FOUND.name
+    await tester.assert_query_failed(
+        query=query_books, jwt=" ", op_name="books", raises=ErrorCode.JWT_NOT_FOUND
+    )
 
     # Prefix absent
-    resp = await tester.assert_query_failed(
+    await tester.assert_query_failed(
         query=query_books,
         headers={"authorization": f"{get_user_tokens[0]}"},
         op_name="books",
-    )
-    assert (
-        resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_INVALID_PREFIX.name
+        raises=ErrorCode.JWT_INVALID_PREFIX,
     )
 
     # Empty authorization header
-    resp = await tester.assert_query_failed(
-        query=query_books, headers={"authorization": ""}, op_name="books"
+    await tester.assert_query_failed(
+        query=query_books,
+        headers={"authorization": ""},
+        op_name="books",
+        raises=ErrorCode.JWT_NOT_FOUND,
     )
-    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FOUND.name
 
     # Invalid JWT header
     header, others = get_user_tokens[0].split(".", maxsplit=1)
     wrong_jwt = header + "__." + others
     resp = await tester.assert_query_failed(
-        query=query_books, jwt=wrong_jwt, op_name="books"
+        query=query_books, jwt=wrong_jwt, op_name="books", raises=ErrorCode.JWT_INVALID
     )
-    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_INVALID.name
 
     # Invalid JWT payload
     header, payload, signature = get_user_tokens[0].split(".")
     wrong_jwt = header + payload + "__." + signature
     resp = await tester.assert_query_failed(
-        query=query_books, jwt=wrong_jwt, op_name="books"
+        query=query_books, jwt=wrong_jwt, op_name="books", raises=ErrorCode.JWT_EXPIRED
     )
-    assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
 
 async def test_no_verify(tester, get_user_tokens):
@@ -236,12 +231,12 @@ async def test_token_expired(tester, get_user_tokens):
             variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
         )
         await asyncio.sleep(0.05)
-        resp = await tester.assert_query_failed(
+        await tester.assert_query_failed(
             query=query_books,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="books",
+            raises=ErrorCode.JWT_EXPIRED,
         )
-        assert resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_EXPIRED.name
 
 
 async def test_fresh_token(tester, create_user, get_user_tokens):
@@ -256,14 +251,12 @@ async def test_fresh_token(tester, create_user, get_user_tokens):
             variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
         )
         await asyncio.sleep(0.05)
-        resp = await tester.assert_query_failed(
+        await tester.assert_query_failed(
             query=mutation_update_password,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="updatePassword",
             variables={"password": DEFAULT_PASSWORD},
-        )
-        assert (
-            resp[1]["errors"][0]["extensions"]["code"] == ErrorCode.JWT_NOT_FRESH.name
+            raises=ErrorCode.JWT_NOT_FRESH,
         )
 
     with settings_stub(JWT_FRESH_DELTA=timedelta(minutes=5)):
@@ -274,7 +267,7 @@ async def test_fresh_token(tester, create_user, get_user_tokens):
             variables={"username": CUSTOMER_USERNAME, "password": DEFAULT_PASSWORD},
         )
         await asyncio.sleep(0.05)
-        resp = await tester.assert_query_success(
+        await tester.assert_query_success(
             query=mutation_update_password,
             jwt=response[1]["data"]["getJWT"]["accessToken"],
             op_name="updatePassword",
@@ -307,21 +300,17 @@ async def test_jwe(tester, create_user):
         )
 
         # Invalid JWE
-        resp = await tester.assert_query_failed(
-            query=query_exclusive_books, jwt=jwe + "invalid", op_name="exclusiveBooks"
-        )
-        assert (
-            resp[1]["errors"][0]["extensions"]["code"]
-            == ErrorCode.JWE_INVALID_TOKEN.name
+        await tester.assert_query_failed(
+            query=query_exclusive_books,
+            jwt=jwe + "invalid",
+            op_name="exclusiveBooks",
+            raises=ErrorCode.JWE_INVALID_TOKEN,
         )
 
         # Invalid ciphertext - append invalid string before the actual encrypted payload
-        resp = await tester.assert_query_failed(
+        await tester.assert_query_failed(
             query=query_exclusive_books,
             jwt=jwe.replace('{"ciphertext":"', '{"ciphertext":"--'),
             op_name="exclusiveBooks",
-        )
-        assert (
-            resp[1]["errors"][0]["extensions"]["code"]
-            == ErrorCode.JWE_DECRYPTION_ERROR.name
+            raises=ErrorCode.JWE_DECRYPTION_ERROR,
         )

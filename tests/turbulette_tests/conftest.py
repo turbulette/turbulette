@@ -99,7 +99,6 @@ async def get_staff_tokens(turbulette_setup, tester):
 
     assert response[1]["data"]["getJWT"]["accessToken"]
     assert response[1]["data"]["getJWT"]["refreshToken"]
-    assert not response[1]["data"]["getJWT"]["errors"]
 
     return (
         response[1]["data"]["getJWT"]["accessToken"],
@@ -157,7 +156,6 @@ async def get_no_role_user_tokens(tester):
 
     assert response[1]["data"]["getJWT"]["accessToken"]
     assert response[1]["data"]["getJWT"]["refreshToken"]
-    assert not response[1]["data"]["getJWT"]["errors"]
 
     return (
         response[1]["data"]["getJWT"]["accessToken"],
