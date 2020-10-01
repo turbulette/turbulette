@@ -18,7 +18,7 @@ from turbulette.conf.constants import (
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
-from turbulette.types import DatabaseSettings
+from turbulette.type import DatabaseSettings
 from turbulette.core.cache import cache
 
 
