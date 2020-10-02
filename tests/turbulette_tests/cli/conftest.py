@@ -9,6 +9,7 @@ import pytest
 from click.testing import CliRunner
 from gino import create_engine
 
+from turbulette.management import cli as cli_mod
 from turbulette.management.cli import cli
 
 PROJECT = "__test_project"
@@ -34,7 +35,7 @@ def create_project():
     with working_directory(tmp_dir.name):
         runner = CliRunner()
         res = runner.invoke(cli, ["project", "--name", PROJECT])
-        print(cli.__file__)
+        print(cli_mod.__file__)
         assert res.exit_code == 0
     yield Path(tmp_dir.name) / PROJECT
     tmp_dir.cleanup()
