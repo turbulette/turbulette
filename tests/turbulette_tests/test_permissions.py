@@ -1,6 +1,9 @@
 import pytest
+from ariadne import gql, make_executable_schema, snake_case_fallback_resolvers
 
+from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.core.errors import ErrorCode
+from turbulette.core.exceptions import SchemaError
 
 from .constants import CUSTOMER_PERMISSION, CUSTOMER_USERNAME
 from .queries import (
@@ -81,8 +84,8 @@ async def test_get_role_permissions(tester, create_user):
 
 
 async def test_role_crud(tester):
-    from turbulette.apps.auth.utils import create_user
     from turbulette.apps.auth.models import Role
+    from turbulette.apps.auth.utils import create_user
     from turbulette.db.exceptions import DoesNotExist
 
     user = await create_user(
@@ -211,8 +214,8 @@ async def test_policy_decorator(tester):
 
 
 async def test_conditions(tester, create_book, create_staff_user):
-    from turbulette.conf.utils import settings_stub
     from turbulette.apps.auth import get_token_from_user
+    from turbulette.conf.utils import settings_stub
 
     # Principal is good, but not all conditions are satisfied
     # This break the iss condition from `policies.json`
@@ -223,4 +226,37 @@ async def test_conditions(tester, create_book, create_staff_user):
             jwt=token,
             op_name="books",
             error_codes=[ErrorCode.FIELD_NOT_ALLOWED],
+        )
+
+
+def test_non_null():
+    schema = gql(
+        """
+    scalar Date
+    scalar DateTime
+    scalar JSON
+    directive @policy on FIELD_DEFINITION
+
+    type Query {
+    _: Boolean
+    }
+
+    type Mutation {
+    _: Boolean
+    }
+
+    type GraphQLTypes {
+        nonNull: Int! @policy
+    }
+    """
+    )
+
+    from turbulette.apps.auth.directives import PolicyDirective
+
+    with pytest.raises(SchemaError):
+        make_executable_schema(
+            schema,
+            base_scalars_resolvers,
+            snake_case_fallback_resolvers,
+            directives={"policy": PolicyDirective},
         )
