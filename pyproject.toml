@@ -73,7 +73,7 @@ mkdocs-git-revision-date-plugin = "^0.3"
 "turbulette" = "turbulette.test.pytest_plugin"
 
 [tool.poetry.scripts]
-"turb" = "turbulette.core.management.cli:cli"
+"turb" = "turbulette.management.cli:cli"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
