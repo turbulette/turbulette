@@ -68,20 +68,20 @@ def project(ctx, name, first_app):
     # Generate a default secret key
     jwk_key = jwk.JWK.generate(kty=DEFAULT_KTY, crv=DEFAULT_CRV).export(as_dict=True)
 
-    for file in TEMPLATE_FILES:
-        path = project_dir / file
-        process_tags(
-            path,
-            {
-                "project": name,
-                "settings": f"{name}.settings",
-                "SECRET_KEY_KTY": f"SECRET_KEY_KTY={jwk_key['kty']}",
-                "SECRET_KEY_CRV": f"SECRET_KEY_CRV={jwk_key['crv']}",
-                "SECRET_KEY_D": f"SECRET_KEY_D={jwk_key['d']}",
-                "SECRET_KEY_X": f"SECRET_KEY_X={jwk_key['x']}",
-                "SECRET_KEY_Y": f"SECRET_KEY_Y={jwk_key['y']}",
-            },
-        )
+    # for file in TEMPLATE_FILES:
+    #     path = project_dir / file
+    #     process_tags(
+    #         path,
+    #         {
+    #             "project": name,
+    #             "settings": f"{name}.settings",
+    #             "SECRET_KEY_KTY": f"SECRET_KEY_KTY={jwk_key['kty']}",
+    #             "SECRET_KEY_CRV": f"SECRET_KEY_CRV={jwk_key['crv']}",
+    #             "SECRET_KEY_D": f"SECRET_KEY_D={jwk_key['d']}",
+    #             "SECRET_KEY_X": f"SECRET_KEY_X={jwk_key['x']}",
+    #             "SECRET_KEY_Y": f"SECRET_KEY_Y={jwk_key['y']}",
+    #         },
+    #     )
 
     if first_app:
         chdir(project_dir.as_posix())
