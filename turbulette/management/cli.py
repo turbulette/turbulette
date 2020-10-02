@@ -1,6 +1,6 @@
 import configparser
 from importlib import import_module
-from importlib.util import find_spec
+from inspect import currentframe, getframeinfo
 from os import chdir, remove, sep
 from pathlib import Path
 from pprint import pprint
@@ -13,9 +13,7 @@ from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
-import turbulette
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
-
 
 TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env", "settings.py"]
 
@@ -65,8 +63,9 @@ def cli():
 @click.pass_context
 def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
+    filename = getframeinfo(currentframe()).filename
     copytree(
-        Path(turbulette.__path__[0]) / "management" / "templates" / "project",
+        Path(filename).resolve().parent / "templates" / "project",
         project_dir,
     )
 
