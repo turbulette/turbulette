@@ -1,6 +1,6 @@
 import configparser
 from importlib import import_module
-from os import chdir, sep, remove
+from os import chdir, remove, sep
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
@@ -12,6 +12,7 @@ from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
+import turbulette
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
 TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env", "settings.py"]
@@ -62,7 +63,10 @@ def cli():
 @click.pass_context
 def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
-    copytree(Path(__file__).parent / "templates" / "project", project_dir)
+    copytree(
+        Path(turbulette.__file__).parent / "management" / "templates" / "project",
+        project_dir,
+    )
 
     # Generate a default secret key
     jwk_key = jwk.JWK.generate(kty=DEFAULT_KTY, crv=DEFAULT_CRV).export(as_dict=True)
