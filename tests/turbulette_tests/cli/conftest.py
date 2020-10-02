@@ -5,7 +5,6 @@ from importlib import import_module
 from os import chdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
 import pytest
 from click.testing import CliRunner
 from gino import create_engine
@@ -35,6 +34,7 @@ def create_project():
     with working_directory(tmp_dir.name):
         runner = CliRunner()
         res = runner.invoke(cli, ["project", "--name", PROJECT])
+        print(cli.__file__)
         assert res.exit_code == 0
     yield Path(tmp_dir.name) / PROJECT
     tmp_dir.cleanup()

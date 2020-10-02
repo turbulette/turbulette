@@ -63,11 +63,7 @@ def cli():
 @click.pass_context
 def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
-    filename = getframeinfo(currentframe()).filename
-    copytree(
-        Path(filename).resolve().parent / "templates" / "project",
-        project_dir,
-    )
+    copytree(Path(__file__).parent / "templates" / "project", project_dir)
 
     # Generate a default secret key
     jwk_key = jwk.JWK.generate(kty=DEFAULT_KTY, crv=DEFAULT_CRV).export(as_dict=True)
