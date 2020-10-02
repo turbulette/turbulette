@@ -36,6 +36,7 @@ def create_project():
     with working_directory(tmp_dir.name):
         runner = CliRunner()
         res = runner.invoke(cli, ["project", "--name", PROJECT])
+        print(Path.cwd())
         print(__file__)
         print(cli_mod.__file__)
         print(Path(cli_mod.__file__).parent / "templates" / "project")
