@@ -151,4 +151,4 @@ docker/
 docker-compose.yml
 
 # Template
-!turbulette/core/management/templates/project/.env
+!turbulette/management/templates/project/.env

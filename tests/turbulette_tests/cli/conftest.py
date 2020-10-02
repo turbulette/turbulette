@@ -1,4 +1,3 @@
-from pathlib import Path
 import contextlib
 import sys
 from datetime import datetime
@@ -6,11 +5,11 @@ from importlib import import_module
 from os import chdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
 import pytest
 from click.testing import CliRunner
 from gino import create_engine
 
-from turbulette.management import cli as cli_mod
 from turbulette.management.cli import cli
 
 PROJECT = "__test_project"
@@ -36,14 +35,6 @@ def create_project():
     with working_directory(tmp_dir.name):
         runner = CliRunner()
         res = runner.invoke(cli, ["project", "--name", PROJECT])
-        print(Path.cwd())
-        print(__file__)
-        print(cli_mod.__file__)
-        print(Path(cli_mod.__file__).parent / "templates" / "project")
-        if (Path(cli_mod.__file__).parent / "templates" / "project").is_dir():
-            print("it's a dir")
-        else:
-            print("nope")
         assert res.exit_code == 0
     yield Path(tmp_dir.name) / PROJECT
     tmp_dir.cleanup()
