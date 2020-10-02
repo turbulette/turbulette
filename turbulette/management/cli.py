@@ -1,5 +1,6 @@
 import configparser
 from importlib import import_module
+from importlib.util import find_spec
 from os import chdir, remove, sep
 from pathlib import Path
 from pprint import pprint
@@ -14,6 +15,7 @@ from jwcrypto import jwk
 
 import turbulette
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
+
 
 TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env", "settings.py"]
 
@@ -64,7 +66,7 @@ def cli():
 def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
     copytree(
-        Path(turbulette.__file__).parent / "management" / "templates" / "project",
+        Path(turbulette.__path__[0]) / "management" / "templates" / "project",
         project_dir,
     )
 
