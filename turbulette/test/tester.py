@@ -2,8 +2,8 @@ from importlib import import_module
 from typing import Dict, Any, List
 from ariadne import graphql
 from ariadne.types import GraphQLResult, GraphQLSchema
-from turbulette.core.errors import error_formatter, ErrorCode
-from turbulette.core.extensions import PolicyExtension
+from turbulette.errors import error_formatter, ErrorCode
+from turbulette.extensions import PolicyExtension
 from turbulette import conf
 
 

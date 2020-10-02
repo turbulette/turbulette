@@ -71,7 +71,7 @@ async def turbulette_setup(project_settings, create_db):
         config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
         config.set_main_option("script_location", script_location)
         upgrade(config, "heads")
-        cache = getattr(import_module("turbulette.core.cache"), "cache")
+        cache = getattr(import_module("turbulette.cache"), "cache")
         await cache.connect()
         yield conf_module
         if cache.is_connected:

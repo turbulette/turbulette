@@ -14,7 +14,7 @@ from starlette.applications import Starlette
 
 from turbulette.apps.registry import Registry
 from turbulette.conf.constants import OVERRIDE_BY_ENV  # noqa
-from turbulette.core.utils import LazyInitMixin
+from turbulette.utils import LazyInitMixin
 
 from . import constants
 from .utils import get_config_from_paths  # noqa

@@ -7,8 +7,8 @@ from tests.app_1.pyd_models import CreateBook, CreateComics
 from turbulette import mutation, query
 from turbulette.apps.auth import get_token_from_user, user_model
 from turbulette.apps.auth.pyd_models import BaseUserCreate
-from turbulette.core.errors import ErrorField
-from turbulette.core.validation.decorators import validate
+from turbulette.errors import ErrorField
+from turbulette.validation.decorators import validate
 
 
 @mutation.field("createUser")

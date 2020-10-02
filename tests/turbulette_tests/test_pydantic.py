@@ -1,8 +1,8 @@
 import pytest
 from ariadne import make_executable_schema, snake_case_fallback_resolvers, gql
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
-from turbulette.core.validation import GraphQLModel, PydanticBindable
-from turbulette.core.validation.exceptions import PydanticBindError
+from turbulette.validation import GraphQLModel, PydanticBindable
+from turbulette.validation.exceptions import PydanticBindError
 from pydantic import Json
 
 schema = gql(

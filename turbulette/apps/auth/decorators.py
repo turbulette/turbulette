@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Any, Callable
 
-from turbulette.core.errors import ErrorCode, add_error
-from turbulette.core.utils import is_query
+from turbulette.errors import ErrorCode, add_error
+from turbulette.utils import is_query
 
 from .core import TokenType, decode_jwt, process_jwt_header, settings
 from .exceptions import JWTInvalidTokenType, JWTNotFresh

@@ -1,13 +1,15 @@
 from importlib import import_module
+from typing import List, Type
 
 from ariadne.asgi import GraphQL
+from ariadne.types import Extension
 from caches import Cache
 from gino import Gino  # type: ignore [attr-defined]
 
 from turbulette import conf
-from turbulette.core.cache import cache
-from turbulette.core.errors import error_formatter
-from turbulette.core.extensions import PolicyExtension
+from turbulette.cache import cache
+from turbulette.errors import error_formatter
+from turbulette.extensions import PolicyExtension
 
 from .apps import Registry
 from .apps.config import get_project_settings_by_env
@@ -44,7 +46,7 @@ def setup(project_settings: str = None, database: bool = False) -> GraphQL:
 
     cache.__setup__(Cache(settings.CACHE))
 
-    extensions = [PolicyExtension]
+    extensions: List[Type[Extension]] = [PolicyExtension]
     for ext in settings.ARIADNE_EXTENSIONS:
         module_class = ext.rsplit(".", 1)
         extensions.append(

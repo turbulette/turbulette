@@ -1,6 +1,39 @@
+from random import SystemRandom
 from typing import Any, Optional, Type
+
 from ariadne.types import GraphQLResolveInfo
+
 from .exceptions import NotReady
+
+
+def camel_to_snake(string: str) -> str:
+    """Convert a camel case to snake case.
+
+        This as the advantage to only use builtins (no need to import re)
+
+        https://stackoverflow.com/a/44969381/10735573
+    Args:
+        string (str): The camel case string to convert
+
+    Returns:
+        str: The snake case string
+    """
+    return "".join(["_" + c.lower() if c.isupper() else c for c in string]).lstrip("_")
+
+
+def get_random_string(size: int, allowed_chars: str):
+    """Generate a cryptographically random string.
+
+    From this answer :
+    https://stackoverflow.com/a/23728630/10735573
+
+    Args:
+        size (int): string length
+
+    Returns:
+        (string): The random string
+    """
+    return "".join(SystemRandom().choice(allowed_chars) for _ in range(size))
 
 
 def is_query(info: GraphQLResolveInfo) -> bool:
@@ -56,7 +89,7 @@ class LazyInitMixin:
             raise NotReady(f"{self.name} is not ready yet")
         return object.__getattribute__(self.obj, name)
 
-    def __setup__(self, obj: Type):
+    def __setup__(self, obj: Any):
         """Actually initialize the wrapped object."""
         self.__initialized__ = True
         self.obj = obj

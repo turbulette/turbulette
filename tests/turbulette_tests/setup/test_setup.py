@@ -40,8 +40,8 @@ def test_starlette_setup(settings):
 
 @pytest.mark.asyncio
 async def test_lazy_init_mixin():
-    from turbulette.core import cache
-    from turbulette.core.exceptions import NotReady
+    from turbulette import cache
+    from turbulette.exceptions import NotReady
 
     reload(cache)
     with pytest.raises(NotReady):

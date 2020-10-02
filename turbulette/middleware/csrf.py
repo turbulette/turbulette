@@ -14,7 +14,7 @@ from starlette.types import ASGIApp
 from starlette.exceptions import HTTPException
 
 from turbulette.conf import settings
-from turbulette.utils.crypto import get_random_string
+from turbulette.utils import get_random_string
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 

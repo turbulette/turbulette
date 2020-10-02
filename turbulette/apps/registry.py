@@ -17,7 +17,7 @@ from turbulette.conf.constants import (
     SETTINGS_RULES,
     TURBULETTE_CORE_APPS,
 )
-from turbulette.core.validation import pydantic_binder
+from turbulette.validation import pydantic_binder
 
 from .app import TurbuletteApp
 from .config import get_project_settings_by_env

@@ -10,7 +10,7 @@ import pytest
 from click.testing import CliRunner
 from gino import create_engine
 
-from turbulette.core.management.cli import cli
+from turbulette.management.cli import cli
 
 PROJECT = "__test_project"
 APP_1 = "__test_app_1"

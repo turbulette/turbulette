@@ -10,7 +10,7 @@ async def test_csrf(blank_conf):
     app = turbulette_starlette("tests.settings_csrf")
     from turbulette.conf import settings
     from turbulette.conf.utils import settings_stub
-    from turbulette.core.cache import cache
+    from turbulette.cache import cache
 
     async with TestClient(app) as client:
 

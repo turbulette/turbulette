@@ -1,7 +1,7 @@
 from inspect import getmodule
 from gino.declarative import ModelType
 from turbulette.conf import registry, db
-from turbulette.utils.normalize import camel_to_snake
+from turbulette.utils import camel_to_snake
 
 
 class BaseModelMeta(ModelType):

@@ -38,7 +38,7 @@ def reload_resources(settings, settings_no_apps, base_app_module_name):
     reload(import_module(f"{base_app_module_name}.resolvers.root_types"))
     reload(import_module(base_app_module_name))
     reload(import_module("turbulette.apps.registry"))
-    reload(import_module("turbulette.core.validation"))
+    reload(import_module("turbulette.validation"))
 
 
 @pytest.fixture

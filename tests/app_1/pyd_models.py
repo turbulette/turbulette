@@ -1,4 +1,4 @@
-from turbulette.core.validation.pyd_model import GraphQLModel
+from turbulette.validation.pyd_model import GraphQLModel
 
 
 class CreateBook(GraphQLModel):

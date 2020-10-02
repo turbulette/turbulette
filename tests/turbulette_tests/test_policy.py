@@ -2,8 +2,8 @@ import pytest
 from ariadne import gql, make_executable_schema, snake_case_fallback_resolvers
 
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
-from turbulette.core.errors import ErrorCode
-from turbulette.core.exceptions import SchemaError
+from turbulette.errors import ErrorCode
+from turbulette.exceptions import SchemaError
 
 from .constants import CUSTOMER_PERMISSION, CUSTOMER_USERNAME
 from .queries import (

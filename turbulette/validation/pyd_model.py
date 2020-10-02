@@ -12,7 +12,7 @@ from graphql.type.definition import (
 from graphql.type.schema import GraphQLSchema
 from pydantic.fields import ModelField
 from pydantic.main import BaseModel, ModelMetaclass
-from turbulette.utils.normalize import camel_to_snake
+from turbulette.utils import camel_to_snake
 from .exceptions import PydanticBindError
 
 # Base mapping for GraphQL types as well as Turbulette built-in scalars

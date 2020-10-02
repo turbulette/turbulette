@@ -8,7 +8,7 @@ from typing import Dict, List, Type
 from ariadne import SchemaDirectiveVisitor, load_schema_from_path
 from pydantic import BaseModel
 
-from turbulette.core.validation.pyd_model import GraphQLModel
+from turbulette.validation.pyd_model import GraphQLModel
 
 from .constants import (
     FOLDER_SCHEMA,

@@ -44,7 +44,7 @@ async def test_get_tokens(tester, create_user, username, password, errors):
 
 
 async def test_refresh_jwt(tester, create_user, get_user_tokens):
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
 
     access_token, refresh_token = get_user_tokens
 
@@ -73,7 +73,7 @@ async def test_login_required(tester, create_user, get_user_tokens):
 
 
 async def test_wrong_signature(tester, get_user_tokens):
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
 
     await tester.assert_query_failed(
         query=query_books,
@@ -84,7 +84,7 @@ async def test_wrong_signature(tester, get_user_tokens):
 
 
 async def test_jwt_not_properly_formatted(tester, get_user_tokens):
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
 
     # Invalid JWT
     await tester.assert_query_failed(
@@ -221,7 +221,7 @@ async def test_access_token_required(tester, get_user_tokens):
 
 async def test_token_expired(tester, get_user_tokens):
     from turbulette.conf.utils import settings_stub
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
 
     with settings_stub(JWT_EXPIRATION_DELTA=timedelta(microseconds=1)):
         response = await tester.assert_query_success(
@@ -241,7 +241,7 @@ async def test_token_expired(tester, get_user_tokens):
 
 async def test_fresh_token(tester, create_user, get_user_tokens):
     from turbulette.conf.utils import settings_stub
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
 
     with settings_stub(JWT_FRESH_DELTA=timedelta(microseconds=1)):
         response = await tester.assert_query_success(
@@ -277,7 +277,7 @@ async def test_fresh_token(tester, create_user, get_user_tokens):
 
 async def test_jwe(tester, create_user):
     from turbulette.conf.utils import settings_stub
-    from turbulette.core.errors import ErrorCode
+    from turbulette.errors import ErrorCode
     from turbulette.apps.auth import core
 
     with settings_stub(JWT_ENCRYPT=True):

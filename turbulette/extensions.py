@@ -1,5 +1,5 @@
 from ariadne.types import Extension
-from turbulette.core.errors import errors
+from turbulette.errors import errors
 
 
 class PolicyExtension(Extension):

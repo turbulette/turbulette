@@ -1,6 +1,6 @@
 from turbulette import query
 from turbulette.conf import settings
-from turbulette.core.errors import ErrorField
+from turbulette.errors import ErrorField
 
 from turbulette.apps.auth import user_model
 from turbulette.apps.auth.core import (

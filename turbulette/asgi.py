@@ -19,7 +19,7 @@ from turbulette.conf.constants import (
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
-from turbulette.core.cache import cache
+from turbulette.cache import cache
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):

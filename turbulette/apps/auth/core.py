@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from python_jwt import generate_jwt, process_jwt, verify_jwt
 
 from turbulette.conf import settings
-from turbulette.core.cache import cache
+from turbulette.cache import cache
 
 from .exceptions import (
     JWTDecodeError,

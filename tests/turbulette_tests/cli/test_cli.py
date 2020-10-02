@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 
 from click.testing import CliRunner
 
-from turbulette.core.management.cli import cli
+from turbulette.management.cli import cli
 
 from .conftest import APP_1, APP_2, working_directory
 

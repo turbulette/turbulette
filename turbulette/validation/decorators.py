@@ -1,11 +1,11 @@
 from types import FunctionType
-from typing import Union
+from typing import Type, Union
 from pydantic import BaseModel, ValidationError
 from ..errors import PydanticsValidationError
 
 
 def validate(
-    model: BaseModel,
+    model: Type[BaseModel],
     input_kwarg: str = "input",
 ):
     def wrap(func: FunctionType):

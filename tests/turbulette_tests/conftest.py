@@ -13,7 +13,7 @@ from turbulette.test.pytest_plugin import (
     turbulette_setup,
     blank_conf,
 )
-from turbulette.utils.crypto import get_random_string
+from turbulette.utils import get_random_string
 
 from .constants import (
     CUSTOMER_USERNAME,
