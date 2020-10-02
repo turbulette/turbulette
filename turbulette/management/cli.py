@@ -1,6 +1,6 @@
 import configparser
 from importlib import import_module
-from os import chdir, sep, remove
+from os import chdir, remove, sep
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree

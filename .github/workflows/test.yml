@@ -73,7 +73,7 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
           $HOME/.poetry/bin/poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
-          $HOME/.poetry/bin/poetry run pytest --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
+          $HOME/.poetry/bin/poetry run pytest -s --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
       - name: lint
         run: |
           $HOME/.poetry/bin/poetry run black --check .
