@@ -1148,7 +1148,7 @@ description = "Visualize Python performance profiles"
 name = "tuna"
 optional = false
 python-versions = ">=3.6"
-version = "0.4.7"
+version = "0.4.8"
 
 [package.dependencies]
 [package.dependencies.importlib-metadata]
@@ -1252,8 +1252,11 @@ version = "3.2.0"
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
+[extras]
+argon2 = ["argon2-cffi"]
+
 [metadata]
-content-hash = "c344593c439ea2543eb4f523ebe69fdc3eb53594d00e572cd2dfd5af4fe3fdd0"
+content-hash = "59faed04beed8d373db4ee9e4f6d2579fa41250fb5a68f00fb286040455fdb4d"
 lock-version = "1.0"
 python-versions = "^3.6"
 
@@ -2013,8 +2016,8 @@ tqdm = [
     {file = "tqdm-4.49.0.tar.gz", hash = "sha256:faf9c671bd3fad5ebaeee366949d969dca2b2be32c872a7092a1e1a9048d105b"},
 ]
 tuna = [
-    {file = "tuna-0.4.7-py3-none-any.whl", hash = "sha256:61101a82a6191fac5e6823c8d8fe4c67a642ba610666e0da8d900cee259c2d23"},
-    {file = "tuna-0.4.7.tar.gz", hash = "sha256:7a4eb545bde7eb5cd43a7d1233e55c15bfe3101a0fff3da5cde1ff68b2191bcb"},
+    {file = "tuna-0.4.8-py3-none-any.whl", hash = "sha256:f45b595f9afa8d6146d6ace8d97a1696eec55bd017e3e92d529dc4d3f6e52a45"},
+    {file = "tuna-0.4.8.tar.gz", hash = "sha256:a487b13fa564101bbc71b731689e1f86b599789c3d940f4b2f40580eefd2133e"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3"},
