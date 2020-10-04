@@ -1,6 +1,6 @@
 import pytest
 from ariadne import gql, make_executable_schema, snake_case_fallback_resolvers
-from pydantic import Json, ValidationError
+from pydantic import Json, ValidationError, UUID4
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.validation import GraphQLModel, PydanticBindable, validator
 from turbulette.validation.exceptions import PydanticBindError
@@ -196,11 +196,6 @@ def test_graphql_options():
         class GraphQL:
             gql_type = "Book"
 
-    class User_1(GraphQLModel):
-        class GraphQL:
-            gql_type = "User"
-            include = ["username"]
-
     class User_2(GraphQLModel):
         class GraphQL:
             gql_type = "User"
@@ -211,20 +206,6 @@ def test_graphql_options():
         class GraphQL:
             gql_type = "User"
             include = ["unknow"]
-
-    class User_4(GraphQLModel):
-        class GraphQL:
-            gql_type = "User"
-            fields = {"profile": Json}
-
-    bindable = PydanticBindable({"User_1": User_1, "Book": Book})
-
-    make_executable_schema(
-        schema,
-        base_scalars_resolvers,
-        snake_case_fallback_resolvers,
-        bindable,
-    )
 
     bindable = PydanticBindable({"User_2": User_2, "Book": Book})
 
@@ -246,7 +227,14 @@ def test_graphql_options():
             bindable,
         )
 
-    bindable = PydanticBindable({"User_4": User_4, "Book": Book})
+
+def test_include():
+    class Book(GraphQLModel):
+        class GraphQL:
+            gql_type = "Book"
+            include = ["title"]
+
+    bindable = PydanticBindable({"Book": Book})
 
     make_executable_schema(
         schema,
@@ -254,6 +242,50 @@ def test_graphql_options():
         snake_case_fallback_resolvers,
         bindable,
     )
+
+    assert Book.schema()["properties"] == {
+        "title": {"title": "Title", "type": "string"}
+    }
+
+
+def test_exclude():
+    class Book(GraphQLModel):
+        class GraphQL:
+            gql_type = "Book"
+            exclude = ["title"]
+
+    bindable = PydanticBindable({"Book": Book})
+
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )
+
+    assert "title" not in Book.schema()["properties"]
+
+
+def test_type_override():
+    class Book(GraphQLModel):
+        class GraphQL:
+            gql_type = "Book"
+            fields = {"id": UUID4}
+
+    bindable = PydanticBindable({"Book": Book})
+
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )
+
+    assert Book.schema()["properties"]["id"] == {
+        "title": "Id",
+        "type": "string",
+        "format": "uuid4",
+    }
 
 
 def test_validator():
