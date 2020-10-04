@@ -26,7 +26,7 @@ Features :
 - Split your API in small, independent applications
 - Generate Pydantic models from GraphQL types
 - JWT authentication with refresh and fresh tokens
-- Powerful and extendable policy-based access control (PBAC)
+- Declarative, powerful and extendable policy-based access control (PBAC)
 - Extendable auth user model with role management
 - Async caching (provided by async-caches)
 - Built-in CLI to manage project, apps, and DB migrations
