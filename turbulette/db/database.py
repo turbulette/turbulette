@@ -1,7 +1,7 @@
 from inspect import getmodule
 from gino.declarative import ModelType
 from turbulette.conf import registry, db
-from turbulette.utils import camel_to_snake
+from ariadne.utils import convert_camel_case_to_snake
 
 
 class BaseModelMeta(ModelType):
@@ -61,4 +61,7 @@ def get_tablename(package: str, name: str) -> str:
     Returns:
         str: The camel case table name
     """
-    return f"{registry.get_app_by_package(package).label}" f"_{camel_to_snake(name)}"
+    return (
+        f"{registry.get_app_by_package(package).label}"
+        f"_{convert_camel_case_to_snake(name)}"
+    )

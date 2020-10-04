@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
-
+from ariadne import convert_camel_case_to_snake
 from ariadne.types import SchemaBindable
 from graphql.type.definition import (
     GraphQLInputObjectType,
@@ -15,7 +15,6 @@ from pydantic.main import BaseModel, ModelMetaclass
 from pydantic.class_validators import ValidatorGroup
 from pydantic import validator as pyd_validator
 from pydantic.typing import AnyCallable
-from turbulette.utils import camel_to_snake
 from .exceptions import PydanticBindError
 
 
@@ -233,7 +232,10 @@ class PydanticBindable(SchemaBindable):
                 if default_value is None:
                     field_type = Optional[field_type]
                     # Convert names to snake case
-                pyd_fields[camel_to_snake(name)] = (field_type, default_value)
+                pyd_fields[convert_camel_case_to_snake(name)] = (
+                    field_type,
+                    default_value,
+                )
         return pyd_fields
 
     def process_model(self, model: Type[GraphQLModel], schema: GraphQLSchema) -> None:
