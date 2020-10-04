@@ -36,7 +36,7 @@ Features :
 - Split your API in small, independent applications
 - Generate Pydantic models from GraphQL types
 - JWT authentication with refresh and fresh tokens
-- Powerful and extendable policy-based access control (PBAC)
+- Declarative, powerful and extendable policy-based access control (PBAC)
 - Extendable auth user model with role management
 - Async caching (provided by async-caches)
 - Built-in CLI to manage project, apps, and DB migrations
@@ -76,7 +76,7 @@ pip install uvicorn
 
 ----
 
-## 🚀  5 min Quick Start
+## 🚀 Quick Start
 
 Here is a short example that demonstrates a minimal project setup.
 
@@ -95,19 +95,19 @@ poetry add turbulette
 
 ### 1: Create a project
 
-First, create a `hello_world/` directory that will contain the whole project.
+First, create a directory that will contain the whole project.
 
 Now, inside this folder, create your Turbulette project using the `turb` CLI :
 
 ``` bash
-turb project my-project
+turb project eshop
 ```
 
 You should get with something like this :
 
 ```console
 .
-└── 📁 my-project
+└── 📁 eshop
     ├── 📁 alembic
     │   ├── 📄 env.py
     │   └── 📄 script.py.mako
@@ -119,13 +119,14 @@ You should get with something like this :
 
 Let's break down the structure :
 
-- `📁 my-project` : Here is the so-called *Turbulette project* folder, it will contain applications and project-level configuration files
+- `📁 eshop` : Here is the so-called *Turbulette project* folder, it will contain applications and project-level configuration files
 - `📁 alembic` : Contains the [Alembic](https://alembic.sqlalchemy.org/en/latest/) scripts used when generating/applying DB migrations
   - `📄 env.py`
   - `📄 script.py.mako`
 - `📄 .env` : The actual project settings live here
 - `📄 app.py` : Your API entrypoint, it contains the ASGI app
 - `📄 settings.py` : Will load settings from `.env` file
+
 
 !!! question
     Why have both `.env` and `settings.py`?
@@ -140,10 +141,10 @@ Let's break down the structure :
 
 Now it's time to create a Turbulette application!
 
-Run this command under the project directory (`my-project`) :
+Run this command under the project directory (`eshop`) :
 
 ```bash
-turb app --name hello-world
+turb app --name account
 ```
 
 !!! info
@@ -153,10 +154,10 @@ You should see your new app under the project folder :
 
 ```console
 .
-└── 📁 my-project
+└── 📁 eshop
     ...
     |
-    └── 📁 hello-world
+    └── 📁 account
         ├── 📁 graphql
         ├── 📁 migrations
         │   └── 📄 20200926_1508_auto_ef7704f9741f_initial.py
@@ -171,6 +172,22 @@ Details :
 - `📁 resolvers` : Python package where you will write resolvers binded to the schema
 - `📄 models.py` : Will hold GINO models for this app
 
+!!! question
+    What is this "initial" python file under `📁 migrations`?
+
+    We won't cover database connection in this quickstart, but note that it's the initial database migration
+    for the `account` app that creates its dedicated Alembic branch, needed to generate/apply per-app migrations.
+
+Before writing some code, the only thing to do is make Turbulette aware of our lovely account app.
+
+To do this, open `📄 eshop/settings.py` and add `"eshop.account"` to `INSTALLED_APPS`,
+so the application is registered and can be picked up by Turbulette at startup :
+
+``` python
+# List installed Turbulette apps that defines some GraphQL schema
+INSTALLED_APPS = ["eshop.account"]
+```
+
 ### 3: GraphQL schema
 
 Now that we have our project scaffold, we can start writing actual schema/code.
@@ -179,59 +196,147 @@ Create a `schema.gql` file in the `📁 graphql` folder and add this base schema
 
 ``` graphql
 extend type Query {
-    user: [User]
+    registerCard(input: CreditCard!): SuccessOut!
 }
 
-type User {
-    id: ID!
-    username: String!
-    gender: String!
-    isStaff: Boolean!
+input CreditCard {
+    number: String!
+    expiration: Date!
+    name: String!
 }
+
+type SuccessOut {
+    success: Boolean
+    errors: [String]
+}
+
 ```
 
 !!! info
     Note that we *extend* the type `Query` because Turbulette already defines it. The same goes for `Mutation` type
 
-### 4: Add a resolver
+Notice that with use the `Date` scalar, it's one of the custom scalars provided by Turbulette. It parses string in the ISO8601 date format YYY-MM-DD.
+
+### 4: Add pydantic model
+
+We want to validate our `CreditCard` input to ensure the user has entered a valid card number and date.
+Fortunately, Turbulette integrates with [Pydantic](https://pydantic-docs.helpmanual.io/), a data validation library that uses python type annotations,
+and offers a convenient way to generate a Pydantic model from a schema type.
+
+Create a new `📄 pyd_models.py` under `📁 account` :
+
+```python
+from turbulette.validation import GraphQLModel
+from pydantic import PaymentCardNumber
+
+
+class CreditCard(GraphQLModel):
+    class GraphQL:
+        gql_type = "CreditCard"
+        fields = {"number": PaymentCardNumber}
+```
+
+What's happening here?
+
+The inherited `GraphQLModel` class is a pydantic model that knows about the GraphQL schema and can produce pydantic fields from a given GraphQL type. We specify the GraphQL type with the `gql_type` attribute; it's the only one required.
+
+But we also add a `fields` attribute to override the type of `number` field because it is string typed in our schema. If we don't add this, Turbulette will assume that `number` is a string and will annotate the number field as `str`.
+`fields` is a mapping between GraphQL field names and the type that will override the schema's one.
+
+Let's add another validation check: the expiration date. We want to ensure the user has entered a valid date (i.e., at least greater than now) :
+
+```python hl_lines="3 11 12 13 14 15"
+from datetime import datetime
+from pydantic import PaymentCardNumber
+from turbulette.validation import GraphQLModel, validator
+
+
+class CreditCard(GraphQLModel):
+    class GraphQL:
+        gql_type = "CreditCard"
+        fields = {"number": PaymentCardNumber}
+
+    @validator("expiration")
+    def check_expiration_date(cls, value):
+        if value < datetime.now():
+            raise ValueError("Expiration date is invalid")
+        return value
+```
+
+!!! question
+    Why don't we use the `#!python @validator` from Pydantic?
+
+    For those who have already used Pydantic, you probably know about the `#!python @validator` decorator used add custom validation rules on fields.
+
+    But here, we use a `#!python @validator` imported from `turbulette.validation`, why?
+
+    They're almost identical. Turbulette's validator is just a shortcut to the Pydantic one with `check_fields=False` as a default, instead of `True`, because we use an inherited `BaseModel`. The above snippet would correctly work if we used Pydantic's validator and explicitly set `#!python @validator("expiration", check_fields=False)`.
+
+### 5: Add a resolver
 
 The last missing piece is the resolver for our `user` query, to make the API returning something when querying for it.
 
-As you may have guessed, we will create a new Python module in our `📁 resolvers` package. Let's call it `user.py` :
+The GraphQL part is handled by [Ariadne](https://ariadnegraphql.org/), a schema-first GraphQL library that allows binding the logic to the schema with minimal code.
+
+As you may have guessed, we will create a new Python module in our `📁 resolvers` package.
+
+Let's call it `📄 user.py` :
 
 ``` python
 from turbulette import query
+from ..pyd_models import CreditCard
 
-
-@query.field("user")
-async def user(obj, info, **kwargs):
-    return [
-        {"id": 1, "username": "Gustave Eiffel", "gender": "male", "is_staff": False},
-        {"id": 2, "username": "Marie Curie", "gender": "female", "is_staff": True},
-    ]
-
+@query.field("registerCard")
+async def register(obj, info, valid_input, **kwargs):
+    return {"success": True}
 ```
+
+`query` is the base query type defined by Turbulette and is used to register all query resolvers (hence the use of `extend type Query` on the schema).
+For now, our resolver is very simple and doesn't do any data validation on inputs and doesn't handle errors.
+
+Turbulette has a `#!python @validate` decorator that can be used to validate resolver input using a pydantic model (like the one defined in [Step 4](#4-add-pydantic-model)).
+
+Here's how to use it:
+
+``` python hl_lines="3 6 7"
+from turbulette import query
+from ..pyd_models import CreditCard
+from turbulette.validation import validate
+
+@query.field("registerCard")
+@validate(CreditCard)
+async def register(obj, info, valid_input, **kwargs):
+    return {"success": True}
+```
+
+Note the new `valid_input` param. The `#!python @validate` decorator produces it if the validation succeeds.
+But what happens otherwise? Normally, if the validation fails, pydantic will raise a `ValidationError`,
+but here the `#!python @validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
 
 ### 5: Run it
 
 Our `user` query is now binded to the schema, so let's test it.
 
-Start the server :
+Start the server in the root directory (the one containing `📁 eshop` folder) :
 
 ```bash
-poetry run uvicorn app:app --port 8000
+poetry run uvicorn eshop.app:app --port 8000
 ```
 
 Now, go to [http://localhost:8000/graphql](http://localhost:8000/graphql), you will see the [GraphQL Playground](https://github.com/graphql/graphql-playground) IDE.
 Finally, run the user query, for example :
 
 ``` graphql
-query {
-  user {
-    id
-    username
-    gender
-    isStaff
+query card {
+  registerCard(
+    input: {
+      number: "4000000000000002"
+      expiration: "2023-05-12"
+      name: "John Doe"
+    }
+  ) {
+    success
+    errors
   }
 }
 ```
@@ -241,24 +346,42 @@ Should give you the following expected result :
 ``` json
 {
   "data": {
-    "user": [
-      {
-        "id": "1",
-        "username": "Gustave Eiffel",
-        "gender": "male",
-        "isStaff": false
-      },
-      {
-        "id": "2",
-        "username": "Marie Curie",
-        "gender": "female",
-        "isStaff": true
-      }
-    ]
+    "registerCard": {
+      "success": true,
+      "errors": null
+    }
   }
 }
 ```
 
-Good job! That was a straightforward example, showing off the bare minimum needed to set up a Turbulette API. To get the most of it, follow the User Guide.
+Now, try entering a wrong date (before *now*). You should see the validation error as expected:
+
+```json
+{
+  "data": {
+    "registerCard": {
+      "success": null,
+      "errors": [
+        "expiration: Expiration date is invalid"
+      ]
+    }
+  }
+}
+```
+
+!!! question
+    How the error message end in the `errors` key?
+
+    Indeed, we didn't specify anywhere that validation errors should be passed to the `errors` key in our `SuccessOut` GraphQL type.
+    That is because Turbulette has a setting called `ERROR_FIELD`, which defaults to `"errors"`.
+    This setting indicates the error field on the GraphLQ output type used by Turbulette when collecting query errors.
+
+    It means that if you didn't specify `ERROR_FIELD` on the GraphQL type, you would get an exception telling you that the field is missing.
+
+    It's the default (and recommended) way of handling errors in Turbulette. Still, as all happens in the `#!python @validate`, you can always remove it and manually instantiate your Pydantic models in resolvers.
+
+Good job! 👏
+
+That was a straightforward example, showing off a simple Turbulette API set up. To get the most of it, follow the User Guide.
 
 *[ASGI]: Asynchronous Server Gateway Interface
