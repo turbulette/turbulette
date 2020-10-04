@@ -1,9 +1,9 @@
 import pytest
-from ariadne import make_executable_schema, snake_case_fallback_resolvers, gql
+from ariadne import gql, make_executable_schema, snake_case_fallback_resolvers
+from pydantic import Json, ValidationError
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
-from turbulette.validation import GraphQLModel, PydanticBindable
+from turbulette.validation import GraphQLModel, PydanticBindable, validator
 from turbulette.validation.exceptions import PydanticBindError
-from pydantic import Json
 
 schema = gql(
     """
@@ -254,3 +254,33 @@ def test_graphql_options():
         snake_case_fallback_resolvers,
         bindable,
     )
+
+
+def test_validator():
+    class Book(GraphQLModel):
+        class GraphQL:
+            gql_type = "Book"
+
+    class User(GraphQLModel):
+        class GraphQL:
+            gql_type = "User"
+
+        @validator("username")
+        def check_username(value):
+            if len(value) <= 3:
+                raise ValueError("Username length must be greater than 3")
+            return value
+
+    bindable = PydanticBindable({"User": User, "Book": Book})
+
+    make_executable_schema(
+        schema,
+        base_scalars_resolvers,
+        snake_case_fallback_resolvers,
+        bindable,
+    )
+
+    User(username="gazorby")
+
+    with pytest.raises(ValidationError):
+        User(username="gaz")

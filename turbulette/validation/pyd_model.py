@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 from ariadne.types import SchemaBindable
 from graphql.type.definition import (
@@ -12,8 +12,12 @@ from graphql.type.definition import (
 from graphql.type.schema import GraphQLSchema
 from pydantic.fields import ModelField
 from pydantic.main import BaseModel, ModelMetaclass
+from pydantic.class_validators import ValidatorGroup
+from pydantic import validator as pyd_validator
+from pydantic.typing import AnyCallable
 from turbulette.utils import camel_to_snake
 from .exceptions import PydanticBindError
+
 
 # Base mapping for GraphQL types as well as Turbulette built-in scalars
 TYPE_MAP = {
@@ -26,6 +30,27 @@ TYPE_MAP = {
     "Date": datetime,
     "JSON": dict,
 }
+
+
+def validator(
+    *fields: str,
+    pre: bool = False,
+    each_item: bool = False,
+    always: bool = False,
+    check_fields: bool = False,
+    whole: bool = None,
+    allow_reuse: bool = False,
+) -> Callable[[AnyCallable], classmethod]:
+    """Shortcut to Pydantic `@validator` decorator with check_fields=False."""
+    return pyd_validator(
+        *fields,
+        pre=pre,
+        each_item=each_item,
+        always=always,
+        check_fields=check_fields,
+        whole=whole,
+        allow_reuse=allow_reuse,
+    )
 
 
 class GraphQLConfig:
@@ -41,6 +66,8 @@ class GraphQLMetaclass(ModelMetaclass):
         for attr_name, val in GraphQLConfig.__dict__.items():
             if not hasattr(model.GraphQL, attr_name):
                 setattr(model.GraphQL, attr_name, val)
+        # Needed to bind validators to fields that will be added later
+        model.__vg__ = ValidatorGroup(model.__validators__)
         return model
 
 
@@ -54,11 +81,8 @@ class GraphQLModel(
     (ex : when the GraphQL type is referenced by fields of other GraphQL types)
     """
 
-    __type__: Optional[str] = None
-    __type_fields__: Optional[Dict[str, Any]] = {}
-    __include__: Optional[List[str]] = None
-    __exclude__: List[str] = []
     __initialized__: bool = False
+    __vg__: Optional[ValidatorGroup] = None
 
     GraphQL = GraphQLConfig
 
@@ -76,15 +100,19 @@ class GraphQLModel(
         """
         new_fields: Dict[str, ModelField] = {}
         new_annotations: Dict[str, Optional[type]] = {}
+        validators = None
 
         for f_name, f_def in field_definitions.items():
             f_annotation, f_value = f_def
+
+            if cls.__vg__:
+                validators = cls.__vg__.get_validators(f_name)
 
             new_fields[f_name] = ModelField.infer(
                 name=f_name,
                 value=f_value,
                 annotation=f_annotation,
-                class_validators=None,
+                class_validators=validators,
                 config=cls.__config__,
             )
 
