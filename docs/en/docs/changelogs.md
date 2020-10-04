@@ -1,3 +1,28 @@
+## 0.3.0
+### Features
+- Add `Date` scalar
+- Add parser for the `DateTime` scalar
+- Add `include`, `exclude` and `fields` settings when generating Pydantic models
+- Make error field configurable in settings
+
+### Fixes
+- Fix `.env` path in `settings.py` generared by `turb project`
+- Fix error when declaring validators on generated Pydantic models
+
+### Changes
+- The GraphQL config for `GraphQLModel` now must be declared in `GraphQL` inner class
+- Rename `#!python @scope` decorator to `#!python @policy`
+- Raise `SchemaError` if `#!python @policy` is used on a non-nullable field
+
+### Docs
+- Improve Quick Start
+
+### Internal
+- Update dev dependencies
+- Make the project structure less nested
+- Remove `camel_to_snake` util and use `convert_camel_case_to_snake` from Ariadne instead
+
+
 ## 0.2.0
 
 ### Features
