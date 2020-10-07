@@ -22,7 +22,6 @@ from .exceptions import (
     JWEInvalidToken,
     JWEDecryptionError,
 )
-from .models import Permission, Role, RolePermission, UserRole
 
 STAFF_SCOPE = "_staff"
 
@@ -114,26 +113,16 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
 
 async def _get_scopes(user: user_model) -> list:
     """Return a list of user role names."""
-    query = (
-        user_model.join(UserRole)
-        .join(Role)
-        .join(RolePermission)
-        .join(Permission)
-        .select()
-    )
-    role_perms = (
-        await query.where(user_model.username == user.username)
-        .gino.load(Role.distinct(Role.id).load(add_permission=Permission.load()))
-        .query.gino.all()
-    )
+    role_perms = await user.role_perms()
 
+    # Cache role permissions if they are not there
     for role in role_perms:
         cached_role = await cache.get(role.name)
         if not cached_role:
             permissions = [p.to_dict() for p in role.permissions]
             await cache.set(role.name, permissions)
 
-    return list(map(lambda role: role.name, role_perms))
+    return [role.name for role in role_perms]
 
 
 def process_jwt_header(header: str) -> str:

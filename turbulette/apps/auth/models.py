@@ -209,3 +209,12 @@ class AbstractUser:
         await UserRole.delete.where(
             UserRole.user == self.id and UserRole.role == role_.id
         ).gino.status()
+
+    async def role_perms(self) -> List[Role]:
+        """Load user roles and permissions."""
+        query = UserRole.join(Role).join(RolePermission).join(Permission).select()
+        return (
+            await query.where(UserRole.user == self.id)
+            .gino.load(Role.distinct(Role.id).load(add_permission=Permission.load()))
+            .query.gino.all()
+        )
