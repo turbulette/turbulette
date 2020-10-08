@@ -182,7 +182,7 @@ Now that we have our project scaffold, we can start writing actual schema/code.
 Create a `schema.gql` file in the `📁 graphql` folder and add this base schema :
 
 ``` graphql
-extend type Query {
+extend type Mutation {
     registerCard(input: CreditCard!): SuccessOut!
 }
 
@@ -199,7 +199,7 @@ type SuccessOut {
 
 ```
 
-Note that we *extend* the type `Query` because Turbulette already defines it. The same goes for `Mutation` type
+Note that we *extend* the type `Mutation` because Turbulette already defines it. The same goes for `Query` type
 
 Notice that with use the `Date` scalar, it's one of the custom scalars provided by Turbulette. It parses string in the ISO8601 date format YYY-MM-DD.
 
@@ -249,17 +249,17 @@ class CreditCard(GraphQLModel):
         return value
 ```
 
-Why don't we use the `#!python @validator` from Pydantic?
+Why don't we use the `@validator` from Pydantic?
 
-For those who have already used Pydantic, you probably know about the `#!python @validator` decorator used add custom validation rules on fields.
+For those who have already used Pydantic, you probably know about the `@validator` decorator used add custom validation rules on fields.
 
-But here, we use a `#!python @validator` imported from `turbulette.validation`, why?
+But here, we use a `@validator` imported from `turbulette.validation`, why?
 
-They're almost identical. Turbulette's validator is just a shortcut to the Pydantic one with `check_fields=False` as a default, instead of `True`, because we use an inherited `BaseModel`. The above snippet would correctly work if we used Pydantic's validator and explicitly set `#!python @validator("expiration", check_fields=False)`.
+They're almost identical. Turbulette's validator is just a shortcut to the Pydantic one with `check_fields=False` as a default, instead of `True`, because we use an inherited `BaseModel`. The above snippet would correctly work if we used Pydantic's validator and explicitly set `@validator("expiration", check_fields=False)`.
 
 ### 5: Add a resolver
 
-The last missing piece is the resolver for our `user` query, to make the API returning something when querying for it.
+The last missing piece is the resolver for our `user` mutation, to make the API returning something when querying for it.
 
 The GraphQL part is handled by [Ariadne](https://ariadnegraphql.org/), a schema-first GraphQL library that allows binding the logic to the schema with minimal code.
 
@@ -268,39 +268,39 @@ As you may have guessed, we will create a new Python module in our `📁 resolve
 Let's call it `📄 user.py` :
 
 ``` python
-from turbulette import query
+from turbulette import mutation
 from ..pyd_models import CreditCard
 
-@query.field("registerCard")
+@mutation.field("registerCard")
 async def register(obj, info, valid_input, **kwargs):
     return {"success": True}
 ```
 
-`query` is the base query type defined by Turbulette and is used to register all query resolvers (hence the use of `extend type Query` on the schema).
+`mutation` is the base mutation type defined by Turbulette and is used to register all mutation resolvers (hence the use of `extend type Mutation` on the schema).
 For now, our resolver is very simple and doesn't do any data validation on inputs and doesn't handle errors.
 
-Turbulette has a `#!python @validate` decorator that can be used to validate resolver input using a pydantic model (like the one defined in [Step 4](#4-add-pydantic-model)).
+Turbulette has a `@validate` decorator that can be used to validate resolver input using a pydantic model (like the one defined in [Step 4](#4-add-pydantic-model)).
 
 Here's how to use it:
 
 ``` python hl_lines="3 6 7"
-from turbulette import query
+from turbulette import mutation
 from ..pyd_models import CreditCard
 from turbulette.validation import validate
 
-@query.field("registerCard")
+@mutation.field("registerCard")
 @validate(CreditCard)
 async def register(obj, info, valid_input, **kwargs):
     return {"success": True}
 ```
 
-Note the new `valid_input` param. The `#!python @validate` decorator produces it if the validation succeeds.
+Note the new `valid_input` param. The `@validate` decorator produces it if the validation succeeds.
 But what happens otherwise? Normally, if the validation fails, pydantic will raise a `ValidationError`,
-but here the `#!python @validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
+but here the `@validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
 
 ### 5: Run it
 
-Our `user` query is now binded to the schema, so let's test it.
+Our `user` mutation is now binded to the schema, so let's test it.
 
 Start the server in the root directory (the one containing `📁 eshop` folder) :
 
@@ -309,10 +309,10 @@ poetry run uvicorn eshop.app:app --port 8000
 ```
 
 Now, go to [http://localhost:8000/graphql](http://localhost:8000/graphql), you will see the [GraphQL Playground](https://github.com/graphql/graphql-playground) IDE.
-Finally, run the user query, for example :
+Finally, run the user mutation, for example :
 
 ``` graphql
-query card {
+mutation card {
   registerCard(
     input: {
       number: "4000000000000002"
@@ -362,11 +362,8 @@ This setting indicates the error field on the GraphLQ output type used by Turbul
 
 It means that if you didn't specify `ERROR_FIELD` on the GraphQL type, you would get an exception telling you that the field is missing.
 
-It's the default (and recommended) way of handling errors in Turbulette. Still, as all happens in the `#!python @validate`, you can always remove it and manually instantiate your Pydantic models in resolvers.
+It's the default (and recommended) way of handling errors in Turbulette. Still, as all happens in the `@validate`, you can always remove it and manually instantiate your Pydantic models in resolvers.
 
 Good job! 👏
 
-That was a straightforward example, showing off a simple Turbulette API set up. To get the most of it, follow the User Guide.
-
-*[ASGI]: Asynchronous Server Gateway Interface
-
+That was a straightforward example, showing off a simple Turbulette API set up. To get the most of it, follow the  [User Guide](https://python-turbulette.github.io/turbulette/user-guide/) .
