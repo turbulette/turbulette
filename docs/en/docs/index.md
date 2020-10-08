@@ -93,6 +93,12 @@ Then, install Turbulette from PyPI :
 poetry add turbulette
 ```
 
+For the rest of the tutorial, we will assume that commands will be executed under the virtualenv.  You can either prepend all commands with `poetry run` , or spawn a shell inside the virtualenv :
+
+```bash
+poetry shell
+```
+
 ### 1: Create a project
 
 First, create a directory that will contain the whole project.
@@ -320,7 +326,7 @@ Our `user` mutation is now binded to the schema, so let's test it.
 Start the server in the root directory (the one containing `📁 eshop` folder) :
 
 ```bash
-poetry run uvicorn eshop.app:app --port 8000
+uvicorn eshop.app:app --port 8000
 ```
 
 Now, go to [http://localhost:8000/graphql](http://localhost:8000/graphql), you will see the [GraphQL Playground](https://github.com/graphql/graphql-playground) IDE.
