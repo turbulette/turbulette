@@ -25,8 +25,8 @@
 <a href="https://pre-commit.com/">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
 </a>
-<a href="https://pre-commit.com/">
-    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
+<a href="https://pypi.org/project/turbulette/">
+    <img src="https://img.shields.io/pypi/v/turbulette" alt="pypi-version"/>
 </a>
 </p>
 
