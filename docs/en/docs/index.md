@@ -25,6 +25,9 @@
 <a href="https://pre-commit.com/">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
 </a>
+<a href="https://pre-commit.com/">
+    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
+</a>
 </p>
 
 <p align="center">Turbulette packages all you need to build great GraphQL APIs :</p>
