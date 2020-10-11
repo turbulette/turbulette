@@ -1,3 +1,7 @@
+## 0.3.1
+### Fixes
+- Fix `upgrade` and `makerevision` CLI commands
+
 ## 0.3.0
 ### Features
 - Add `Date` scalar
