@@ -3,7 +3,7 @@ from os import environ
 from types import ModuleType
 
 from turbulette.conf.exceptions import ImproperlyConfigured
-from turbulette.conf.constants import ENV_TURBULETTE_SETTINGS
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 
 
 def get_project_settings_by_env() -> ModuleType:
@@ -15,9 +15,9 @@ def get_project_settings_by_env() -> ModuleType:
     Returns:
         ModuleType: The settings module
     """
-    if ENV_TURBULETTE_SETTINGS not in environ:
+    if PROJECT_SETTINGS_MODULE not in environ:
         raise ImproperlyConfigured(
             "You must provide project settings either by passing the module name in args"
             + " to turbulette() or by setting the TURBULETTE_SETTINGS environment variable"
         )
-    return import_module(environ["TURBULETTE_SETTINGS"])
+    return import_module(environ[PROJECT_SETTINGS_MODULE])

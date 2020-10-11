@@ -1,10 +1,14 @@
+import sys
+from os import environ
 from importlib import import_module
 from logging.config import fileConfig
+from pathlib import Path
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from turbulette.apps import Registry
 from turbulette.main import get_gino_instance
 from turbulette import conf
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 
 
 def run_migrations_offline(metadata, config):  # pragma: no cover
@@ -51,8 +55,11 @@ def run_migrations_online(metadata, config):  # pragma: no cover
             context.run_migrations()
 
 
-def run_migrations(project_settings: str):
-    settings = import_module(project_settings)
+def run_migrations():
+    # Add project folder to python path
+    sys.path[0:0] = [str(Path.cwd().parent.resolve()), str(Path.cwd().resolve())]
+
+    settings = import_module(environ[PROJECT_SETTINGS_MODULE])
     registry = Registry(project_settings_module=settings)
     if not conf.registry.__initialized__:
         conf.registry.__setup__(registry)
@@ -71,7 +78,6 @@ def run_migrations(project_settings: str):
     # add your model's MetaData object here
     # for 'autogenerate' support
     metadata = database
-    print(registry.apps.values())
     registry.load_models()
     alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))  # type: ignore
 

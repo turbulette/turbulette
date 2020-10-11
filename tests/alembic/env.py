@@ -1,9 +1,7 @@
-import sys
-from os.path import abspath, join
-from os import getcwd
+from os import environ
+
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.management.alembic_env import run_migrations
 
-
-# Add project folder to python path
-sys.path.append(abspath(join(getcwd())))
-run_migrations("tests.settings")
+environ.setdefault(PROJECT_SETTINGS_MODULE, "tests.settings")
+run_migrations()

@@ -7,7 +7,7 @@ from starlette.applications import Starlette
 
 from turbulette import setup as turbulette_setup
 from turbulette import turbulette_starlette
-from turbulette.conf.constants import ENV_TURBULETTE_SETTINGS
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 
@@ -17,9 +17,10 @@ def test_minimal_setup(settings_no_apps):
 
 
 def test_settings_by_env():
-    environ[ENV_TURBULETTE_SETTINGS] = "tests.settings_no_apps"
+    environ[PROJECT_SETTINGS_MODULE] = "tests.settings_no_apps"
+    assert turbulette_starlette()
     assert turbulette_setup()
-    environ.pop(ENV_TURBULETTE_SETTINGS)
+    environ.pop(PROJECT_SETTINGS_MODULE)
 
 
 def test_missing_settings_module():

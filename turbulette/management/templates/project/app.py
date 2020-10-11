@@ -1,3 +1,5 @@
+from os import environ
 from turbulette import turbulette_starlette
 
-app = turbulette_starlette("{{ settings }}")
+environ.setdefault("TURBULETTE_SETTINGS_MODULE", "{{ settings }}")
+app = turbulette_starlette()

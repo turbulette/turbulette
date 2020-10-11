@@ -1,6 +1,8 @@
+from os import environ
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
+from typing import Optional
 
 from gino_starlette import Gino
 from sqlalchemy.engine.url import URL
@@ -15,6 +17,8 @@ from turbulette.conf.constants import (
     SETTINGS_DB_DSN,
     TURBULETTE_ROUTING_MODULE,
     SETTINGS_DATABASE_CONNECTION,
+    PROJECT_SETTINGS_MODULE,
+    SETTINGS_MIDDLEWARES,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
@@ -69,7 +73,7 @@ async def shutdown():
     await cache.disconnect()
 
 
-def turbulette_starlette(project_settings: str):
+def turbulette_starlette(project_settings: Optional[str] = None):
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
@@ -82,6 +86,9 @@ def turbulette_starlette(project_settings: str):
         FastAPI: The Starlette instance
     """
     middlewares, routes = [], []
+
+    if not project_settings:
+        project_settings = environ[PROJECT_SETTINGS_MODULE]
 
     settings_module = import_module(project_settings)
 
@@ -98,10 +105,10 @@ def turbulette_starlette(project_settings: str):
 
     graphql_route = setup(project_settings, is_database)
 
-    middleware_list = list(conf.settings.MIDDLEWARES)
-
     # Register middlewares
-    if middleware_list:
+    if hasattr(conf.settings, SETTINGS_MIDDLEWARES):
+        middleware_list = list(conf.settings.MIDDLEWARES)
+
         for middleware in middleware_list:
             package, class_ = middleware.rsplit(".", 1)
             middleware_settings = (

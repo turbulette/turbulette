@@ -1,5 +1,4 @@
 import configparser
-from importlib import import_module
 from os import chdir, remove, sep
 from pathlib import Path
 from pprint import pprint
@@ -14,7 +13,8 @@ from jwcrypto import jwk
 
 from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
 
-TEMPLATE_FILES = ["app.py", Path("alembic") / "env.py", ".env", "settings.py"]
+
+TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
 
 CRV = {
     "OKP": ["Ed25519", "Ed448", "X25519", "X448"],
@@ -205,8 +205,6 @@ def app_(name):
 def upgrade(app):
     alembic_ini = get_alembic_ini()
     config = Config(file_=alembic_ini.as_posix())
-    settings = import_module(f"{alembic_ini.parent.name}.settings")
-    config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))
     if not app:
         alembic_upgrade(config, "heads")
     else:
