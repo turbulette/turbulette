@@ -584,11 +584,11 @@ python-versions = "*"
 
 [[package]]
 name = "memory-profiler"
-version = "0.57.0"
+version = "0.58.0"
 description = "A module for monitoring memory usage of a python program"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.4"
 
 [package.dependencies]
 psutil = "*"
@@ -1157,7 +1157,7 @@ argon2 = ["argon2-cffi"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "0bd57eba67f79ca7f809cc5e0df8c0a28c724e6961527f54dab49ba085d4c0a7"
+content-hash = "ff502692e02945f32b55827b1ef23f9c21dd108996db0115afceadbb0af31470"
 
 [metadata.files]
 aioredis = [
@@ -1587,7 +1587,7 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 memory-profiler = [
-    {file = "memory_profiler-0.57.0.tar.gz", hash = "sha256:23b196f91ea9ac9996e30bfab1e82fecc30a4a1d24870e81d1e81625f786a2c3"},
+    {file = "memory_profiler-0.58.0.tar.gz", hash = "sha256:01385ac0fec944fcf7969814ec4406c6d8a9c66c079d09276723c5a7680f44e5"},
 ]
 mkdocs = [
     {file = "mkdocs-1.1.2-py3-none-any.whl", hash = "sha256:096f52ff52c02c7e90332d2e53da862fde5c062086e1b5356a6e392d5d60f5e9"},
