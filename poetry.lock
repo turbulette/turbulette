@@ -1117,7 +1117,7 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.12.1"
+version = "0.12.2"
 description = "The lightning-fast ASGI server."
 category = "dev"
 optional = false
@@ -1157,7 +1157,7 @@ argon2 = ["argon2-cffi"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "0bd57eba67f79ca7f809cc5e0df8c0a28c724e6961527f54dab49ba085d4c0a7"
+content-hash = "e651c2e0b0689bd5a742dc198a3af64d924b84d4fe0d47f3b0fcf9c48ae53b07"
 
 [metadata.files]
 aioredis = [
@@ -1943,8 +1943,8 @@ urllib3 = [
     {file = "urllib3-1.25.10.tar.gz", hash = "sha256:91056c15fa70756691db97756772bb1eb9678fa585d9184f24534b100dc60f4a"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.12.1-py3-none-any.whl", hash = "sha256:d06a25caa8dc680ad92eb3ec67363f5281c092059613a1cc0100acba37fc0f45"},
-    {file = "uvicorn-0.12.1.tar.gz", hash = "sha256:a461e76406088f448f36323f5ac774d50e5a552b6ccb54e4fca8d83ef614a7c2"},
+    {file = "uvicorn-0.12.2-py3-none-any.whl", hash = "sha256:e5dbed4a8a44c7b04376021021d63798d6a7bcfae9c654a0b153577b93854fba"},
+    {file = "uvicorn-0.12.2.tar.gz", hash = "sha256:8ff7495c74b8286a341526ff9efa3988ebab9a4b2f561c7438c3cb420992d7dd"},
 ]
 wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
