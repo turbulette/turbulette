@@ -10,6 +10,7 @@ from simple_settings.strategies import SettingsLoadStrategyPython
 from turbulette import conf
 from turbulette.apps.base import mutation as root_mutation
 from turbulette.apps.base import query as root_query
+from turbulette.apps.base import subscription as root_subscription
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.conf.constants import (
     SETTINGS_INSTALLED_APPS,
@@ -150,6 +151,7 @@ class Registry:
             [*schema],
             root_mutation,
             root_query,
+            root_subscription,
             base_scalars_resolvers,
             snake_case_fallback_resolvers,
             pydantic_binder,

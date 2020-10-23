@@ -1,12 +1,14 @@
 import json
 from datetime import datetime
 from typing import Any
+from ariadne import subscriptions
 
 import ciso8601
-from ariadne import MutationType, QueryType, ScalarType
+from ariadne import MutationType, QueryType, ScalarType, SubscriptionType
 
 query = QueryType()
 mutation = MutationType()
+subscription = SubscriptionType()
 
 # Custom scalars
 datetime_scalar = ScalarType("DateTime")
