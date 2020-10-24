@@ -612,7 +612,7 @@ tornado = ">=5.0"
 
 [[package]]
 name = "mkdocs-git-revision-date-plugin"
-version = "0.3"
+version = "0.3.1"
 description = "MkDocs plugin for setting revision date from git per markdown file."
 category = "dev"
 optional = false
@@ -1594,8 +1594,8 @@ mkdocs = [
     {file = "mkdocs-1.1.2.tar.gz", hash = "sha256:f0b61e5402b99d7789efa032c7a74c90a20220a9c81749da06dbfbcbd52ffb39"},
 ]
 mkdocs-git-revision-date-plugin = [
-    {file = "mkdocs-git-revision-date-plugin-0.3.tar.gz", hash = "sha256:8b1337d0f04846d6026cd6225711832fb153e1c3186b835006fd575c2d9d1485"},
-    {file = "mkdocs_git_revision_date_plugin-0.3-py3-none-any.whl", hash = "sha256:331ace946115d03bff8d69f91a13e5c5e620425d54555d3a622c9591747e03aa"},
+    {file = "mkdocs-git-revision-date-plugin-0.3.1.tar.gz", hash = "sha256:4abaef720763a64c952bed6829dcc180f67c97c60dd73914e90715e05d1cfb23"},
+    {file = "mkdocs_git_revision_date_plugin-0.3.1-py3-none-any.whl", hash = "sha256:8ae50b45eb75d07b150a69726041860801615aae5f4adbd6b1cf4d51abaa03d5"},
 ]
 mkdocs-material = [
     {file = "mkdocs-material-6.0.1.tar.gz", hash = "sha256:8facb50db21fc0152ea5459ef67298512370503816dd2a6a2887f67330f61ed2"},
