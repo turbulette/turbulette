@@ -8,7 +8,7 @@ from gino_starlette import Gino
 from sqlalchemy.engine.url import URL
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
-from starlette.routing import Route
+from starlette.routing import Route, WebSocketRoute
 
 from turbulette import conf
 from turbulette.conf.constants import (
@@ -137,7 +137,11 @@ def turbulette_starlette(project_settings: Optional[str] = None):
 
         app = Starlette(
             debug=getattr(settings_module, "DEBUG"),
-            routes=[Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route)] + routes,
+            routes=[
+                Route(conf.settings.GRAPHQL_ENDPOINT, graphql_route),
+                WebSocketRoute(conf.settings.GRAPHQL_ENDPOINT, graphql_route),
+            ]
+            + routes,
             middleware=middlewares,
             on_startup=[startup],
             on_shutdown=[shutdown],
