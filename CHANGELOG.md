@@ -1,3 +1,7 @@
+## 0.4.0 (2020-10-24)
+### Features
+- Add subscription type and websocket route
+
 ## 0.1.1 (2020-08-24)
 - 👷‍♂️ chore(ci): update CI config
 

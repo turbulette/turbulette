@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "turbulette"
-version = "0.3.1"
+version = "0.4.0"
 description = "A batteries-included framework to build high performance, async GraphQL APIs"
 license = "BSD-3-Clause"
 authors = ["Matthieu MN <matthieu.macnab@pm.me>"]

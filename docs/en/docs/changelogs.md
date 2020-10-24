@@ -1,3 +1,7 @@
+## 0.4.0 (2020-10-24)
+### Features
+- Add subscription type and websocket route
+
 ## 0.3.1
 ### Fixes
 - Fix `upgrade` and `makerevision` CLI commands
