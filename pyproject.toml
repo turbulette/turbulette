@@ -58,7 +58,7 @@ ptvsd = "^4.3.2"
 uvicorn = {extras = ["watchgodreload"], version = "^0.12.1"}
 tuna = "^0.4.5"
 memory_profiler = "^0.57.0"
-pytest = "^6.0.2"
+pytest = "^6.1.2"
 pytest-cov = "^2.10.0"
 pytest-asyncio = "^0.14.0"
 gunicorn = "^20.0.4"
