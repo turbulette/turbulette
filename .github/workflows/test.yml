@@ -41,13 +41,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      - name: virtualenv cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-${{ matrix.python-version }}-venv-${{ hashFiles(format('{0}{1}', github.workspace, '/poetry.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-version }}-venv-
+      # - name: virtualenv cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ~/.cache/pypoetry/virtualenvs
+      #     key: ${{ runner.os }}-${{ matrix.python-version }}-venv-${{ hashFiles(format('{0}{1}', github.workspace, '/poetry.lock')) }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-${{ matrix.python-version }}-venv-
       - name: Poetry cache
         uses: actions/cache@v2
         with:
