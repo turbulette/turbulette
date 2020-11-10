@@ -1077,7 +1077,7 @@ dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 
 [[package]]
 name = "tuna"
-version = "0.4.8"
+version = "0.5.0"
 description = "Visualize Python performance profiles"
 category = "dev"
 optional = false
@@ -1157,7 +1157,7 @@ argon2 = ["argon2-cffi"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "46e6287bc7372df2e492ca13a5beb942257eaec667f1d62cc6b154589d368b21"
+content-hash = "9d6e4a179bd985793d5490f41f6d3b477af8efc4edcbee5772996ad6bc3b2ffa"
 
 [metadata.files]
 aioredis = [
@@ -1970,8 +1970,8 @@ tqdm = [
     {file = "tqdm-4.51.0.tar.gz", hash = "sha256:ef54779f1c09f346b2b5a8e5c61f96fbcb639929e640e59f8cf810794f406432"},
 ]
 tuna = [
-    {file = "tuna-0.4.8-py3-none-any.whl", hash = "sha256:f45b595f9afa8d6146d6ace8d97a1696eec55bd017e3e92d529dc4d3f6e52a45"},
-    {file = "tuna-0.4.8.tar.gz", hash = "sha256:a487b13fa564101bbc71b731689e1f86b599789c3d940f4b2f40580eefd2133e"},
+    {file = "tuna-0.5.0-py3-none-any.whl", hash = "sha256:6d8c67a06a94158070e900d775ee4b74fc4179a7f802ad3203f696f38c8e8008"},
+    {file = "tuna-0.5.0.tar.gz", hash = "sha256:2ea74f5bcc53a086b42ac8222659eb401a36a71e4e64697c826471d1e168ae68"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3"},
