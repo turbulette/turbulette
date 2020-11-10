@@ -97,6 +97,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install poetry
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
           python get-poetry.py -y
