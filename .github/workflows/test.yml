@@ -8,7 +8,7 @@ on:
       - ci/*
       - v*.*.x
     tags:
-    - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
     branches:
       - master
@@ -18,9 +18,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8' ]
+        python-version: ["3.6", "3.7", "3.8"]
     services:
       postgres:
         image: postgres
@@ -30,7 +32,7 @@ jobs:
           POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: test
         ports:
-        - 5432:5432
+          - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
@@ -41,43 +43,38 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      # - name: virtualenv cache
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ~/.cache/pypoetry/virtualenvs
-      #     key: ${{ runner.os }}-${{ matrix.python-version }}-venv-${{ hashFiles(format('{0}{1}', github.workspace, '/poetry.lock')) }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ matrix.python-version }}-venv-
-      - name: Poetry cache
+      - name: Set up Poetry cache for Python dependencies
         uses: actions/cache@v2
+        if: startsWith(runner.os, 'Linux')
         with:
-          path: ~/.poetry
-          key: ${{ runner.os }}-${{ matrix.python-version }}-dotpoetry
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-version }}-dotpoetry-
-      - name: Install Python dependencies
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          $HOME/.poetry/bin/poetry install --no-interaction --no-root
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+      - name: Install dependencies
+          poetry install --no-interaction --no-root
       - name: List installed packages
-        run: |
-            $HOME/.poetry/bin/poetry run pip list
+        run: poetry run pip list
       - name: test
         env:
-            DB_DRIVER: postgresql
-            DB_HOST: localhost
-            DB_PORT: 5432
-            DB_USER: postgres
-            DB_PASSWORD: ""
-            PYTEST_TURBULETTE_SETTINGS: tests.settings
+          DB_DRIVER: postgresql
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: ""
+          PYTEST_TURBULETTE_SETTINGS: tests.settings
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
-          $HOME/.poetry/bin/poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
-          $HOME/.poetry/bin/poetry run pytest -s --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
+          poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
+          poetry run pytest -s --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
       - name: lint
         run: |
-          $HOME/.poetry/bin/poetry run black --check .
-          $HOME/.poetry/bin/poetry run mypy turbulette --ignore-missing-imports
+          poetry run black --check .
+          poetry run mypy turbulette --ignore-missing-imports
       - name: coverage
         uses: codacy/codacy-coverage-reporter-action@master
         with:
@@ -89,22 +86,25 @@ jobs:
     needs: test
     strategy:
       matrix:
-        python-version: [ '3.8' ]
+        python-version: ["3.8"]
     steps:
-    - name: Checkout source code
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/checkout@v2
-    - name: Set up Python
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Release to PyPI
-      if: startsWith(github.ref, 'refs/tags/')
-      env:
-        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-        $HOME/.poetry/bin/poetry install --no-interaction --no-dev
-        $HOME/.poetry/bin/poetry build
-        $HOME/.poetry/bin/poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+      - name: Checkout source code
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/checkout@v2
+      - name: Set up Python
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+      - name: Build Python package and publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry install --no-interaction --no-dev
+          poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
