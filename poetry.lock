@@ -186,7 +186,7 @@ d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
 name = "certifi"
-version = "2020.6.20"
+version = "2020.11.8"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "dev"
 optional = false
@@ -318,8 +318,8 @@ idna = ">=2.0.0"
 name = "future"
 version = "0.18.2"
 description = "Clean single-source support for Python 3 and 2"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
@@ -360,8 +360,8 @@ starlette = ">=0.13.0,<0.14.0"
 name = "gitdb"
 version = "4.0.5"
 description = "Git Object Database"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.4"
 
 [package.dependencies]
@@ -371,8 +371,8 @@ smmap = ">=3.0.1,<4"
 name = "gitpython"
 version = "3.1.11"
 description = "Python Git Library"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.4"
 
 [package.dependencies]
@@ -385,20 +385,6 @@ description = "GraphQL implementation for Python, a port of GraphQL.js, the Java
 category = "main"
 optional = false
 python-versions = ">=3.6,<4"
-
-[[package]]
-name = "gunicorn"
-version = "20.0.4"
-description = "WSGI HTTP Server for UNIX"
-category = "dev"
-optional = false
-python-versions = ">=3.4"
-
-[package.extras]
-eventlet = ["eventlet (>=0.9.7)"]
-gevent = ["gevent (>=0.13)"]
-setproctitle = ["setproctitle"]
-tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "h11"
@@ -472,8 +458,8 @@ colors = ["colorama (>=0.4.3,<0.5.0)"]
 name = "jinja2"
 version = "2.11.2"
 description = "A very fast and expressive template engine."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
@@ -486,8 +472,8 @@ i18n = ["Babel (>=0.8)"]
 name = "joblib"
 version = "0.17.0"
 description = "Lightweight pipelining: using Python functions as pipeline jobs."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -513,8 +499,8 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "livereload"
 version = "2.6.3"
 description = "Python LiveReload is an awesome tool for web developers"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -525,8 +511,8 @@ tornado = {version = "*", markers = "python_version > \"2.7\""}
 name = "lunr"
 version = "0.5.8"
 description = "A Python implementation of Lunr.js"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -556,8 +542,8 @@ lingua = ["lingua"]
 name = "markdown"
 version = "3.3.3"
 description = "Python implementation of Markdown."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -586,8 +572,8 @@ python-versions = "*"
 name = "memory-profiler"
 version = "0.58.0"
 description = "A module for monitoring memory usage of a python program"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.4"
 
 [package.dependencies]
@@ -597,8 +583,8 @@ psutil = "*"
 name = "mkdocs"
 version = "1.1.2"
 description = "Project documentation with Markdown."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -614,8 +600,8 @@ tornado = ">=5.0"
 name = "mkdocs-git-revision-date-plugin"
 version = "0.3.1"
 description = "MkDocs plugin for setting revision date from git per markdown file."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.4"
 
 [package.dependencies]
@@ -627,8 +613,8 @@ mkdocs = ">=0.17"
 name = "mkdocs-material"
 version = "6.1.4"
 description = "A Material Design theme for MkDocs"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -642,8 +628,8 @@ pymdown-extensions = ">=7.0"
 name = "mkdocs-material-extensions"
 version = "1.0.1"
 description = "Extension pack for Python Markdown."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -685,8 +671,8 @@ python-versions = "*"
 name = "nltk"
 version = "3.5"
 description = "Natural Language Toolkit"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -734,7 +720,7 @@ totp = ["cryptography"]
 
 [[package]]
 name = "pathspec"
-version = "0.8.0"
+version = "0.8.1"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "dev"
 optional = false
@@ -758,8 +744,8 @@ dev = ["pre-commit", "tox"]
 name = "psutil"
 version = "5.7.3"
 description = "Cross-platform lib for process and system monitoring in Python."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
@@ -770,14 +756,6 @@ name = "psycopg2"
 version = "2.8.6"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
 category = "main"
-optional = false
-python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
-
-[[package]]
-name = "ptvsd"
-version = "4.3.2"
-description = "Remote debugging server for Python support in Visual Studio and Visual Studio Code"
-category = "dev"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -818,8 +796,8 @@ typing_extensions = ["typing-extensions (>=3.7.2)"]
 name = "pygments"
 version = "2.7.2"
 description = "Pygments is a syntax highlighting package written in Python."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -841,8 +819,8 @@ toml = ">=0.7.1"
 name = "pymdown-extensions"
 version = "8.0.1"
 description = "Extension pack for Python Markdown."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -953,15 +931,15 @@ six = ">=1.4.0"
 name = "pyyaml"
 version = "5.3.1"
 description = "YAML parser and emitter for Python"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "regex"
 version = "2020.10.28"
 description = "Alternative regular expression module, to replace re."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -1013,8 +991,8 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "smmap"
 version = "3.0.4"
 description = "A pure Python implementation of a sliding window memory map manager"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
@@ -1060,16 +1038,16 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "tornado"
 version = "6.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">= 3.5"
 
 [[package]]
 name = "tqdm"
 version = "4.51.0"
 description = "Fast, Extensible Progress Meter"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 
 [package.extras]
@@ -1079,8 +1057,8 @@ dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 name = "tuna"
 version = "0.5.0"
 description = "Visualize Python performance profiles"
-category = "dev"
-optional = false
+category = "main"
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1153,11 +1131,13 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 
 [extras]
 argon2 = ["argon2-cffi"]
+dev_doc = ["mkdocs-material", "mkdocs-git-revision-date-plugin"]
+dev_profiling = ["tuna", "memory_profiler"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "9d6e4a179bd985793d5490f41f6d3b477af8efc4edcbee5772996ad6bc3b2ffa"
+content-hash = "06a2fecaf39cbe108bc2fa0c0536beea630a2a39a847bce1b97fa6c32606684d"
 
 [metadata.files]
 aioredis = [
@@ -1189,8 +1169,6 @@ argon2-cffi = [
     {file = "argon2_cffi-20.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:6678bb047373f52bcff02db8afab0d2a77d83bde61cfecea7c5c62e2335cb203"},
     {file = "argon2_cffi-20.1.0-cp38-cp38-win32.whl", hash = "sha256:77e909cc756ef81d6abb60524d259d959bab384832f0c651ed7dcb6e5ccdbb78"},
     {file = "argon2_cffi-20.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:9dfd5197852530294ecb5795c97a823839258dfd5eb9420233c7cfedec2058f2"},
-    {file = "argon2_cffi-20.1.0-cp39-cp39-win32.whl", hash = "sha256:e2db6e85c057c16d0bd3b4d2b04f270a7467c147381e8fd73cbbe5bc719832be"},
-    {file = "argon2_cffi-20.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:8a84934bd818e14a17943de8099d41160da4a336bcc699bb4c394bbb9b94bd32"},
 ]
 ariadne = [
     {file = "ariadne-0.12.0-py3-none-any.whl", hash = "sha256:e88b574d13c155f934d5e57431e5f9ab3a266a7064a6e397e7c662241276e2e3"},
@@ -1256,11 +1234,12 @@ bcrypt = [
     {file = "bcrypt-3.2.0.tar.gz", hash = "sha256:5b93c1726e50a93a033c36e5ca7fdcd29a5c7395af50a6892f5d9e7c6cfbfb29"},
 ]
 black = [
+    {file = "black-20.8b1-py3-none-any.whl", hash = "sha256:70b62ef1527c950db59062cda342ea224d772abdf6adc58b86a45421bab20a6b"},
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
 certifi = [
-    {file = "certifi-2020.6.20-py2.py3-none-any.whl", hash = "sha256:8fc0819f1f30ba15bdb34cceffb9ef04d99f420f68eb75d901e9560b8749fc41"},
-    {file = "certifi-2020.6.20.tar.gz", hash = "sha256:5930595817496dd21bb8dc35dad090f1c2cd0adfaf21204bf6732ca5d8ee34d3"},
+    {file = "certifi-2020.11.8-py2.py3-none-any.whl", hash = "sha256:1f422849db327d534e3d0c5f02a263458c3955ec0aae4ff09b95f195c59f4edd"},
+    {file = "certifi-2020.11.8.tar.gz", hash = "sha256:f05def092c44fbf25834a51509ef6e631dc19765ab8a57b4e7ab85531f0a9cf4"},
 ]
 cffi = [
     {file = "cffi-1.14.3-2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3eeeb0405fd145e714f7633a5173318bd88d8bbfc3dd0a5751f8c4f70ae629bc"},
@@ -1412,10 +1391,6 @@ gitpython = [
 graphql-core = [
     {file = "graphql-core-3.0.5.tar.gz", hash = "sha256:51f7dab06b5035515b23984f6fcb677ed909b56c672152699cca32e03624992e"},
     {file = "graphql_core-3.0.5-py3-none-any.whl", hash = "sha256:dfc374d3426677727772d8da9dd010e92d10305ddd9c2f7f0fc388f07cee94c4"},
-]
-gunicorn = [
-    {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
-    {file = "gunicorn-20.0.4.tar.gz", hash = "sha256:1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626"},
 ]
 h11 = [
     {file = "h11-0.11.0-py2.py3-none-any.whl", hash = "sha256:ab6c335e1b6ef34b205d5ca3e228c9299cc7218b049819ec84a388c2525e5d87"},
@@ -1658,8 +1633,8 @@ passlib = [
     {file = "passlib-1.7.4.tar.gz", hash = "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04"},
 ]
 pathspec = [
-    {file = "pathspec-0.8.0-py2.py3-none-any.whl", hash = "sha256:7d91249d21749788d07a2d0f94147accd8f845507400749ea19c1ec9054a12b0"},
-    {file = "pathspec-0.8.0.tar.gz", hash = "sha256:da45173eb3a6f2a5a487efba21f050af2b41948be6ab52b6a1e3ff22bb8b7061"},
+    {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
+    {file = "pathspec-0.8.1.tar.gz", hash = "sha256:86379d6b86d75816baba717e64b1a3a3469deb93bb76d613c9ce79edc5cb68fd"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
@@ -1691,36 +1666,7 @@ psycopg2 = [
     {file = "psycopg2-2.8.6-cp37-cp37m-win_amd64.whl", hash = "sha256:56fee7f818d032f802b8eed81ef0c1232b8b42390df189cab9cfa87573fe52c5"},
     {file = "psycopg2-2.8.6-cp38-cp38-win32.whl", hash = "sha256:ad2fe8a37be669082e61fb001c185ffb58867fdbb3e7a6b0b0d2ffe232353a3e"},
     {file = "psycopg2-2.8.6-cp38-cp38-win_amd64.whl", hash = "sha256:56007a226b8e95aa980ada7abdea6b40b75ce62a433bd27cec7a8178d57f4051"},
-    {file = "psycopg2-2.8.6-cp39-cp39-win32.whl", hash = "sha256:2c93d4d16933fea5bbacbe1aaf8fa8c1348740b2e50b3735d1b0bf8154cbf0f3"},
-    {file = "psycopg2-2.8.6-cp39-cp39-win_amd64.whl", hash = "sha256:d5062ae50b222da28253059880a871dc87e099c25cb68acf613d9d227413d6f7"},
     {file = "psycopg2-2.8.6.tar.gz", hash = "sha256:fb23f6c71107c37fd667cb4ea363ddeb936b348bbd6449278eb92c189699f543"},
-]
-ptvsd = [
-    {file = "ptvsd-4.3.2-cp27-cp27m-macosx_10_13_x86_64.whl", hash = "sha256:22b699369a18ff28d4d1aa6a452739e50c7b7790cb16c6312d766e023c12fe27"},
-    {file = "ptvsd-4.3.2-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:3f839fe91d9ddca0d6a3a0afd6a1c824be1768498a737ab9333d084c5c3f3591"},
-    {file = "ptvsd-4.3.2-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:70260b4591c07bff95566d49b6a5dc3051d8558035c43c847bad9a954def46bb"},
-    {file = "ptvsd-4.3.2-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:d2662ec37ee049c0f8f2f9a378abeb7e570d9215c19eaf0a6d7189464195009f"},
-    {file = "ptvsd-4.3.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:d9337ebba4d099698982e090b203e85670086c4b29cf1185b2e45cd353a8053e"},
-    {file = "ptvsd-4.3.2-cp34-cp34m-macosx_10_13_x86_64.whl", hash = "sha256:cf09fd4d90c4c42ddd9bf853290f1a80bc2128993a3923bd3b96b68cc1acd03f"},
-    {file = "ptvsd-4.3.2-cp34-cp34m-manylinux1_i686.whl", hash = "sha256:ccc5c533135305709461f545feed5061c608714db38fa0f58e3f848a127b7fde"},
-    {file = "ptvsd-4.3.2-cp34-cp34m-manylinux1_x86_64.whl", hash = "sha256:de5234bec74c47da668e1a1a21bcc9821af0cbb28b5153df78cd5abc744b29a2"},
-    {file = "ptvsd-4.3.2-cp35-cp35m-macosx_10_13_x86_64.whl", hash = "sha256:c893fb9d1c2ef8f980cc00ced3fd90356f86d9f59b58ee97e0e7e622b8860f76"},
-    {file = "ptvsd-4.3.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:2bbc121bce3608501998afbe742f02b80e7d26b8fecd38f78b903f22f52a81d9"},
-    {file = "ptvsd-4.3.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:fad06de012a78f277318d0c308dd3d7cc1f67167f3b2e1e2f7c6caf04c03440c"},
-    {file = "ptvsd-4.3.2-cp35-cp35m-win32.whl", hash = "sha256:92d26aa7c8f7ffe41cb4b50a00846027027fa17acdf2d9dd8c24de77b25166c6"},
-    {file = "ptvsd-4.3.2-cp35-cp35m-win_amd64.whl", hash = "sha256:eda10ecd43daacc180a6fbe524992be76a877c3559e2b78016b4ada8fec10273"},
-    {file = "ptvsd-4.3.2-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:c01204e3f025c3f7252c79c1a8a028246d29e3ef339e1a01ddf652999f47bdea"},
-    {file = "ptvsd-4.3.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:c97c71835dde7e67fc7b06398bee1c012559a0784ebda9cf8acaf176c7ae766c"},
-    {file = "ptvsd-4.3.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:612948a045fcf9c8931cd306972902440278f34de7ca684b49d4caeec9f1ec62"},
-    {file = "ptvsd-4.3.2-cp36-cp36m-win32.whl", hash = "sha256:72d114baa5737baf29c8068d1ccdd93cbb332d2030601c888eed0e3761b588d7"},
-    {file = "ptvsd-4.3.2-cp36-cp36m-win_amd64.whl", hash = "sha256:58508485a1609a495dd45829bd6d219303cf9edef5ca1f01a9ed8ffaa87f390c"},
-    {file = "ptvsd-4.3.2-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:20f48ffed42a6beb879c250d82662e175ad59cc46a29c95c6a4472ae413199c5"},
-    {file = "ptvsd-4.3.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:b9970e3dc987eb2a6001af6c9d2f726dd6455cfc6d47e0f51925cbdee7ea2157"},
-    {file = "ptvsd-4.3.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:1d3d82ecc82186d099992a748556e6e54037f5c5e4d3fc9bba3e2302354be0d4"},
-    {file = "ptvsd-4.3.2-cp37-cp37m-win32.whl", hash = "sha256:10745fbb788001959b4de405198d8bd5243611a88fb5a2e2c6800245bc0ddd74"},
-    {file = "ptvsd-4.3.2-cp37-cp37m-win_amd64.whl", hash = "sha256:90cbd082e7a9089664888d0d94aca760202f080133fca8f3fe65c48ed6b9e39d"},
-    {file = "ptvsd-4.3.2-py2.py3-none-any.whl", hash = "sha256:459137736068bb02515040b2ed2738169cb30d69a38e0fd5dffcba255f41e68d"},
-    {file = "ptvsd-4.3.2.zip", hash = "sha256:3b05c06018fdbce5943c50fb0baac695b5c11326f9e21a5266c854306bda28ab"},
 ]
 py = [
     {file = "py-1.9.0-py2.py3-none-any.whl", hash = "sha256:366389d1db726cd2fcfc79732e75410e5fe4d31db13692115529d34069a043c2"},
@@ -1981,28 +1927,19 @@ typed-ast = [
     {file = "typed_ast-1.4.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:269151951236b0f9a6f04015a9004084a5ab0d5f19b57de779f908621e7d8b75"},
     {file = "typed_ast-1.4.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:24995c843eb0ad11a4527b026b4dde3da70e1f2d8806c99b7b4a7cf491612652"},
     {file = "typed_ast-1.4.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:fe460b922ec15dd205595c9b5b99e2f056fd98ae8f9f56b888e7a17dc2b757e7"},
-    {file = "typed_ast-1.4.1-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:fcf135e17cc74dbfbc05894ebca928ffeb23d9790b3167a674921db19082401f"},
     {file = "typed_ast-1.4.1-cp36-cp36m-win32.whl", hash = "sha256:4e3e5da80ccbebfff202a67bf900d081906c358ccc3d5e3c8aea42fdfdfd51c1"},
     {file = "typed_ast-1.4.1-cp36-cp36m-win_amd64.whl", hash = "sha256:249862707802d40f7f29f6e1aad8d84b5aa9e44552d2cc17384b209f091276aa"},
     {file = "typed_ast-1.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:8ce678dbaf790dbdb3eba24056d5364fb45944f33553dd5869b7580cdbb83614"},
     {file = "typed_ast-1.4.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:c9e348e02e4d2b4a8b2eedb48210430658df6951fa484e59de33ff773fbd4b41"},
     {file = "typed_ast-1.4.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:bcd3b13b56ea479b3650b82cabd6b5343a625b0ced5429e4ccad28a8973f301b"},
-    {file = "typed_ast-1.4.1-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:f208eb7aff048f6bea9586e61af041ddf7f9ade7caed625742af423f6bae3298"},
     {file = "typed_ast-1.4.1-cp37-cp37m-win32.whl", hash = "sha256:d5d33e9e7af3b34a40dc05f498939f0ebf187f07c385fd58d591c533ad8562fe"},
     {file = "typed_ast-1.4.1-cp37-cp37m-win_amd64.whl", hash = "sha256:0666aa36131496aed8f7be0410ff974562ab7eeac11ef351def9ea6fa28f6355"},
     {file = "typed_ast-1.4.1-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:d205b1b46085271b4e15f670058ce182bd1199e56b317bf2ec004b6a44f911f6"},
     {file = "typed_ast-1.4.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:6daac9731f172c2a22ade6ed0c00197ee7cc1221aa84cfdf9c31defeb059a907"},
     {file = "typed_ast-1.4.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:498b0f36cc7054c1fead3d7fc59d2150f4d5c6c56ba7fb150c013fbc683a8d2d"},
-    {file = "typed_ast-1.4.1-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:7e4c9d7658aaa1fc80018593abdf8598bf91325af6af5cce4ce7c73bc45ea53d"},
     {file = "typed_ast-1.4.1-cp38-cp38-win32.whl", hash = "sha256:715ff2f2df46121071622063fc7543d9b1fd19ebfc4f5c8895af64a77a8c852c"},
     {file = "typed_ast-1.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:fc0fea399acb12edbf8a628ba8d2312f583bdbdb3335635db062fa98cf71fca4"},
     {file = "typed_ast-1.4.1-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:d43943ef777f9a1c42bf4e552ba23ac77a6351de620aa9acf64ad54933ad4d34"},
-    {file = "typed_ast-1.4.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:92c325624e304ebf0e025d1224b77dd4e6393f18aab8d829b5b7e04afe9b7a2c"},
-    {file = "typed_ast-1.4.1-cp39-cp39-manylinux1_i686.whl", hash = "sha256:d648b8e3bf2fe648745c8ffcee3db3ff903d0817a01a12dd6a6ea7a8f4889072"},
-    {file = "typed_ast-1.4.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:fac11badff8313e23717f3dada86a15389d0708275bddf766cca67a84ead3e91"},
-    {file = "typed_ast-1.4.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:0d8110d78a5736e16e26213114a38ca35cb15b6515d535413b090bd50951556d"},
-    {file = "typed_ast-1.4.1-cp39-cp39-win32.whl", hash = "sha256:b52ccf7cfe4ce2a1064b18594381bccf4179c2ecf7f513134ec2f993dd4ab395"},
-    {file = "typed_ast-1.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:3742b32cf1c6ef124d57f95be609c473d7ec4c14d0090e5a5e05a15269fb4d0c"},
     {file = "typed_ast-1.4.1.tar.gz", hash = "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b"},
 ]
 typing-extensions = [
