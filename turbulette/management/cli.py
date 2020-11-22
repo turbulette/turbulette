@@ -293,7 +293,9 @@ def create_user_cmd(username, password, email, first_name, last_name, is_staff, 
             **kwargs,
         )
 
-    asyncio.run(_create_user())
+    # Python 3.6 does not have asyncio.run() (added in 3.7)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(_create_user())
 
 
 cli.add_command(project)
