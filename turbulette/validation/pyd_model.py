@@ -75,7 +75,7 @@ class GraphQLModel(
 ):  # pylint: disable=invalid-metaclass
     """Base pydantic model for GraphQL type binding.
 
-    The GraphQL type must be assigned to `__type__` when subclassing.
+    The GraphQL type must be assigned to `GraphQL.gql_type` when subclassing.
     `__initialized__` is used at binding time, to avoid the model to be processed multiple times.
     (ex : when the GraphQL type is referenced by fields of other GraphQL types)
     """
@@ -209,7 +209,7 @@ class PydanticBindable(SchemaBindable):
             input_fields = model.GraphQL.include
             if model.GraphQL.exclude:
                 raise PydanticBindError(
-                    "You cannot use __include__ and __exclude__ on a GraphQLModel"
+                    "You cannot use include and exclude on a GraphQLModel"
                 )
 
         for name in input_fields:
@@ -246,14 +246,14 @@ class PydanticBindable(SchemaBindable):
             schema (GraphQLSchema): GraphQL schema
 
         Raises:
-            PydanticBindError: Raised if `__type__` is None or
+            PydanticBindError: Raised if `gql_type` is None or
                 if no corresponding GraphQL type has been found.
         """
         if not model.GraphQL.gql_type:
             raise PydanticBindError(
-                f"Can't find __type__ on pydantic model {model.__name__}."
-                " You must define __type__ when subclassing GraphQLToPydantic"
-                " to bind the model to a GraphQL type."
+                f"Can't find gql_type on pydantic model {model.__name__}."
+                " You must define gql_type attribute in the GraphQL inner class"
+                " when subclassing GraphQLToPydantic"
             )
         type_ = schema.type_map.get(model.GraphQL.gql_type)
         if not type_:
