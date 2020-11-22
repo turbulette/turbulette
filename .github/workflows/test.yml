@@ -66,7 +66,7 @@ jobs:
           DB_PORT: 5432
           DB_USER: postgres
           DB_PASSWORD: ""
-          PYTEST_TURBULETTE_SETTINGS: tests.settings
+          TURBULETTE_SETTINGS_MODULE: tests.settings
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
           poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
