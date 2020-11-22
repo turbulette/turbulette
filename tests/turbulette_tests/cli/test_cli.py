@@ -87,7 +87,7 @@ def test_create_user(create_project, create_db_cli, auth_app, blank_conf, monkey
         runner = CliRunner()
 
         # Update `INSTALLED_APPS` setting
-        reload(import_module("settings"))
+        reload(import_module(f"{create_project.name}.settings"))
 
         # Generate and apply migrations to create the user table
         res = runner.invoke(cli, ["makerevision", auth_app])

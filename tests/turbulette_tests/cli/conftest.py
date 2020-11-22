@@ -2,15 +2,14 @@ import contextlib
 import sys
 from datetime import datetime
 from importlib import import_module
-from os import chdir
+from os import chdir, environ
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from gino_starlette import Gino
 
 import pytest
 from click.testing import CliRunner
-from gino import create_engine
-
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.management.cli import cli
 
 PROJECT = "__test_project"
@@ -45,7 +44,9 @@ def create_project():
         runner = CliRunner()
         res = runner.invoke(cli, ["project", "--name", PROJECT])
         assert res.exit_code == 0
+    environ[PROJECT_SETTINGS_MODULE] = f"{PROJECT}.settings"
     yield Path(tmp_dir.name) / PROJECT
+    environ.pop(PROJECT_SETTINGS_MODULE)
     tmp_dir.cleanup()
 
 
