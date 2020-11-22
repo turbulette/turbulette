@@ -12,6 +12,7 @@ from turbulette.apps.base import mutation as root_mutation
 from turbulette.apps.base import query as root_query
 from turbulette.apps.base import subscription as root_subscription
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
+from turbulette.utils import get_project_settings
 from turbulette.conf.constants import (
     SETTINGS_INSTALLED_APPS,
     SETTINGS_LOGS,
@@ -21,7 +22,6 @@ from turbulette.conf.constants import (
 from turbulette.validation import pydantic_binder
 
 from .app import TurbuletteApp
-from .config import get_project_settings_by_env
 from .constants import MODULE_SETTINGS
 from .exceptions import RegistryError
 
@@ -66,12 +66,9 @@ class Registry:
         self.apps: Dict[str, TurbuletteApp] = {}
         self._ready = False
 
-        if project_settings:
-            project_settings_module = import_module(project_settings)
-
         project_settings_module = (
-            get_project_settings_by_env()
-            if project_settings_module is None
+            import_module(get_project_settings(project_settings))
+            if not project_settings_module
             else project_settings_module
         )
 

@@ -1,4 +1,3 @@
-from os import environ
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
@@ -17,13 +16,13 @@ from turbulette.conf.constants import (
     SETTINGS_DB_DSN,
     TURBULETTE_ROUTING_MODULE,
     SETTINGS_DATABASE_CONNECTION,
-    PROJECT_SETTINGS_MODULE,
     SETTINGS_MIDDLEWARES,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
 from turbulette.cache import cache
+from turbulette.utils import get_project_settings
 
 
 def gino_starlette(settings: DatabaseSettings, dsn: URL):
@@ -87,10 +86,8 @@ def turbulette_starlette(project_settings: Optional[str] = None):
     """
     middlewares, routes = [], []
 
-    if not project_settings:
-        project_settings = environ[PROJECT_SETTINGS_MODULE]
-
-    settings_module = import_module(project_settings)
+    settings_path = get_project_settings(project_settings)
+    settings_module = import_module(settings_path)
 
     is_database = (
         hasattr(settings_module, SETTINGS_DATABASE_CONNECTION)
@@ -103,7 +100,7 @@ def turbulette_starlette(project_settings: Optional[str] = None):
             getattr(settings_module, SETTINGS_DB_DSN),
         )
 
-    graphql_route = setup(project_settings, is_database)
+    graphql_route = setup(settings_path, is_database)
 
     # Register middlewares
     if hasattr(conf.settings, SETTINGS_MIDDLEWARES):
@@ -125,12 +122,12 @@ def turbulette_starlette(project_settings: Optional[str] = None):
             )
 
     # Register routes
-    spec = find_spec(project_settings)
+    spec = find_spec(settings_path)
     if spec and spec.origin:
         if (Path(spec.origin).parent / f"{TURBULETTE_ROUTING_MODULE}.py").is_file():
             routes = getattr(
                 import_module(
-                    f"{project_settings.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
+                    f"{settings_path.split('.',    1)[0]}.{TURBULETTE_ROUTING_MODULE}"
                 ),
                 ROUTING_MODULE_ROUTES,
             )
@@ -153,5 +150,5 @@ def turbulette_starlette(project_settings: Optional[str] = None):
         return app
 
     raise ImproperlyConfigured(
-        f"Cannot find spec for module {project_settings}"
+        f"Cannot find spec for module {settings_path}"
     )  # pragma: no cover

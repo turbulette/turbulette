@@ -1,9 +1,30 @@
+from os import environ
+from pathlib import Path
 from random import SystemRandom
 from typing import Any, Optional, Type
 
 from ariadne.types import GraphQLResolveInfo
 
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
+from turbulette.conf.exceptions import ImproperlyConfigured
+
 from .exceptions import NotReady
+
+
+def get_project_settings(given_path: Optional[str] = None, guess: bool = False) -> str:
+    if given_path:
+        return given_path
+
+    if PROJECT_SETTINGS_MODULE in environ:
+        return environ[PROJECT_SETTINGS_MODULE]
+
+    if guess:
+        return f"{Path.cwd().name}.settings"
+
+    raise ImproperlyConfigured(
+        "Unable to find project settings module,"
+        + " you may set the PROJECT_SETTINGS_MODULE environment variable"
+    )
 
 
 def get_random_string(size: int, allowed_chars: str):

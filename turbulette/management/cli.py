@@ -1,8 +1,10 @@
+import asyncio
 import configparser
-from os import chdir, remove, sep
+from os import chdir, remove, sep, environ
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
+from types import FunctionType
 
 import click
 from alembic.command import revision
@@ -11,8 +13,14 @@ from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
-from turbulette.conf.constants import FILE_ALEMBIC_INI, FOLDER_MIGRATIONS
-
+from turbulette import turbulette_starlette
+from turbulette.utils import get_project_settings
+from turbulette.conf.constants import (
+    FILE_ALEMBIC_INI,
+    FOLDER_MIGRATIONS,
+    PROJECT_SETTINGS_MODULE,
+    TEST_MODE,
+)
 
 TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
 
@@ -23,6 +31,33 @@ CRV = {
 
 DEFAULT_KTY = "EC"
 DEFAULT_CRV = "P-256"
+
+
+def db(func: FunctionType):
+    """Decorator to access database in commands."""
+
+    async def wrap(**kwargs):
+        try:
+            TEST_MODE not in environ and turbulette_starlette(
+                get_project_settings(guess=True)
+            )
+        except ModuleNotFoundError as error:  # pragma: no cover
+            raise click.ClickException(
+                "Project settings module not found, are you in the project directory?"
+                f" You may want to set the {PROJECT_SETTINGS_MODULE} environment variable."
+            ) from error
+        from turbulette.conf import (  # pylint: disable=import-outside-toplevel
+            db as turb_db,
+            settings,
+        )
+
+        async with turb_db.with_bind(bind=settings.DB_DSN):
+            TEST_MODE in environ and turbulette_starlette(
+                get_project_settings(guess=True)
+            )
+            await func(**kwargs)
+
+    return wrap
 
 
 def process_tags(file: Path, tags: dict):
@@ -37,7 +72,7 @@ def get_alembic_ini():
 
     if not alembic_ini.is_file():
         raise click.ClickException(
-            f"{FILE_ALEMBIC_INI} not found, are you in a project directory?"
+            f"{FILE_ALEMBIC_INI} not found, are you in the project directory?"
         )
     return alembic_ini
 
@@ -225,8 +260,45 @@ def makerevision(app, message):
     revision(config, message=message, autogenerate=True, head=f"{app}@head")
 
 
+@click.command(help="Create a user using the AUTH_USER_MODEL setting")
+@click.argument("username", nargs=1)
+@click.argument("password", nargs=1)
+@click.option("--email", "-e", help="User email")
+@click.option("--first-name", "-f", help="First name", default=None)
+@click.option("--last-name", "-l", help="Last name", default=None)
+@click.option(
+    "--is-staff", "-s", help="Wether the user is a staff member or not", is_flag=True
+)
+@click.option("--others", "-o", help="Other fields", default="")
+def create_user_cmd(username, password, email, first_name, last_name, is_staff, others):
+    # username must be unique so we can use it to generate the email
+    email = f"{username}@example.com" if not email else email
+
+    kwargs = {kv.split("=")[0]: kv.split("=")[1] for kv in others.split()}
+
+    @db
+    async def _create_user():
+        from turbulette.apps.auth.utils import (  # pylint: disable=import-outside-toplevel
+            create_user,
+        )
+
+        await create_user(
+            username=username,
+            password_one=password,
+            password_two=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            is_staff=is_staff,
+            **kwargs,
+        )
+
+    asyncio.run(_create_user())
+
+
 cli.add_command(project)
 cli.add_command(app_, "app")
 cli.add_command(upgrade)
 cli.add_command(makerevision)
 cli.add_command(jwk_, "jwk")
+cli.add_command(create_user_cmd, "createuser")

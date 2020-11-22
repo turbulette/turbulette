@@ -8,11 +8,11 @@ from pathlib import Path
 import pytest
 from alembic.command import upgrade
 from alembic.config import Config
-from gino import Gino, create_engine
+from gino import create_engine
 from starlette.config import Config as starlette_config
 
 from turbulette import conf, setup
-from turbulette.conf.constants import PYTEST_TURBULETTE_SETTINGS
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 from .tester import Tester
@@ -31,17 +31,17 @@ def pytest_addoption(parser):
 def project_settings(request):
     res = request.config.getoption("--settings", default=None)
     if not res:
-        if PYTEST_TURBULETTE_SETTINGS in environ:
-            res = environ[PYTEST_TURBULETTE_SETTINGS]
+        if PROJECT_SETTINGS_MODULE in environ:
+            res = environ[PROJECT_SETTINGS_MODULE]
         else:
             if Path(Path.cwd() / ".env").is_file():
-                env = Path(Path.cwd() / ".env").as_posix()
+                env = Path(Path.cwd() / ".env")
             else:
                 raise ImproperlyConfigured("Cannot find the .env file")
             config = starlette_config(env)
-            res = config.get(PYTEST_TURBULETTE_SETTINGS)
+            res = config.get(PROJECT_SETTINGS_MODULE)
             # Needed to make it available for alembic in env.py
-            environ[PYTEST_TURBULETTE_SETTINGS] = res
+            environ[PROJECT_SETTINGS_MODULE] = res
     return import_module(res)
 
 

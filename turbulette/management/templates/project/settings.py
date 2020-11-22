@@ -12,7 +12,7 @@ GRAPHQL_ENDPOINT = config("GRAPHQL_ENDPOINT", cast=str, default="/graphql")
 
 # List installed Turbulette apps
 # that defines some GraphQL schema
-INSTALLED_APPS: list = []
+INSTALLED_APPS = config("INSTALLED_APPS", cast=CommaSeparatedStrings, default=[])
 
 MIDDLEWARES = config("MIDDLEWARES", cast=CommaSeparatedStrings, default=[])
 

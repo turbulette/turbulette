@@ -5,6 +5,7 @@ from importlib import import_module
 from os import chdir
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from gino_starlette import Gino
 
 import pytest
 from click.testing import CliRunner
@@ -16,6 +17,14 @@ PROJECT = "__test_project"
 APP_1 = "__test_app_1"
 APP_2 = "__test_app_2"
 APP_3 = "__test_app_3"
+
+_USER_MODEL = """
+from turbulette.apps.auth.models import AbstractUser
+from turbulette.db import Model
+
+class User(AbstractUser, Model):
+    pass
+"""
 
 
 @contextlib.contextmanager
@@ -43,9 +52,38 @@ def create_project():
 @pytest.fixture(scope="session")
 def create_apps(create_project):
     runner = CliRunner()
-    chdir(create_project)
-    res = runner.invoke(cli, ["app", "--name", APP_1, "--name", APP_2, "--name", APP_3])
-    assert res.exit_code == 0
+    with working_directory(create_project):
+        res = runner.invoke(
+            cli, ["app", "--name", APP_1, "--name", APP_2, "--name", APP_3]
+        )
+        assert res.exit_code == 0
+
+
+@pytest.fixture(scope="session")
+def auth_app(create_project, create_apps):
+    # AUTH_USER_MODEL setting
+    settings_file = (create_project / "settings.py").read_text()
+    auth_user_model = (
+        settings_file + f"\nAUTH_USER_MODEL='{PROJECT}.{APP_1}.models.User'"
+    )
+
+    # Add a blank user model subclassing `AbstractUser`
+    (create_project / "settings.py").write_text(auth_user_model)
+    (create_project / APP_1 / "models.py").write_text(_USER_MODEL)
+
+    # Add auth to INSTALLED_APPS
+    env_file = (create_project / ".env").read_text()
+    add_auth_app = env_file.replace(
+        "INSTALLED_APPS=", f"INSTALLED_APPS=turbulette.apps.auth,{PROJECT}.{APP_1}"
+    )
+    (create_project / ".env").write_text(add_auth_app)
+
+    yield APP_1
+
+    # Restore initial settings
+    (create_project / "settings.py").write_text(settings_file)
+    (create_project / APP_1 / "models.py").write_text("")
+    (create_project / ".env").write_text(env_file)
 
 
 @pytest.fixture(scope="session")
@@ -70,17 +108,18 @@ def create_env(db_name_cli, create_project):
 
 @pytest.fixture(scope="session")
 async def create_db_cli(db_name_cli, project_settings_cli, request):
+    db = Gino()
+
     # Connect to the default template1 database to create a new one
     project_settings_cli.DB_DSN.database = "template1"
-    # The pool must be able to authorize two connection to drop the test db if needed
-    engine = await create_engine(
+
+    async with db.with_bind(
         str(project_settings_cli.DB_DSN), min_size=1, max_size=2
-    )
-    async with engine.acquire():
-        await engine.status(f'CREATE DATABASE "{db_name_cli}"')
-        project_settings_cli.DB_DSN.database = db_name_cli
-        yield
-        # Drop the test db if needed
-        if not request.config.getoption("--keep-db", default=False):
-            await engine.status(f'DROP DATABASE "{db_name_cli}"')
-    await engine.close()
+    ) as engine:
+        async with engine.acquire():
+            await engine.status(f'CREATE DATABASE "{db_name_cli}"')
+            project_settings_cli.DB_DSN.database = db_name_cli
+            yield
+            # Drop the test db if needed
+            if not request.config.getoption("--keep-db", default=False):
+                await engine.status(f'DROP DATABASE "{db_name_cli}"')
