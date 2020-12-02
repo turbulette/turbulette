@@ -9,7 +9,7 @@ on:
       - v*.*.x
     tags:
       - "v*.*.*"
-  pull_request:
+  pull_request_target:
     branches:
       - master
       - develop
