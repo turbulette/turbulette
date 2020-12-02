@@ -17,7 +17,7 @@
 
 ---
 
-Documentation : [https://python-turbulette.github.io/turbulette/](https://python-turbulette.github.io/turbulette/)
+Documentation : [https://turbulette.github.io/turbulette/](https://turbulette.github.io/turbulette/)
 
 ---
 
