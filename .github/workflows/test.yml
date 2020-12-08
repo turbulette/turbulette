@@ -22,7 +22,7 @@ jobs:
       POETRY_VIRTUALENVS_CREATE: false
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
     services:
       postgres:
         image: postgres
@@ -86,7 +86,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.9"]
     steps:
       - name: Checkout source code
         if: startsWith(github.ref, 'refs/tags/')
