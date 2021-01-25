@@ -81,14 +81,14 @@ wrapt = ">=1.11,<2.0"
 
 [[package]]
 name = "async-asgi-testclient"
-version = "1.4.4"
+version = "1.4.5"
 description = "Async client for testing ASGI web applications"
 category = "dev"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-multidict = ">=4.0,<5.0"
+multidict = ">=4.0,<6.0"
 requests = ">=2.21,<3.0"
 
 [[package]]
@@ -1144,7 +1144,7 @@ dev_profiling = ["tuna", "memory_profiler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "f14193995c2063bb1d6ff8d40f58990eb4755add64dd36d18a81841df181617c"
+content-hash = "a073675b4c105d535970b75eb6fecd8807d0417edc631410249ed04829168b1c"
 
 [metadata.files]
 aioredis = [
@@ -1188,7 +1188,7 @@ astroid = [
     {file = "astroid-2.4.2.tar.gz", hash = "sha256:2f4078c2a41bf377eea06d71c9d2ba4eb8f6b1af2135bec27bbbb7d8f12bb703"},
 ]
 async-asgi-testclient = [
-    {file = "async-asgi-testclient-1.4.4.tar.gz", hash = "sha256:e961c61123eca6dc30c4f67df7fe8a3f695ca9c8b013d97272b930d6d5af4509"},
+    {file = "async-asgi-testclient-1.4.5.tar.gz", hash = "sha256:46630a1da821810a931248706f3a908dbf29938a1035710cb5663932ea9013be"},
 ]
 async-caches = [
     {file = "async-caches-0.3.0.tar.gz", hash = "sha256:b860095e286f598ad568fe120136d8f418754b39fd20ab1e60fdcfc1e39c7e6a"},

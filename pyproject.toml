@@ -63,7 +63,7 @@ pytest = "^6.2.1"
 pytest-cov = "^2.11.1"
 pytest-asyncio = "^0.14.0"
 coverage = {extras = ["toml"], version = "^5.3"}
-async-asgi-testclient = "^1.4.4"
+async-asgi-testclient = "^1.4.5"
 python-multipart = "^0.0.5"
 mypy = "^0.790"
 debugpy = "^1.2.0"
