@@ -2,7 +2,7 @@ from os import environ
 from pathlib import Path
 from random import SystemRandom
 from typing import Any, Optional, Type
-
+from os import environ
 from ariadne.types import GraphQLResolveInfo
 
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
@@ -59,10 +59,12 @@ class LazyInitMixin:
 
     Usage :
 
-        class Foo(LazyInitMixin, WrappedClass):
-            pass
+    ```python
+    class Foo(LazyInitMixin, WrappedClass):
+        pass
 
-        bar = Foo()
+    bar = Foo()
+    ```
 
     This mixin must be placed first in the MRO, so the
     `__init__` from `LazyInitMixin` is called when instantiating Foo
@@ -84,7 +86,7 @@ class LazyInitMixin:
         """
         self.obj: Optional[Type] = None
         self.name = name
-        self.__initialized__ = False
+        self.__initialized__ = environ.get("TURBULETTE_NO_LAZY_INIT") == "True"
 
     def __getattribute__(self, name: str) -> Any:
         """Proxy that delegates attribute accesses to the wrapped object after initialization."""

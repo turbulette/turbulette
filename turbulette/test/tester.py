@@ -18,7 +18,7 @@ class TestRequest:
 
 
 class Tester:
-    """Helper class to test GraphQL queries against a schema."""
+    """Helper class to test GraphQL queries against the GraphQL schema."""
 
     def __init__(self, schema: GraphQLSchema):
         self.schema = schema
@@ -51,6 +51,29 @@ class Tester:
         op_errors=False,
         error_codes: List[ErrorCode] = None,
     ) -> GraphQLResult:
+        """Assert True if the GraphQL query succeeds.
+
+        With default params, the query succeeds if:
+
+        - Request status is `200`
+        - GraphQL `errors` array is **not** present
+        - The name of the GraphQL operation is in the response at the top level
+
+        Additional options can be used to assert specific results :
+
+        Args:
+            query (str): The GraphQL query to execute
+            op_name (str): The name of the GraphQL operation
+            variables (dict, optional): Operation variables.
+            headers (dict, optional): Request headers.
+            jwt (str, optional): JWT (must be formatted as `prefix token`).
+            op_errors (bool, optional): If `True`, will assert the presence of the error
+                field (defined by the `ERROR_FIELD` setting) in operation response data.
+            error_codes (List[ErrorCode], optional): List of error codes that must be present in the response.
+
+        Returns:
+            Ariadne's GraphQLResult object response
+        """
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         self.assert_no_errors(response)
@@ -73,10 +96,33 @@ class Tester:
         variables: dict = None,
         headers: dict = None,
         jwt: str = None,
-        errors=True,
+        errors: bool = True,
         error_codes: List[ErrorCode] = None,
         raises: ErrorCode = None,
     ) -> GraphQLResult:
+        """Assert True if the GraphQL query fails.
+
+        With default params, the query fails if:
+
+        - Request status is `200` (we test the query execution, not the HTTP request)
+        - GraphQL `errors` array **is** present
+        - The name of the GraphQL operation is **not** in the operation response data
+
+        Additional options can be used to assert specific results :
+
+        Args:
+            query (str): The GraphQL query to execute
+            op_name (str): The name of the GraphQL operation
+            variables (dict, optional): Operation variables.
+            headers (dict, optional): Request headers.
+            jwt (str, optional): JWT (must be formatted as `prefix token`).
+            errors: If `True`, assert that the response data contains `errors` array at the top level
+            error_codes (List[ErrorCode], optional): List of error codes that must be present in the response.
+            raises ErrorCode: Error code that must be present in `["extension"]["code"]`.
+
+        Returns:
+            Ariadne's GraphQLResult object response
+        """
         response = await self.query(query, variables, op_name, headers, jwt)
         self.assert_status_200(response)
         if errors:

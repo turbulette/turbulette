@@ -4,29 +4,32 @@
     </em>
 </p>
 <p align="center">
-<a href="https://github.com/gazorby/turbulette/actions?query=workflow%3Atest">
+<a class="badge" href="https://github.com/gazorby/turbulette/actions?query=workflow%3Atest">
     <img src="https://github.com/python-turbulette/turbulette/workflows/test/badge.svg"/>
 </a>
-<a href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
+<a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
     <img src="https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc"/>
 </a>
-<a href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=python-turbulette/turbulette&amp;utm_campaign=Badge_Grade">
+<a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=python-turbulette/turbulette&amp;utm_campaign=Badge_Grade">
     <img src="https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc"/>
 </a>
-<a href="http://mypy-lang.org/">
+<a class="badge" href="http://mypy-lang.org/">
     <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy"/>
 </a>
-<a href="https://github.com/psf/black">
+<a class="badge" href="https://github.com/psf/black">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black"/>
 </a>
-<a href="https://github.com/PyCQA/bandit">
+<a class="badge" href="https://github.com/PyCQA/bandit">
     <img src="https://img.shields.io/badge/security-bandit-yellow.svg" alt="black"/>
 </a>
-<a href="https://pre-commit.com/">
+<a class="badge" href="https://pre-commit.com/">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
 </a>
-<a href="https://pypi.org/project/turbulette/">
+<a class="badge" href="https://pypi.org/project/turbulette/">
     <img src="https://img.shields.io/pypi/v/turbulette" alt="pypi-version"/>
+</a>
+<a class="badge" href="https://gitter.im/turbulette/turbulette">
+    <img src="https://badges.gitter.im/turbulette/turbulette.svg" alt="gitter"/>
 </a>
 </p>
 
@@ -34,7 +37,7 @@
 
 <p align="center"><strong><em>ASGI framework, GraphQL library, ORM and data validation</em></strong></p>
 
-Features :
+Features:
 
 - Split your API in small, independent applications
 - Generate Pydantic models from GraphQL types
@@ -50,7 +53,7 @@ Features :
 - 100% typed, your IDE will thank you ;)
 - Handcrafted with ❤️, from 🇨🇵
 
-## Requirements
+## 🔧 Requirements
 
 Python 3.6+
 
@@ -65,7 +68,7 @@ Python 3.6+
 - [async-caches](https://github.com/rafalp/async-caches) - Async caching library
 - [Click](https://palletsprojects.com/p/click/) - A "Command Line Interface Creation Kit"
 
-## Installation
+## 📝 Installation
 
 ``` bash
 pip install turbulette
@@ -109,7 +112,7 @@ First, create a directory that will contain the whole project.
 Now, inside this folder, create your Turbulette project using the `turb` CLI :
 
 ``` bash
-turb project eshop
+turb project --name eshop
 ```
 
 You should get with something like this :
@@ -153,7 +156,7 @@ Now it's time to create a Turbulette application!
 Run this command under the project directory (`eshop`) :
 
 ```bash
-turb app --name account
+turb app -n account
 ```
 
 !!! info
@@ -392,5 +395,18 @@ Now, try entering a wrong date (before *now*). You should see the validation err
 Good job! 👏
 
 That was a straightforward example, showing off a simple Turbulette API set up. To get the most of it, follow the User Guide.
+
+## Rationale
+
+Right after the creation of the world, two things happened within one year: [Python got asyncio](https://docs.python.org/3/whatsnew/3.5.html) and [GraphQL came out](https://engineering.fb.com/2015/09/14/core-data/graphql-a-data-query-language/) (well, okay, things may have happened in the meantime). But these new features have brought a breath of fresh air for Python API developers:
+
+- GraphQL allows you to *type* your API, describes *how to ask* for data when you make a request, and supports asynchronous messaging.
+- Asynchronous programming is a type of parallel programming, which makes it possible not to wait for the end of task execution to continue program one. That allows us to write more efficient applications, especially for those whose tasks are I/O bound (which is the case for a majority of APIs).
+
+Turbulette is "batteries included" which means that everything you need to build your API (GraphQL) is here.
+
+To be more precise, Turbulette does not invent or reinvent anything. The open-source world already has many great libraries and frameworks, so not using them and starting from scratch would take time and could lead to fragmentation.
+
+On the contrary, Turbulette can be considered as a kind of *"glue"* which makes these tools work well together and does not bring another layer of complexity on top. One of the main goals is to make their use in Turbulette as transparent as possible so that someone who already knows some of them would have practically nothing more to learn.
 
 *[ASGI]: Asynchronous Server Gateway Interface

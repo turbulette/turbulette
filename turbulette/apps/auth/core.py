@@ -1,6 +1,6 @@
 from enum import Enum
 from importlib import import_module
-from typing import Tuple
+from typing import List, Tuple
 
 from gino.declarative import Model
 from jwcrypto.jwk import JWK
@@ -45,6 +45,13 @@ if settings.JWT_ENCRYPT:
 
 
 class TokenType(Enum):
+    """Type of JWTs available.
+
+    - `ACCESS` : used to access a specific resource (usually a query or a mutation)
+    - `REFRESH` : needed to refresh an expired access token
+
+    """
+
     ACCESS = "access"
     REFRESH = "refresh"
 
@@ -64,17 +71,41 @@ def _jwt_payload(user_id: str, scopes: list, is_staff: bool) -> dict:
 
 
 async def jwt_payload(user: user_model) -> dict:
+    """Get the JWT payload from a user object.
+
+    Args:
+        user (user_model): An instance of `AUTH_USER_MODEL`
+
+    Returns:
+        dict: The JWT payload
+    """
     return _jwt_payload(user.get_username(), await _get_scopes(user), user.is_staff)
 
 
 def jwt_payload_from_claims(claims: dict) -> dict:
+    """Get the full JWT payload from JWT claims.
+
+    Args:
+        claims (dict): Holds custom JWT claims (scopes)
+
+    Returns:
+        dict: [description]
+    """
     return _jwt_payload(
         claims["sub"], claims["scopes"], STAFF_SCOPE in claims["scopes"]
     )
 
 
 def encode_jwt(payload: dict, token_type: TokenType) -> str:
+    """Encode a JWT from the given payload and token type.
 
+    Args:
+        payload (dict): JWT payload
+        token_type (TokenType): Type of the encoded token
+
+    Returns:
+        str: The encoded JWT
+    """
     exp = (
         settings.JWT_EXPIRATION_DELTA
         if token_type is TokenType.ACCESS
@@ -111,7 +142,7 @@ def encode_jwt(payload: dict, token_type: TokenType) -> str:
     return token
 
 
-async def _get_scopes(user: user_model) -> list:
+async def _get_scopes(user: user_model) -> List[str]:
     """Return a list of user role names."""
     role_perms = await user.role_perms()
 
@@ -125,11 +156,23 @@ async def _get_scopes(user: user_model) -> list:
     return [role.name for role in role_perms]
 
 
-def process_jwt_header(header: str) -> str:
-    if not header:
+def _process_jwt_header(token: str) -> str:
+    """Checks the JWT prefix and the token presence.
+
+    Args:
+        token (str): Raw JWT (prefix + token)
+
+    Raises:
+        JWTNotFound: Raised if token/JWT is absent
+        JWTInvalidPrefix: Raised if JWT prefix doesn't match `JWT_PREFIX` setting
+
+    Returns:
+        str: [description]
+    """
+    if not token:
         raise JWTNotFound()
 
-    prefix, *others = header.split()
+    prefix, *others = token.split()
 
     jwt = others[0] if others else None
 
@@ -149,13 +192,13 @@ def decode_jwt(jwt: str) -> Tuple:
     """Decode JSON web token.
 
     Args:
-        auth_token (str): The JSON web token
+        jwt: The JSON web token
 
     Raises:
         JSONWebTokenError: Raised if the signature has expired or if the token is invalid
 
     Returns:
-        int: The user id
+        The user id
     """
     if settings.JWT_ENCRYPT:
         token = JWE()
@@ -192,10 +235,10 @@ async def get_token_from_user(user: user_model) -> str:
     """A shortcut to get the token directly from a user model instance.
 
     Args:
-        user (user_model): GINO model instance of AUTH_USER_MODEL
+        user: GINO model instance of `AUTH_USER_MODEL`
 
     Returns:
-        str: The JWT token
+        The user JWT
     """
     return encode_jwt(await jwt_payload(user), TokenType.ACCESS)
 
@@ -204,11 +247,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Check the password against an existing hash.
 
     Args:
-        plain_password (str): Plain password to check
-        hashed_password (str): Hashed password to compare to
+        plain_password: Plain password to check
+        hashed_password: Hashed password to compare to
 
     Returns:
-        bool: ``True`` if the password matched the hash, else ``False``
+        `True` if the password matched the hash, else `False`
     """
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -217,10 +260,10 @@ def get_password_hash(password: str) -> str:
     """Get the password hash.
 
     Args:
-        password (str): The password to hash
+        password: The password to hash
 
     Returns:
-        str: The resulting hash
+        The resulting hash
     """
     return pwd_context.hash(password)
 

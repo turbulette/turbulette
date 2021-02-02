@@ -8,7 +8,7 @@ from .exceptions import ImproperlyConfigured
 
 
 def get_config_from_paths(paths: List[str]) -> Config:
-    """Return a Config instance from the first existing path.
+    """Return a Starlette `Config` instance from the first existing path.
 
     Args:
         paths (List[str]): Paths to config file to try
@@ -17,7 +17,7 @@ def get_config_from_paths(paths: List[str]) -> Config:
         ImproperlyConfigured: Raised if none of the given paths exists
 
     Returns:
-        Config: A Config instance
+        A `Config` instance
     """
     for path_str in paths:
         path = Path(path_str)
@@ -29,7 +29,15 @@ def get_config_from_paths(paths: List[str]) -> Config:
 class TurubuletteSettingsStub(SettingsStub):
     """Subclass of SettingsStub to make it work with Turbulette settings.
 
-    Useful to safely change settings on the fly during tests
+    It's a simple context manager that can be used to safely
+    change settings on the fly in tests:
+
+    ```python
+    async def test_something(tester):
+        from turbulette.conf.utils import settings_stub
+        with settings_stub(MY_SETTING="special_value"):
+            # some tests
+    ```
     """
 
     def __init__(self, **kwargs):

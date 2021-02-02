@@ -8,29 +8,54 @@ errors: Dict[str, Dict[str, List]] = {}
 
 
 class ErrorCode(Enum):
-    """Store error codes as names and messages as values.
-
-    It is intended to be used with `BaseError` Exception and it subclasses
-    to provide consistent formatting in GraphQL error responses.
-    """
+    """Store error codes as names and messages as values."""
 
     JWT_EXPIRED = "JWT has expired"
+    """JWT has expired"""
+
     JWT_INVALID_SINATURE = "JWT signature cannot be validated"
+    """JWT signature cannot be validated"""
+
     JWT_INVALID = "JWT is invalid and/or improperly formatted"
+    """JWT is invalid and/or improperly formatted"""
+
     JWT_USERNAME_NOT_FOUND = "No username was found when decoding the JWT"
+    """No username was found when decoding the JWT"""
+
     JWT_INVALID_PREFIX = "JWT prefix in the authorization header is invalid"
+    """JWT prefix in the authorization header is invalid"""
+
     JWT_NOT_FOUND = "JWT was not found"
+    """JWT was not found"""
+
     JWT_NOT_FRESH = "JWT is not fresh enough"
+    """JWT is not fresh enough"""
+
     JWT_INVALID_TOKEN_TYPE = "JWT type is invalid"
+    """JWT type is invalid"""
+
     FIELD_NOT_ALLOWED = "Some fields are not allowed"
+    """Some fields are not allowed"""
+
     SERVER_ERROR = "Internal server error"
+    """Internal server error"""
+
     QUERY_NOT_ALLOWED = "You are not allowed to perform this query"
+    """You are not allowed to perform this query"""
+
     JWE_INVALID_TOKEN = "JWE token is invalid"
+    """JWE token is invalid"""
+
     JWE_DECRYPTION_ERROR = "JWE payload can't be decrypted or object is malformed"
+    """JWE payload can't be decrypted or object is malformed"""
 
 
 class BaseError(Exception):
-    """Base Exception class for unexpected server errors."""
+    """Base Exception class for unexpected server errors.
+
+    It is intended to be used with `ErrorCode` enum to
+    provide consistent formatting in GraphQL error responses.
+    """
 
     error_code: Enum = ErrorCode.SERVER_ERROR
     extensions: dict = {}

@@ -20,8 +20,8 @@ class TokenData(BaseModel):
 class BaseUserCreate(BaseModel):
     """Base User model.
 
-    The hashed_password shouldn't be supplied
-    has filled by the root validator if passwords matches
+    The `hashed_password` shouldn't be supplied
+    has it's filled by the root validator if passwords matches
     """
 
     username: str

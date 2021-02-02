@@ -182,7 +182,7 @@ def test_register_type():
         )
 
     # Bring it back through `register` method
-    bindable.register_scalar("JSON", dict)
+    bindable._register_scalar("JSON", dict)
     make_executable_schema(
         schema,
         base_scalars_resolvers,

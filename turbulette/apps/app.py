@@ -94,12 +94,14 @@ class TurbuletteApp:
         self.pydantic_module = pydantic_module
         self.ready = False
 
-    def load_resolvers(self):
-        """Load resolvers.
+    def load_resolvers(self) -> None:
+        """Load app resolvers.
 
-        This assumes that all python files under the ``resolvers`` contains resolvers
-        functions. Functions that are not binded to a GraphQL query should live outside
-        this folder.
+        This assumes that all python modules under the `resolvers` package contains resolvers
+        functions. non-resolver functions should live outside this folder to avoid
+        unnecessary imports at startup.
+
+        Resolvers defined outside the `resolvers` package won't be loaded
         """
         resolver_modules = [
             m.as_posix()[:-3]
@@ -115,13 +117,13 @@ class TurbuletteApp:
                     f".{module}", f"{self.package_name}.{self.resolvers_package}"
                 )
 
-    def load_models(self):
-        """Load GINO models."""
+    def load_models(self) -> None:
+        """Load app GINO models."""
         if (self.package_path / f"{self.models_module}.py").is_file():
             _star_import(f"{self.package_name}.{self.models_module}")
 
-    def load_directives(self):
-        """Load GraphQL directives.
+    def load_directives(self) -> None:
+        """Load app GraphQL directives.
         Directives class must have a class attribute ``name``
         that match the directive name in the GraphQL schema
         """
@@ -140,23 +142,33 @@ class TurbuletteApp:
                 ):
                     self.directives[member.name] = member
 
-    def load_schema(self):
-        """Load GraphQL schema."""
+    def load_schema(self) -> None:
+        """Load GraphQL schema.
+
+        Only GraphQL files under the `graphql` folder will be loaded.
+        """
         if (self.package_path / self.schema_folder).is_dir() and self.schema is None:
             type_defs = [
-                load_schema_from_path(self.package_path / f"{self.schema_folder}")
+                load_schema_from_path(
+                    str((self.package_path / f"{self.schema_folder}").resolve())
+                )
             ]
             if type_defs:
                 self.schema = [*type_defs]
 
-    def load_graphql_ressources(self):
-        """Load all needed resources to enable GraphQL queries."""
+    def load_graphql_ressources(self) -> None:
+        """Load all needed resources to enable GraphQL queries (schema, directives and resolvers)."""
         self.load_schema()
         self.load_directives()
         self.load_resolvers()
         self.ready = True
 
     def load_pydantic_models(self) -> Dict[str, Type[GraphQLModel]]:
+        """Load pydantic models subclassing [GraphQLModel][turbulette.validation.pyd_model.GraphQLModel].
+
+        Returns:
+            A dict containing all loaded pydantic models for the current app
+        """
         models: Dict[str, Type[GraphQLModel]] = {}
         if (self.package_path / f"{self.pydantic_module}.py").is_file():
             module = import_module(f".{self.pydantic_module}", f"{self.package_name}")

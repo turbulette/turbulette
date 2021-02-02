@@ -40,7 +40,14 @@ def validator(
     whole: bool = None,
     allow_reuse: bool = False,
 ) -> Callable[[AnyCallable], classmethod]:
-    """Shortcut to Pydantic `@validator` decorator with check_fields=False."""
+    """Shortcut to Pydantic `@validator` decorator with `check_fields=False`.
+
+    When `check_fields` is `True` validators are checked on class creation to
+    confirm that the fields they specify actually exist on the model.
+    Because models subclassing `GraphQLModel` won't declare any fields at creation
+    (as they'll be added dynamically later), but may declare validators,
+    this behavior becomes an undesirable effect and it's necessary to disable it.
+    """
     return pyd_validator(
         *fields,
         pre=pre,
@@ -78,6 +85,8 @@ class GraphQLModel(
     The GraphQL type must be assigned to `GraphQL.gql_type` when subclassing.
     `__initialized__` is used at binding time, to avoid the model to be processed multiple times.
     (ex : when the GraphQL type is referenced by fields of other GraphQL types)
+
+
     """
 
     __initialized__: bool = False
@@ -86,7 +95,7 @@ class GraphQLModel(
     GraphQL = GraphQLConfig
 
     class Config:
-        """Needed to reference custom GraphQL types."""
+        """Set `orm_mode` to `True` to allow referencing custom GraphQL types in models."""
 
         orm_mode = True
 
@@ -94,8 +103,7 @@ class GraphQLModel(
     def add_fields(cls, **field_definitions: Tuple[str, Any]) -> None:
         """Add fields to the model.
 
-        Adapted from here :
-        https://github.com/samuelcolvin/pydantic/issues/1937#issuecomment-695313040
+        Adapted from [here](https://github.com/samuelcolvin/pydantic/issues/1937#issuecomment-695313040)
         """
         new_fields: Dict[str, ModelField] = {}
         new_annotations: Dict[str, Optional[type]] = {}
@@ -120,7 +128,30 @@ class GraphQLModel(
 
 
 class PydanticBindable(SchemaBindable):
-    """Hold logic to bind GraphQL types to pydantic model."""
+    """Custom bindable to bind GraphQL types to pydantic model.
+
+    All GraphQL scalars will be converted to their Python equivalent :
+
+    | GraphQL Scalar | Python annotation |
+    | -------------- | ----------------- |
+    | Int            | `int`             |
+    | Float          | `float`           |
+    | String         | `str`             |
+    | Boolean        | `bool`            |
+    | ID             | `Union[str, int]` |
+
+
+    The same goes for wrapping types :
+
+    | GraphQL Wrapping type | Python annotation                                                                  |
+    | --------------------- | ---------------------------------------------------------------------------------- |
+    | List                  | `List`                                                                             |
+    | Non-Null              | Every nullable fields have `None` as default value, non-nullable ones are required |
+
+    For non scalar fields (i.e: other GraphQL types), the bindable will look
+    for an existing `GraphQLModel` that describes it. If it can't found it,
+    a `PydanticBindError` will be raised.
+    """
 
     def __init__(
         self, models: Dict[str, Type[GraphQLModel]] = None
@@ -134,7 +165,7 @@ class PydanticBindable(SchemaBindable):
         self.models = models if models else {}
         self._type_map = {**TYPE_MAP}
 
-    def register_scalar(self, name: str, typing: Any) -> None:
+    def _register_scalar(self, name: str, typing: Any) -> None:
         """Register a custom scalar to use when binding pydantic models.
 
         Args:
@@ -143,7 +174,7 @@ class PydanticBindable(SchemaBindable):
         """
         self._type_map[name] = typing
 
-    def resolve_field_typing(
+    def _resolve_field_typing(
         self, gql_field, schema: GraphQLSchema
     ) -> Tuple[Any, Optional[Any]]:
         """Find out the proper typing to use for a given GraphQL field.
@@ -172,13 +203,13 @@ class PydanticBindable(SchemaBindable):
                 self.process_model(sub_model, schema)
             field_type = sub_model
         elif isinstance(gql_field, GraphQLNonNull):
-            field_type, _ = self.resolve_field_typing(gql_field.of_type, schema)
+            field_type, _ = self._resolve_field_typing(gql_field.of_type, schema)
             # Ellipsis as default value in the pydantic model mark the field as required
             default_value = ...
         elif isinstance(gql_field, GraphQLScalarType):
             field_type = self._type_map.get(gql_field.name)
         elif isinstance(gql_field, GraphQLList):
-            of_type, default_of_type = self.resolve_field_typing(
+            of_type, default_of_type = self._resolve_field_typing(
                 gql_field.of_type, schema
             )
             if default_of_type is None:
@@ -186,7 +217,7 @@ class PydanticBindable(SchemaBindable):
             field_type = List[of_type]  # type: ignore
         return field_type, default_value
 
-    def resolve_model_fields(
+    def _resolve_model_fields(
         self, model: Type[GraphQLModel], gql_type: Any, schema: GraphQLSchema
     ) -> Dict[str, Any]:
         """Translate fields from a GraphQL type into pydantic ones.
@@ -220,7 +251,7 @@ class PydanticBindable(SchemaBindable):
                     raise PydanticBindError(
                         f'field "{name}" does not exist on type {gql_type.name}'
                     ) from error
-                field_type, default_value = self.resolve_field_typing(
+                field_type, default_value = self._resolve_field_typing(
                     field.type, schema
                 )
                 if model.GraphQL.fields and name in model.GraphQL.fields:
@@ -240,6 +271,8 @@ class PydanticBindable(SchemaBindable):
 
     def process_model(self, model: Type[GraphQLModel], schema: GraphQLSchema) -> None:
         """Add fields to the given pydantic model.
+
+        `model` must be a subclass of `GraphQLModel`.
 
         Args:
             model (Type[GraphQLModel]): The pydantic model on which to add fields
@@ -261,7 +294,7 @@ class PydanticBindable(SchemaBindable):
                 f"The GraphQL type {model.GraphQL.gql_type} does not exists"
             )
         if not model.__initialized__:
-            fields = self.resolve_model_fields(model, type_, schema)
+            fields = self._resolve_model_fields(model, type_, schema)
             model.__initialized__ = True
             model.add_fields(**fields)
 

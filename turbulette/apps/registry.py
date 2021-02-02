@@ -53,7 +53,7 @@ class Registry:
     """A class storing the Turbulette applications in use.
 
     It mostly serve as a proxy to execute common actions on all apps
-    plus some configuration stuff (loading settings etc)
+    plus some configuration stuff (loading settings, models etc)
     """
 
     def __init__(
@@ -91,7 +91,7 @@ class Registry:
         """Retrieve the Turbulette app given its label.
 
         Args:
-            label (str): App label
+            label: App label
 
         Returns:
             TurbuletteApp: The Turbulette application
@@ -107,10 +107,10 @@ class Registry:
         """Retrieve a Turbulette application given its package path.
 
         Args:
-            path (str): The module path of the app (dotted path)
+            path: The module path of the app (dotted path)
 
         Returns:
-            GraphLQApp: The Turbulette application
+            TurbuletteApp: The Turbulette application
         """
         try:
             return self.apps[package_name.rsplit(".", maxsplit=1)[-1]]
@@ -120,10 +120,10 @@ class Registry:
             ) from error
 
     def setup(self) -> GraphQLSchema:
-        """Load GraphQL resources and settings for each app and return the global executable schema.
+        """Load GraphQL resources and settings for each app and create the global executable schema.
 
         Returns:
-            GraphQLSchema: The aggregated schema
+            GraphQLSchema: The aggregated schema from all apps
         """
         settings = self.load_settings()
         if settings.APOLLO_FEDERATION:
@@ -159,14 +159,17 @@ class Registry:
         return executable_schema
 
     def load_models(self):
-        """Import GINO models of each app."""
+        """Import GINO models of each app.
+
+        This make the GINO instance aware of all models across installed apps.
+        """
         for app in self.apps.values():
             app.load_models()
 
     def load_settings(self) -> LazySettings:
-        """Put Turbulette app settings together in a LazySettings object.
+        """Put Turbulette app settings together in a `LazySettings` object.
 
-        The LazySettings object is from ``simple_settings`` library, which accepts
+        The `LazySettings` object is from `simple_settings` library, which accepts
         multiple modules path during instantiation.
 
         Returns:
@@ -193,6 +196,14 @@ class Registry:
         return conf.settings
 
     def register(self, app: TurbuletteApp):
+        """Register an existing [TurbuletteApp][turbulette.apps.app:TurbuletteApp].
+
+        Args:
+            app: The [TurbuletteApp][turbulette.apps.app:TurbuletteApp] to add
+
+        Raises:
+            RegistryError: Raised if the app is already registered
+        """
         if app.label in self.apps:
             raise RegistryError(f'App "{app}" is already registered')
         self.apps[app.label] = app

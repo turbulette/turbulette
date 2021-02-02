@@ -1,0 +1,94 @@
+site_name: Turbulette
+site_description: Turbulette - A batteries-included framework to build high performance, fully async GraphQL APIs
+repo_url: https://github.com/python-turbulette/turbulette
+repo_name: python-turbulette/turbulette
+site_url: https://python-turbulette.github.io/
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: blue
+  features:
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+plugins:
+  - search:
+      lang: en
+  - git-revision-date
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            # Disable lazy init to enable pytkdocs to collect objects
+            - from os import environ
+            - environ.setdefault("TURBULETTE_NO_LAZY_INIT", "True")
+            - from turbulette import turbulette_starlette
+            - turbulette_starlette("tests.settings_no_env")
+          selection:
+            new_path_syntax: yes
+            filters:
+              - "!^_" # exlude all members starting with _
+              - "^__init__$" # but always include __init__ modules and methods
+      watch:
+        - turbulette
+markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+  - pymdownx.superfences
+  - admonition
+  - abbr
+  - attr_list
+nav:
+  - Turbulette: index.md
+  - User Guide:
+      - Introduction: user_guide/index.md
+      - Project and applications: user_guide/project_apps.md
+      - Settings: user_guide/settings.md
+      - Database: user_guide/database.md
+      - GraphQL schema and resolvers: user_guide/graphql.md
+      - Data validation: user_guide/validation.md
+      - Error handling: user_guide/error_handling.md
+      - Authentication: user_guide/auth.md
+      - Authorization: user_guide/policy.md
+  - Reference:
+      - Applications:
+          - auth:
+              - GraphQL schema: reference/apps/auth/graphql.md
+              - Models: reference/apps/auth/models.md
+              - Pydantic models: reference/apps/auth/pyd_models.md
+              - Decorators: reference/apps/auth/decorators.md
+              - Core: reference/apps/auth/core.md
+              - Policy: reference/apps/auth/policy.md
+              - Utils: reference/apps/auth/utils.md
+              - Settings: reference/apps/auth/settings.md
+          - App management: reference/apps/app_management.md
+      - Custom scalars: reference/custom_scalars.md
+      - Database: reference/database/database.md
+      - Validation:
+          - Pydantic: reference/validation/pyd_model.md
+          - Decorators: reference/validation/decorators.md
+      - Error codes: reference/error_codes.md
+      - Routes handlers: reference/route_handlers.md
+      - Middlewares:
+          - CSRF: reference/middlewares/csrf.md
+      - Test: reference/test.md
+      - Turb CLI: reference/management/cli.md
+      - ASGI application: reference/asgi.md
+  - FAQ: faq.md
+  - Release Notes: changelogs.md
+extra_css:
+  - css/custom.css
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/python-turbulette/turbulette/
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/turbulette/turbulette
+google_analytics:
+  - UA-183721846-1
+  - auto
