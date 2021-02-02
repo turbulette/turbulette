@@ -4,7 +4,7 @@ from typing import Any, Callable
 from turbulette.errors import ErrorCode, add_error
 from turbulette.utils import is_query
 
-from .core import TokenType, decode_jwt, process_jwt_header, settings
+from .core import TokenType, decode_jwt, _process_jwt_header, settings
 from .exceptions import JWTInvalidTokenType, JWTNotFresh
 from .policy import authorized
 
@@ -98,7 +98,7 @@ def _jwt_required(token_type: TokenType):
 
     def wrap(func: Callable[..., Any]):
         async def wrapped_func(obj, info, **kwargs):
-            jwt = process_jwt_header(info.context["request"].headers["authorization"])
+            jwt = _process_jwt_header(info.context["request"].headers["authorization"])
             claims = decode_jwt(jwt)[1]
             if TokenType(claims["type"]) is not token_type:
                 raise JWTInvalidTokenType(

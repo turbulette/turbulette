@@ -19,7 +19,7 @@ class PolicyType:
     """Store policy resolvers and handle core logic to apply policies.
 
     Policy evaluation follows the principle of least privilege :
-    Access is authorized if any policy allows it, and no policy denies it
+    Access is authorized if *any* policy allows it, and *no* policy denies it
     """
 
     _principals: Dict[str, PrincipalResolver]
@@ -184,7 +184,7 @@ class PolicyType:
         return any(self._match(key, val, info) for key, val in policy[key].items())
 
     def apply(self, info: GraphQLResolveInfo, policies: List[Policy]) -> List[bool]:
-        """Given a list of policies, return wether not each of them allow or deny the access.
+        """Given a list of policies, return whether not each of them allow or deny the access.
 
         Args:
             info (GraphQLResolveInfo): GraphQL infos for the current query

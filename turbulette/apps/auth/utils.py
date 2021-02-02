@@ -3,10 +3,14 @@ from . import user_model
 from .models import Role, UserRole
 
 
-async def create_user(role=None, **user_data):
+async def create_user(role: str = None, **user_data) -> None:
     """Helper to create a user using the mode defined by the `AUTH_USER_MODEL` setting.
-
     It will create the user with the hashed password add it in the given `role`
+
+    Args:
+        role: The name of the role to add
+        user_data (dict): Necessary data to create the user
+
     """
     password = user_data.pop("password_one")
     del user_data["password_two"]

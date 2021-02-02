@@ -25,8 +25,8 @@ from turbulette.cache import cache
 from turbulette.utils import get_project_settings
 
 
-def gino_starlette(settings: DatabaseSettings, dsn: URL):
-    """Setup db connection using gino_starlette extension.
+def gino_starlette(settings: DatabaseSettings, dsn: URL) -> Gino:
+    """Setup db connection using `gino_starlette` extension.
 
     Args:
         settings (DatabaseSettings): Settings to use when establishing the connection
@@ -72,7 +72,7 @@ async def shutdown():
     await cache.disconnect()
 
 
-def turbulette_starlette(project_settings: Optional[str] = None):
+def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
@@ -82,7 +82,7 @@ def turbulette_starlette(project_settings: Optional[str] = None):
         ASGIFrameworkError: Raised if Starlette cannot be imported
 
     Returns:
-        FastAPI: The Starlette instance
+        The Starlette instance
     """
     middlewares, routes = [], []
 

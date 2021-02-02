@@ -26,7 +26,11 @@ CSRF_TOKEN_LENGTH = 64
 
 
 class SubmitMethod(Enum):
-    """Authorized methods to use when transmitting the CSRF token."""
+    """Authorized methods to use when transmitting the CSRF token.
+
+    - `HEADER`
+    - `FORM`
+    """
 
     HEADER = "header"
     FORM = "form"
@@ -37,10 +41,17 @@ class CSRFNotFound(HTTPException):
 
 
 def get_new_token() -> str:
+    """Generate a CSRF token.
+
+    The CSRF token is composed of ascii letters and digits only
+
+    Returns:
+        The CSRF token
+    """
     return get_random_string(CSRF_TOKEN_LENGTH, ascii_letters + digits)
 
 
-def is_valid_referer(request: Request) -> bool:
+def _is_valid_referer(request: Request) -> bool:
     header: str = request.headers.get("origin") or request.headers.get("referer") or ""
 
     url = URL(header)
@@ -60,11 +71,12 @@ class CSRFMiddleware(BaseHTTPMiddleware):
     This uses the Double Submit Cookie style of CSRF prevention. For more
     information:
 
-    https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie
-    https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#use-of-custom-request-headers
+    - [Double Submit Cookie](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie)
+    - [Use of custom request headers](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#use-of-custom-request-headers)
 
-    This is currently only intended for use using AJAX - since the CSRF token
-    needs to be added to the request header.
+    !!! warning
+        This is currently only intended for use using AJAX - since the CSRF token
+        needs to be added to the request header.
     """
 
     def __init__(
@@ -146,7 +158,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             # the vast majority of HTTPS requests, but not HTTP requests,
             # so only check it for HTTPS.
             # https://seclab.stanford.edu/websec/csrf/csrf.pdf
-            if not is_valid_referer(request):
+            if not _is_valid_referer(request):
                 return Response("Referrer or origin is incorrect", status_code=403)
 
         request.scope.update({CSRF_REQUEST_SCOPE_NAME: cookie_token})

@@ -1,19 +1,18 @@
 import json
 from datetime import datetime
 from typing import Any
-from ariadne import subscriptions
 
 import ciso8601
 from ariadne import MutationType, QueryType, ScalarType, SubscriptionType
 
-query = QueryType()
-mutation = MutationType()
-subscription = SubscriptionType()
+query: QueryType = QueryType()
+mutation: MutationType = MutationType()
+subscription: SubscriptionType = SubscriptionType()
 
 # Custom scalars
-datetime_scalar = ScalarType("DateTime")
-date_scalar = ScalarType("Date")
-json_scalar = ScalarType("JSON")
+datetime_scalar: ScalarType = ScalarType("DateTime")
+date_scalar: ScalarType = ScalarType("Date")
+json_scalar: ScalarType = ScalarType("JSON")
 
 base_scalars_resolvers = [datetime_scalar, date_scalar, json_scalar]
 

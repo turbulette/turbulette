@@ -59,7 +59,7 @@ def get_tablename(package: str, name: str) -> str:
         name (str): Model name (usually the class name)
 
     Returns:
-        str: The camel case table name
+        The table name
     """
     return (
         f"{registry.get_app_by_package(package).label}"

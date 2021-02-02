@@ -1,12 +1,4 @@
-"""Turbulette conf package.
-
-Holds the following global resources :
-
-    - db: the GINO instance
-    - registry: Turbulette registry
-    - settings: Turbulette settings
-    - app: The Starlette application
-"""
+"""Turbulette conf package."""
 
 from gino_starlette import Gino
 from simple_settings import LazySettings
@@ -21,24 +13,51 @@ from .utils import get_config_from_paths  # noqa
 
 
 class LazyRegistry(LazyInitMixin, Registry):
+    """Lazy init the Turbulette registry."""
+
     def __init__(self):
         super().__init__("Registry")
 
 
 class LazyStarlette(LazyInitMixin, Starlette):
+    """Lazy init the Starlette instance."""
+
     def __init__(self):
         super().__init__("Starlette app")
 
 
 class LazyGino(LazyInitMixin, Gino):
+    """Lazy init the GINO instance."""
+
     def __init__(self):
         super().__init__("GINO")
 
 
-registry = LazyRegistry()
-db = LazyGino()
+registry: LazyRegistry = LazyRegistry()
+"""`LazyRegistry` instance.
+
+Holds all Turbulette apps in use.
+"""
+
+db: LazyGino = LazyGino()
+"""`LazyGino` instance.
+
+This is the main access point to interact with the database.
+"""
+
 settings: LazySettings = None
-app = LazyStarlette()
+"""`LazySettings` instance.
+
+Contains the parameters defined in each one (default values)
+and the project parameters (can replace them).
+
+!!! info
+    The application parameters are loaded first, as they define the default values.
+    The project parameters come last, so they can override the default settings of the applications.
+"""
+
+app: LazyStarlette = LazyStarlette()
+"""`LazyStarlette` instance."""
 
 
 SIMPLE_SETTINGS = {
