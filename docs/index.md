@@ -14,7 +14,7 @@
     <img src="https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc"/>
 </a>
 <a class="badge" href="http://mypy-lang.org/">
-    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy"/>
+    <img src="https://img.shields.io/badge/mypy-checked-blue" alt="mypy"/>
 </a>
 <a class="badge" href="https://github.com/psf/black">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black"/>

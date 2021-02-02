@@ -1,8 +1,8 @@
 site_name: Turbulette
 site_description: Turbulette - A batteries-included framework to build high performance, fully async GraphQL APIs
-repo_url: https://github.com/python-turbulette/turbulette
-repo_name: python-turbulette/turbulette
-site_url: https://python-turbulette.github.io/
+repo_url: https://github.com/turbulette/turbulette
+repo_name: turbulette/turbulette
+site_url: https://turbulette.github.io/turbulette/
 theme:
   name: material
   palette:
@@ -86,7 +86,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/python-turbulette/turbulette/
+      link: https://github.com/turbulette/turbulette
     - icon: fontawesome/brands/gitter
       link: https://gitter.im/turbulette/turbulette
 google_analytics:
