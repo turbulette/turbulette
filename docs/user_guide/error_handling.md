@@ -23,4 +23,4 @@ Turbulette categorizes errors in meaningful codes, that can be found in two plac
 
     In this case, error codes will appears in `#!json ["extension"]["policy"]`.
 
-See [here](/reference/error_codes) for a comprehensive list of error codes
+See [here](/turbulette/reference/error_codes) for a comprehensive list of error codes
