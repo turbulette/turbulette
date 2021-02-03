@@ -154,7 +154,7 @@ async def test_deny_field_permission(tester, create_user, get_user_tokens, creat
     )
 
     # Only one field is denied
-    assert len(resp[1]["extensions"]["policy"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 1
+    assert len(resp[1]["extensions"]["errors"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 1
 
     resp = await tester.assert_query_success(
         query=query_borrowings_price_bought,
@@ -164,7 +164,7 @@ async def test_deny_field_permission(tester, create_user, get_user_tokens, creat
     )
 
     # Two fields are denied
-    assert len(resp[1]["extensions"]["policy"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 2
+    assert len(resp[1]["extensions"]["errors"][ErrorCode.FIELD_NOT_ALLOWED.name]) == 2
 
 
 async def test_allow_specific_user(tester, create_staff_user, get_staff_tokens):

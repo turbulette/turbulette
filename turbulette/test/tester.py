@@ -130,7 +130,12 @@ class Tester:
         if response[1]["data"]:
             assert not response[1]["data"][op_name]
         if raises:
-            assert response[1]["errors"][0]["extensions"]["code"] == raises.name
+            assert (
+                raises.name
+                in response[1]["errors"][0]["extensions"][
+                    conf.settings.TURBULETTE_ERROR_KEY
+                ]
+            )
         if error_codes:
             for val in list(response[1]["extensions"].values()):
                 if isinstance(val, dict):
