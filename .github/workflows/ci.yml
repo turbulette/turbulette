@@ -18,8 +18,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      POETRY_VIRTUALENVS_CREATE: false
     strategy:
       matrix:
         python-version: ["3.6", "3.7", "3.8", "3.9"]
