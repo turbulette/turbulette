@@ -1,0 +1,82 @@
+# Adapted from https://github.com/python-gino/gino/blob/master/.github/workflows/test.yml
+
+name: CI
+on:
+  push:
+    branches:
+      - main
+      - ci/*
+      - v*.*.x
+    tags:
+      - "v*.*.*"
+  pull_request_target:
+    branches:
+      - main
+      - develop
+      - v*.*.x
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Set up Poetry cache for Python dependencies
+        uses: actions/cache@v2
+        if: startsWith(runner.os, 'Linux')
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
+      - name: Install poetry
+        run: |
+          curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+      - name: List installed packages
+        run: poetry show
+      - name: test
+        env:
+          DB_DRIVER: postgresql
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: ""
+          TURBULETTE_SETTINGS_MODULE: tests.settings
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette
+          poetry run pytest --cov=turbulette --ignore ./tests/turbulette_tests/cli --cov-report xml
+          poetry run pytest -s --cov=turbulette --cov-append ./tests/turbulette_tests/cli --cov-report xml
+      - name: lint
+        run: |
+          poetry run black --check .
+          poetry run mypy turbulette --ignore-missing-imports
+      - name: coverage
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_TOKEN }}
+          coverage-reports: coverage.xml
