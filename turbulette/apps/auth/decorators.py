@@ -25,9 +25,9 @@ def scope_required(func: Callable[..., Any]):
         if await authorized(claims, info):
             return await func(obj, info, claims, **kwargs)
         if is_query(info):
-            add_error("policy", ErrorCode.QUERY_NOT_ALLOWED)
+            add_error(ErrorCode.QUERY_NOT_ALLOWED)
             return None
-        add_error("policy", ErrorCode.FIELD_NOT_ALLOWED, info.field_name)
+        add_error(ErrorCode.FIELD_NOT_ALLOWED, info.field_name)
         return None
 
     return wrapper

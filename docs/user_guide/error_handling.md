@@ -5,22 +5,67 @@ In REST APIs, errors are identified with codes (200 ok, 404 not found, 403 unaut
 In GraphQL, It's a different story because most often you will get a 200 status code
 (or 500 for internal server errors). That's by design.
 
-Turbulette categorizes errors in meaningful codes, that can be found in two places, depending on how the query was carried out:
+Turbulette format and categorizes errors in meaningful codes to help you understand how the query was carried out.
+You can find them under `#!json ["extension"]["errors"]` :
 
-- **Something went wrong, the query couldn't be executed:**
+## Examples
 
-    The GraphQL `errors` array will show up, and you will not get
-    your expected `data` key (in which you would find the query response). In this case, Turbulette will place the error code in
-    `#!json ["errors"]["extension"]["code"]`.
+```json hl_lines="17 18 19 20"
+{
+  "data": {
+    "books": null
+  },
+  "errors": [
+    {
+      "message": "JWT has expired",
+      "locations": [
+        {
+          "line": 2,
+          "column": 3
+        }
+      ],
+      "path": [
+        "books"
+      ],
+      "extensions": {
+        "errors": {
+          "JWT_EXPIRED": [
+            "*"
+          ]
+        },
+```
 
-- **The query returned some data, but still, something went wrong:**
+The `#!json ["extensions"]` object is built with error codes as keys and a list of concerned fields as values. A `#!json "*"` value means that the whole query is concerned.
 
-    This is a less common case, when something went wrong but
-    didn't prevent the query to return a result. For example this is the case
-    when some of the query fields are not allowed: It does not means that
-    *all* of the fields are forbidden, so there is no reason why allowed
-    fields cannot be returned.
+Take the following example showing an authorization error:
 
-    In this case, error codes will appears in `#!json ["extension"]["policy"]`.
+```json hl_lines="20 21 22 23"
+{
+  "data": {
+    "books": {
+      "books": [
+        {
+          "title": "Harry Potter",
+          "author": "J.K Rowling",
+          "borrowings": null,
+        },
+        {
+          "title": "The Lord of the Rings",
+          "author": "J.R.R Tolkien",
+          "borrowings": null,
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "errors": {
+      "FIELD_NOT_ALLOWED": [
+        "borrowings"
+      ]
+    },
+```
+
+Here the response tells us that we are not allowed to access the `"borrowings"` field, but it doesn't means that we can't see the other ones,
+hence the "partial" response.
 
 See [here](/turbulette/reference/error_codes) for a comprehensive list of error codes

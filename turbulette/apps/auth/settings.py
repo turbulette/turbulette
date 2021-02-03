@@ -24,6 +24,13 @@ Defines the hash algorithm used to hash user passwords
 Default: `bcrypt`
 """
 
+TURBULETTE_ERROR_KEY: str = "errors"
+"""
+The key holding Turbulette errors under `"extensions"` in GraphQL responses.
+
+Defaults: `"errors"`
+"""
+
 # JWT
 JWT_VERIFY: bool = True
 """Enables JWT verification.

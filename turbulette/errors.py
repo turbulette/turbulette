@@ -54,14 +54,20 @@ class BaseError(Exception):
     """Base Exception class for unexpected server errors.
 
     It is intended to be used with `ErrorCode` enum to
-    provide consistent formatting in GraphQL error responses.
+    provide consistent error formatting in GraphQL responses.
+
+    By default, fields equals ["*"] meaning that every fields are
+    concerned by the error.
     """
 
     error_code: Enum = ErrorCode.SERVER_ERROR
+    fields: List[str] = ["*"]
     extensions: dict = {}
 
     def __init__(self, message: str = None):
-        self.extensions["code"] = self.error_code.name
+        self.extensions[conf.settings.TURBULETTE_ERROR_KEY] = {
+            self.error_code.name: self.fields
+        }
         if not message:
             message = self.error_code.value
         super().__init__(message)
@@ -125,10 +131,13 @@ def error_formatter(error: GraphQLError, debug: bool = False):
     return formatted
 
 
-def add_error(err_type: str, code: ErrorCode, message: str = None):
-    if not message:
-        message = code.value
-    if err_type not in errors:
-        errors[err_type] = {code.name: [message]}
-    elif code.name in errors[err_type] and message not in errors[err_type][code.name]:
-        errors[err_type][code.name].append(message)
+def add_error(code: ErrorCode, fields: str = None):
+    if not fields:
+        fields = code.value
+    if conf.settings.TURBULETTE_ERROR_KEY not in errors:
+        errors[conf.settings.TURBULETTE_ERROR_KEY] = {code.name: [fields]}
+    elif (
+        code.name in errors[conf.settings.TURBULETTE_ERROR_KEY]
+        and fields not in errors[conf.settings.TURBULETTE_ERROR_KEY][code.name]
+    ):
+        errors[conf.settings.TURBULETTE_ERROR_KEY][code.name].append(fields)
