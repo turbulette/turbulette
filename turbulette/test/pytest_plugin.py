@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from alembic.command import upgrade
 from alembic.config import Config
-from gino import create_engine
+from gino import create_engine  # type: ignore
 from starlette.config import Config as starlette_config
 
 from turbulette import conf, setup
