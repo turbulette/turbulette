@@ -48,6 +48,7 @@ jobs:
         with:
           python-version: 3.9
       - name: Build and publish docs
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           pip install mkdocs-material mkdocs-git-revision-date-plugin mkdocstrings pygments-graphql-lexer pymdown-extensions
           mkdocs gh-deploy --force
