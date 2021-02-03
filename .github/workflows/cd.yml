@@ -34,3 +34,14 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+
+  build-docs:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force
