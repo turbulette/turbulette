@@ -5,7 +5,7 @@
 </p>
 <p align="center">
 <a class="badge" href="https://github.com/gazorby/turbulette/actions?query=workflow%3Atest">
-    <img src="https://github.com/python-turbulette/turbulette/workflows/test/badge.svg"/>
+    <img src="https://github.com/turbulette/turbulette/workflows/CI/badge.svg"/>
 </a>
 <a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
     <img src="https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc"/>
