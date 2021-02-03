@@ -45,5 +45,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           python-version: 3.9
-      - run: pip install mkdocs-material mkdocs-git-revision-date-plugin mkdocstrings git+https://github.com/gazorby/pygments-graphql-lexer.git pymdown-extensions
+      - run: pip install mkdocs-material mkdocs-git-revision-date-plugin mkdocstrings pygments-graphql-lexer pymdown-extensions
       - run: mkdocs gh-deploy --force
