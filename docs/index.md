@@ -4,7 +4,7 @@
     </em>
 </p>
 <p align="center">
-<a class="badge" href="https://github.com/gazorby/turbulette/actions?query=workflow%3Atest">
+<a class="badge" href="https://github.com/turbulette/turbulette/actions?query=workflow%3ACI">
     <img src="https://github.com/turbulette/turbulette/workflows/CI/badge.svg"/>
 </a>
 <a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
