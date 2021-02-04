@@ -53,7 +53,7 @@ mkdocs-git-revision-date-plugin = { version = "^0.3", optional = true }
 mkdocstrings = {version = "^0.14.0", optional = true}
 tuna = { version = "^0.5.0", optional = true }
 memory_profiler = { version = "^0.58.0", optional = true }
-pygments-graphql-lexer = { git = "https://github.com/gazorby/pygments-graphql-lexer.git", optional = true }
+pygments-graphql-lexer = { version = "^0.1.0", optional = true }
 pymdown-extensions = {version = "^8.0.1", optional = true}
 
 
