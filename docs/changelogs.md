@@ -1,3 +1,15 @@
+## 0.5.0 (2021-02-04)
+### Features
+- Add `createuser` command to turb CLI
+- Add support for python 3.9
+
+### Fixes
+- Update error messages on pydantic bindings
+
+### Docs
+- Add user guide and reference
+
+
 ## 0.4.0 (2020-10-24)
 ### Features
 - Add subscription type and websocket route
