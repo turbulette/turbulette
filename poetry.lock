@@ -12,7 +12,7 @@ hiredis = "*"
 
 [[package]]
 name = "alembic"
-version = "1.5.3"
+version = "1.5.4"
 description = "A database migration tool for SQLAlchemy."
 category = "main"
 optional = false
@@ -1190,7 +1190,7 @@ dev_profiling = ["tuna", "memory_profiler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "ebc5291dcb993e1f7c43266d858a20cb5326607c3773458c150e361fa60de45f"
+content-hash = "026e559a9dfeb35eeb2073519e3c676bca7537f6ec7ab630070bf91bd0ee9292"
 
 [metadata.files]
 aioredis = [
@@ -1198,7 +1198,7 @@ aioredis = [
     {file = "aioredis-1.3.1.tar.gz", hash = "sha256:15f8af30b044c771aee6787e5ec24694c048184c7b9e54c3b60c750a4b93273a"},
 ]
 alembic = [
-    {file = "alembic-1.5.3.tar.gz", hash = "sha256:04608b6904a6e6bd1af83e1a48f73f50ba214aeddef44b92d498df33818654a8"},
+    {file = "alembic-1.5.4.tar.gz", hash = "sha256:e871118b6174681f7e9a9ea67cfcae954c6d18e05b49c6b17f662d2530c76bf5"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
