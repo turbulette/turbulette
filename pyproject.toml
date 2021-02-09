@@ -87,10 +87,6 @@ argon2 = ["argon2-cffi"]
 [tool.poetry.scripts]
 "turb" = "turbulette.management.cli:cli"
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "--cov --cov-report html --cov-report xml"
-
 [tool.coverage.run]
 omit = ["turbulette/test/pytest_plugin.py"]
 source = ["turbulette/"]
@@ -114,6 +110,11 @@ exclude = '''
   | snapshots
 )/
 '''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+skip_glob = "**migrations/*.py, **/__init__.py"
 
 [build-system]
 requires = ["poetry>=0.12"]
