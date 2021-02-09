@@ -47,30 +47,47 @@ async-caches = "^0.3.0"
 ciso8601 = "^2.1.3"
 argon2-cffi = { version = "^20.1.0", optional = true }
 
-# dev extras
+# Test extras
+pytest = { version = "^6.2.1", optional = true }
+pytest-cov = { version = "^2.11.1", optional = true }
+pytest-asyncio = { version = "^0.14.0", optional = true }
+async-asgi-testclient = { version = "^1.4.5", optional = true }
+python-multipart = { version = "^0.0.5", optional = true }
+coverage = { version = "^5.3", extras = ["toml"], optional = true }
+
+# Docs extras
 mkdocs-material = { version = "^6.0.1", optional = true }
 mkdocs-git-revision-date-plugin = { version = "^0.3", optional = true }
-mkdocstrings = {version = "^0.14.0", optional = true}
+mkdocstrings = { version = "^0.14.0", optional = true }
+pygments-graphql-lexer = { version = "^0.1.0", optional = true }
+pymdown-extensions = { version = "^8.0.1", optional = true }
+
+# Profiling extras
 tuna = { version = "^0.5.0", optional = true }
 memory_profiler = { version = "^0.58.0", optional = true }
-pygments-graphql-lexer = { version = "^0.1.0", optional = true }
-pymdown-extensions = {version = "^8.0.1", optional = true}
 
+# Lint extras
+black = { version = "^20.8b1", optional = true }
+isort = { version = "^5.7.0", optional = true }
+bandit = { version = "^1.7.0", optional = true }
+pylint = { version = "^2.6.0", optional = true }
+mypy = { version = "^0.800", optional = true }
+pydocstyle = {version = "^5.1.1", optional = true}
 
 [tool.poetry.dev-dependencies]
-black = "^20.8b1"
-pylint = "^2.6.0"
-uvicorn = {extras = ["watchgodreload"], version = "^0.13.3"}
-pytest = "^6.2.1"
-pytest-cov = "^2.11.1"
-pytest-asyncio = "^0.14.0"
-coverage = {extras = ["toml"], version = "^5.3"}
-async-asgi-testclient = "^1.4.5"
-python-multipart = "^0.0.5"
-mypy = "^0.800"
+uvicorn = { extras = ["watchgodreload"], version = "^0.13.3" }
 debugpy = "^1.2.0"
 
 [tool.poetry.extras]
+dev_test = [
+  "pytest",
+  "pytest-cov",
+  "pytest-asyncio",
+  "async-asgi-testclient",
+  "python-multipart",
+  "coverage",
+]
+dev_lint = ["pylint", "black", "isort", "mypy", "pydocstyle"]
 dev_doc = [
   "mkdocs-material",
   "mkdocs-git-revision-date-plugin",
