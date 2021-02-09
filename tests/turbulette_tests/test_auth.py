@@ -1,17 +1,18 @@
 import asyncio
-from importlib import reload
 from datetime import timedelta
+from importlib import reload
+
 import pytest
+
 from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD
 from .queries import (
+    mutation_create_user,
+    mutation_update_password,
     query_books,
     query_exclusive_books,
     query_get_jwt,
-    mutation_create_user,
     query_refresh_jwt,
-    mutation_update_password,
 )
-
 
 pytestmark = pytest.mark.asyncio
 
@@ -153,9 +154,14 @@ async def test_get_token_from_user(tester, create_user):
 
 
 async def test_get_user_by_payload(tester, create_user, get_user_tokens):
-    from turbulette.apps.auth.core import get_user_by_claims, decode_jwt
+    from turbulette.apps.auth.core import (
+        TokenType,
+        decode_jwt,
+        encode_jwt,
+        get_user_by_claims,
+        jwt_payload_from_claims,
+    )
     from turbulette.apps.auth.exceptions import JWTNoUsername
-    from turbulette.apps.auth.core import jwt_payload_from_claims, encode_jwt, TokenType
     from turbulette.db.exceptions import DoesNotExist
 
     claims = decode_jwt(get_user_tokens[1])[1]
@@ -276,9 +282,9 @@ async def test_fresh_token(tester, create_user, get_user_tokens):
 
 
 async def test_jwe(tester, create_user):
+    from turbulette.apps.auth import core
     from turbulette.conf.utils import settings_stub
     from turbulette.errors import ErrorCode
-    from turbulette.apps.auth import core
 
     with settings_stub(JWT_ENCRYPT=True):
 

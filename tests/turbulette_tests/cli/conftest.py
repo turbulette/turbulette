@@ -5,10 +5,11 @@ from importlib import import_module
 from os import chdir, environ
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from gino_starlette import Gino
 
 import pytest
 from click.testing import CliRunner
+from gino_starlette import Gino
+
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.management.cli import cli
 

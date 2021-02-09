@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import List, Optional
 
-
 SETTINGS_RULES = {
     "REQUIRED_SETTINGS": ["AUTH_USER_MODEL", "SECRET_KEY"],
     "REQUIRED_SETTINGS_TYPES": {

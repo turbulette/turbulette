@@ -1,6 +1,8 @@
-from typing import Optional
 from datetime import datetime as dt
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr, root_validator
+
 from .core import get_password_hash
 
 

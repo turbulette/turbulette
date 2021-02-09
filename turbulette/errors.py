@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import Dict, List
+
 from ariadne import format_error
 from graphql import GraphQLError
+
 from turbulette import conf
 
 errors: Dict[str, Dict[str, List]] = {}

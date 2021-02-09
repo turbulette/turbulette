@@ -5,29 +5,29 @@ from typing import Any, Dict
 import pytest
 
 from turbulette.test.pytest_plugin import (
+    blank_conf,
     create_db,
     db_name,
     event_loop,
     project_settings,
     tester,
     turbulette_setup,
-    blank_conf,
 )
 from turbulette.utils import get_random_string
 
 from .constants import (
+    CUSTOMER_PERMISSION,
     CUSTOMER_USERNAME,
     DEFAULT_PASSWORD,
-    STAFF_USERNAME,
-    CUSTOMER_PERMISSION,
     NO_ROLE_USERNAME,
+    STAFF_USERNAME,
 )
 from .queries import query_get_jwt
 
 
 @pytest.fixture(scope="session")
 async def create_permission_role(turbulette_setup):
-    from turbulette.apps.auth.models import Role, RolePermission, Permission
+    from turbulette.apps.auth.models import Permission, Role, RolePermission
 
     role = await Role.create(name="customer")
     permission = await Permission.create(
@@ -54,7 +54,7 @@ async def create_user(create_permission_role):
 
 @pytest.fixture(scope="session")
 async def create_staff_user(turbulette_setup):
-    from turbulette.apps.auth.models import Role, RolePermission, Permission
+    from turbulette.apps.auth.models import Permission, Role, RolePermission
     from turbulette.apps.auth.utils import create_user
 
     role = await Role.create(name="admin")

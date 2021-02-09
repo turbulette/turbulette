@@ -1,5 +1,6 @@
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
+
 from turbulette.conf.utils import get_config_from_paths
 
 config = get_config_from_paths([".wrong", "../.wrong"])

@@ -3,12 +3,14 @@ from importlib import import_module
 from logging.config import fileConfig
 from pathlib import Path
 from typing import Optional
-from turbulette.utils import get_project_settings
+
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+
+from turbulette import conf
 from turbulette.apps import Registry
 from turbulette.main import get_gino_instance
-from turbulette import conf
+from turbulette.utils import get_project_settings
 
 
 def _run_migrations_offline(metadata, config):  # pragma: no cover

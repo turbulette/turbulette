@@ -10,18 +10,18 @@ from starlette.middleware import Middleware
 from starlette.routing import Route, WebSocketRoute
 
 from turbulette import conf
+from turbulette.cache import cache
 from turbulette.conf.constants import (
     ROUTING_MODULE_ROUTES,
+    SETTINGS_DATABASE_CONNECTION,
     SETTINGS_DATABASE_SETTINGS,
     SETTINGS_DB_DSN,
-    TURBULETTE_ROUTING_MODULE,
-    SETTINGS_DATABASE_CONNECTION,
     SETTINGS_MIDDLEWARES,
+    TURBULETTE_ROUTING_MODULE,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
 from turbulette.type import DatabaseSettings
-from turbulette.cache import cache
 from turbulette.utils import get_project_settings
 
 

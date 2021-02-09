@@ -1,5 +1,6 @@
 import pytest
-from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD, CUSTOMER_PERMISSION
+
+from .constants import CUSTOMER_PERMISSION, CUSTOMER_USERNAME, DEFAULT_PASSWORD
 from .queries import mutation_create_comic
 
 pytestmark = pytest.mark.asyncio
@@ -22,8 +23,8 @@ async def create_custom_user(create_permission_role):
 
 
 async def test_repr(tester, create_user, create_user_data, create_custom_user):
-    from turbulette.apps.auth.models import Role, RolePermission, Permission
     from tests.app_1.models import BaseUser, CustomUser
+    from turbulette.apps.auth.models import Permission, Role, RolePermission
 
     user = await BaseUser.query.where(
         BaseUser.username == CUSTOMER_USERNAME

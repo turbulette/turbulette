@@ -1,9 +1,11 @@
 # Adapted from https://github.com/piccolo-orm/piccolo_api
 
-from string import ascii_letters, digits
 from enum import Enum
+from string import ascii_letters, digits
 from typing import Tuple
+
 from starlette.datastructures import URL
+from starlette.exceptions import HTTPException
 from starlette.middleware.base import (
     BaseHTTPMiddleware,
     Request,
@@ -11,12 +13,10 @@ from starlette.middleware.base import (
 )
 from starlette.responses import Response
 from starlette.types import ASGIApp
-from starlette.exceptions import HTTPException
 
 from turbulette.conf import settings
-from turbulette.utils import get_random_string
 from turbulette.conf.exceptions import ImproperlyConfigured
-
+from turbulette.utils import get_random_string
 
 CSRF_ALLOWED_CHARS = ascii_letters + digits
 SAFE_HTTP_METHODS = ("GET", "HEAD", "OPTIONS", "TRACE")

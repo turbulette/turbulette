@@ -1,6 +1,7 @@
 from importlib import import_module
 from pathlib import Path
 from typing import List, Type
+
 from simple_settings.utils import SettingsStub
 from starlette.config import Config
 

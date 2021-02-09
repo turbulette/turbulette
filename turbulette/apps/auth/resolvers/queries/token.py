@@ -1,7 +1,4 @@
 from turbulette import query
-from turbulette.conf import settings
-from turbulette.errors import ErrorField
-
 from turbulette.apps.auth import user_model
 from turbulette.apps.auth.core import (
     TokenType,
@@ -12,6 +9,8 @@ from turbulette.apps.auth.core import (
 )
 from turbulette.apps.auth.decorators import refresh_token_required
 from turbulette.apps.auth.pyd_models import AccessToken, Token
+from turbulette.conf import settings
+from turbulette.errors import ErrorField
 
 
 @query.field("getJWT")

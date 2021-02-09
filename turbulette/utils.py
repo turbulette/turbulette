@@ -2,7 +2,7 @@ from os import environ
 from pathlib import Path
 from random import SystemRandom
 from typing import Any, Optional, Type
-from os import environ
+
 from ariadne.types import GraphQLResolveInfo
 
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE

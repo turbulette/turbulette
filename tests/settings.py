@@ -1,5 +1,6 @@
 from sqlalchemy.engine.url import URL, make_url
-from starlette.datastructures import Secret, CommaSeparatedStrings
+from starlette.datastructures import CommaSeparatedStrings, Secret
+
 from turbulette.conf import get_config_from_paths
 
 config = get_config_from_paths(["tests/.env.example", "../tests/.env.example"])

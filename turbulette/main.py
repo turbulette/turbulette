@@ -7,10 +7,10 @@ from caches import Cache
 from gino import Gino  # type: ignore [attr-defined]
 
 from turbulette import conf
-from turbulette.utils import get_project_settings
 from turbulette.cache import cache
 from turbulette.errors import error_formatter
 from turbulette.extensions import PolicyExtension
+from turbulette.utils import get_project_settings
 
 from .apps import Registry
 

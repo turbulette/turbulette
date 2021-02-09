@@ -1,5 +1,7 @@
-import pytest
 from importlib import import_module, reload
+
+import pytest
+
 from turbulette.apps import Registry
 
 

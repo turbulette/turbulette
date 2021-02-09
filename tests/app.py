@@ -1,4 +1,5 @@
 from os import environ
+
 from turbulette import turbulette_starlette
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 

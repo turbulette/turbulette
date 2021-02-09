@@ -4,9 +4,9 @@ from tempfile import TemporaryDirectory
 
 from click.testing import CliRunner
 
-from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE, TEST_MODE
 from turbulette.management.cli import cli
-from turbulette.conf.constants import TEST_MODE
+
 from .conftest import APP_1, working_directory
 
 

@@ -1,5 +1,5 @@
 from gino.json_support import ObjectProperty
-from sqlalchemy import Column, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.sqltypes import Float, String
 

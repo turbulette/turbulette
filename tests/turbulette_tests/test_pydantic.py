@@ -1,6 +1,7 @@
 import pytest
 from ariadne import gql, make_executable_schema, snake_case_fallback_resolvers
-from pydantic import Json, ValidationError, UUID4
+from pydantic import UUID4, Json, ValidationError
+
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
 from turbulette.validation import GraphQLModel, PydanticBindable, validator
 from turbulette.validation.exceptions import PydanticBindError

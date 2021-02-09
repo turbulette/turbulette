@@ -4,7 +4,7 @@ from typing import Any, Callable
 from turbulette.errors import ErrorCode, add_error
 from turbulette.utils import is_query
 
-from .core import TokenType, decode_jwt, _process_jwt_header, settings
+from .core import TokenType, _process_jwt_header, decode_jwt, settings
 from .exceptions import JWTInvalidTokenType, JWTNotFresh
 from .policy import authorized
 

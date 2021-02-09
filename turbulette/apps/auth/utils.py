@@ -1,5 +1,5 @@
-from .core import get_password_hash
 from . import user_model
+from .core import get_password_hash
 from .models import Role, UserRole
 
 

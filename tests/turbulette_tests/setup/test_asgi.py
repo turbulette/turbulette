@@ -1,7 +1,9 @@
-import pytest
 from importlib import import_module, reload
-from turbulette.conf.exceptions import ImproperlyConfigured
+
+import pytest
+
 from turbulette import turbulette_starlette
+from turbulette.conf.exceptions import ImproperlyConfigured
 
 
 @pytest.mark.usefixtures("reload_resources")

@@ -1,16 +1,16 @@
-from turbulette.conf.exceptions import ImproperlyConfigured
 import pytest
 from async_asgi_testclient import TestClient
 
 from turbulette import turbulette_starlette
+from turbulette.conf.exceptions import ImproperlyConfigured
 
 
 @pytest.mark.asyncio
 async def test_csrf(blank_conf):
     app = turbulette_starlette("tests.settings_csrf")
+    from turbulette.cache import cache
     from turbulette.conf import settings
     from turbulette.conf.utils import settings_stub
-    from turbulette.cache import cache
 
     async with TestClient(app) as client:
 

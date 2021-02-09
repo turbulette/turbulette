@@ -1,4 +1,4 @@
-from turbulette.errors import ErrorCode, BaseError
+from turbulette.errors import BaseError, ErrorCode
 
 
 class JWTDecodeError(BaseError):

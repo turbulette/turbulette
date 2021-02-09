@@ -1,13 +1,14 @@
 import datetime
 from typing import List, Optional, Type
+
 from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     Integer,
     String,
-    ForeignKeyConstraint,
 )
 
 from turbulette.apps import auth

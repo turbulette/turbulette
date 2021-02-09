@@ -1,9 +1,11 @@
 from ariadne import SchemaDirectiveVisitor
 from graphql import default_field_resolver
 from graphql.type.definition import GraphQLNonNull
-from turbulette.utils import is_query
-from .decorators import access_token_required, fresh_token_required, scope_required
+
 from turbulette.exceptions import SchemaError
+from turbulette.utils import is_query
+
+from .decorators import access_token_required, fresh_token_required, scope_required
 
 
 class AccessTokenRequiredDirective(SchemaDirectiveVisitor):

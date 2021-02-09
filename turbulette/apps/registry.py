@@ -2,6 +2,7 @@ from importlib import import_module
 from inspect import ismodule
 from types import ModuleType
 from typing import Dict, List
+
 from ariadne import snake_case_fallback_resolvers
 from graphql.type import GraphQLSchema
 from simple_settings import LazySettings
@@ -12,13 +13,13 @@ from turbulette.apps.base import mutation as root_mutation
 from turbulette.apps.base import query as root_query
 from turbulette.apps.base import subscription as root_subscription
 from turbulette.apps.base.resolvers.root_types import base_scalars_resolvers
-from turbulette.utils import get_project_settings
 from turbulette.conf.constants import (
     SETTINGS_INSTALLED_APPS,
     SETTINGS_LOGS,
     SETTINGS_RULES,
     TURBULETTE_CORE_APPS,
 )
+from turbulette.utils import get_project_settings
 from turbulette.validation import pydantic_binder
 
 from .app import TurbuletteApp

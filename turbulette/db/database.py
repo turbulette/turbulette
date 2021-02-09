@@ -1,7 +1,9 @@
 from inspect import getmodule
-from gino.declarative import ModelType
-from turbulette.conf import registry, db
+
 from ariadne.utils import convert_camel_case_to_snake
+from gino.declarative import ModelType
+
+from turbulette.conf import db, registry
 
 
 class BaseModelMeta(ModelType):

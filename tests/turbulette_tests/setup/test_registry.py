@@ -1,12 +1,13 @@
 from os import environ
+
 import pytest
 from simple_settings import LazySettings
 
 from turbulette.apps import TurbuletteApp
 from turbulette.apps.exceptions import RegistryError
 from turbulette.apps.registry import Registry
-from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
+from turbulette.conf.exceptions import ImproperlyConfigured
 
 
 def test_init():

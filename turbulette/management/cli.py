@@ -1,6 +1,6 @@
 import asyncio
 import configparser
-from os import chdir, remove, sep, environ
+from os import chdir, environ, remove, sep
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
@@ -14,13 +14,13 @@ from click.exceptions import ClickException
 from jwcrypto import jwk
 
 from turbulette import turbulette_starlette
-from turbulette.utils import get_project_settings
 from turbulette.conf.constants import (
     FILE_ALEMBIC_INI,
     FOLDER_MIGRATIONS,
     PROJECT_SETTINGS_MODULE,
     TEST_MODE,
 )
+from turbulette.utils import get_project_settings
 
 TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
 
@@ -46,10 +46,10 @@ def db(func: FunctionType):
                 "Project settings module not found, are you in the project directory?"
                 f" You may want to set the {PROJECT_SETTINGS_MODULE} environment variable."
             ) from error
-        from turbulette.conf import (  # pylint: disable=import-outside-toplevel
-            db as turb_db,
-            settings,
+        from turbulette.conf import (
+            db as turb_db,  # pylint: disable=import-outside-toplevel
         )
+        from turbulette.conf import settings
 
         async with turb_db.with_bind(bind=settings.DB_DSN):
             TEST_MODE in environ and turbulette_starlette(
