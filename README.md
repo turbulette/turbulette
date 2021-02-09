@@ -1,8 +1,8 @@
 # Turbulette
 
 [![CI](https://github.com/turbulette/turbulette/workflows/CI/badge.svg)](https://github.com/turbulette/turbulette/actions?query=workflow%3ACI)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=python-turbulette/turbulette&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=turbulette/turbulette&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=turbulette/turbulette&amp;utm_campaign=Badge_Grade)
 [![PyPI](https://img.shields.io/pypi/v/turbulette)](https://pypi.org/project/turbulette/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/turbulette)
 [![PyPI - License](https://img.shields.io/pypi/l/Turbulette)](https://github.com/turbulette/turbulette/blob/main/LICENSE)

@@ -7,10 +7,10 @@
 <a class="badge" href="https://github.com/turbulette/turbulette/actions?query=workflow%3ACI">
     <img src="https://github.com/turbulette/turbulette/workflows/CI/badge.svg"/>
 </a>
-<a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=python-turbulette/turbulette&utm_campaign=Badge_Coverage">
+<a class="badge" href="https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=turbulette/turbulette&utm_campaign=Badge_Coverage">
     <img src="https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc"/>
 </a>
-<a class="badge" href="https://www.codacy.com/gh/python-turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=python-turbulette/turbulette&amp;utm_campaign=Badge_Grade">
+<a class="badge" href="https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=turbulette/turbulette&amp;utm_campaign=Badge_Grade">
     <img src="https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc"/>
 </a>
 <a class="badge" href="http://mypy-lang.org/">
