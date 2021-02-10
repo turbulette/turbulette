@@ -22,7 +22,7 @@ jobs:
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Build and publish docs
         run: |
-          poetry install -E dev_doc
+          poetry install -E dev_doc -E dev_test
           poetry run mkdocs build
       - name: Zip docs
         run: bash ./scripts/zip-docs.sh
