@@ -1,16 +1,43 @@
 # Turbulette
 
-[![CI](https://github.com/turbulette/turbulette/workflows/CI/badge.svg)](https://github.com/turbulette/turbulette/actions?query=workflow%3ACI)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=turbulette/turbulette&utm_campaign=Badge_Coverage)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc)](https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=turbulette/turbulette&amp;utm_campaign=Badge_Grade)
-[![PyPI](https://img.shields.io/pypi/v/turbulette)](https://pypi.org/project/turbulette/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/turbulette)
-[![PyPI - License](https://img.shields.io/pypi/l/Turbulette)](https://github.com/turbulette/turbulette/blob/main/LICENSE)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
-[![Generic badge](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-[![Generic badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![Join the chat at https://gitter.im/turbulette/turbulette](https://badges.gitter.im/turbulette/turbulette.svg)](https://gitter.im/turbulette/turbulette?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/3d71e7d8-f219-41c3-9dce-1dc0c5b92251/deploy-status)](https://app.netlify.com/sites/turbulette/deploys)
+<p align="center">
+<a class="badge" href="https://github.com/turbulette/turbulette/actions?query=workflow%3ATest">
+    <img src="https://github.com/turbulette/turbulette/workflows/Test/badge.svg" alt="test"/>
+</a>
+<a class="badge" href="https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&utm_medium=referral&utm_content=turbulette/turbulette&utm_campaign=Badge_Coverage">
+    <img src="https://app.codacy.com/project/badge/Coverage/e244bb031e044079af419dabd40bb7fc" alt="codacy-coverage"/>
+</a>
+<a class="badge" href="https://www.codacy.com/gh/turbulette/turbulette/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=turbulette/turbulette&amp;utm_campaign=Badge_Grade">
+    <img src="https://app.codacy.com/project/badge/Grade/e244bb031e044079af419dabd40bb7fc" alt="codacy-grade"/>
+</a>
+<a class="badge" href="https://pypi.org/project/turbulette/">
+    <img src="https://img.shields.io/pypi/v/turbulette" alt="pypi"/>
+</a>
+<a class="badge" href="https://img.shields.io/pypi/pyversions/turbulette">
+    <img src="https://img.shields.io/pypi/pyversions/turbulette" alt="py-version"/>
+</a>
+<a class="badge" href="https://github.com/turbulette/turbulette/blob/main/LICENSE">
+    <img src="https://img.shields.io/pypi/l/Turbulette" alt="license"/>
+</a>
+<a class="badge" href="http://mypy-lang.org/">
+    <img src="https://img.shields.io/badge/mypy-checked-blue" alt="mypy"/>
+</a>
+<a class="badge" href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black"/>
+</a>
+<a class="badge" href="https://github.com/PyCQA/bandit">
+    <img src="https://img.shields.io/badge/security-bandit-yellow.svg" alt="bandit"/>
+</a>
+<a class="badge" href="https://pre-commit.com/">
+    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit"/>
+</a>
+<a class="badge" href="https://gitter.im/turbulette/turbulette">
+    <img src="https://badges.gitter.im/turbulette/turbulette.svg" alt="gitter"/>
+</a>
+<a class="badge" href="https://app.netlify.com/sites/turbulette/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/3d71e7d8-f219-41c3-9dce-1dc0c5b92251/deploy-status" alt="netlify"/>
+</a>
+</p>
 
 <p align="center">Turbulette packages all you need to build great GraphQL APIs :</p>
 
