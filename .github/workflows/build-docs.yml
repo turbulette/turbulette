@@ -24,7 +24,7 @@ jobs:
         if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-docs-${{ hashFiles('**/poetry.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
       - name: Install poetry
         run: |
