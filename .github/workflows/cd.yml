@@ -2,7 +2,6 @@ name: CD
 on:
   push:
     branches:
-      - main
       - ci/*
     tags:
       - "v*.*.*"
@@ -15,21 +14,17 @@ jobs:
         python-version: ["3.9"]
     steps:
       - name: Checkout source code
-        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/checkout@v2
       - name: Set up Python
-        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install poetry
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
           python get-poetry.py -y
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Build Python package and publish to PyPI
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
@@ -41,20 +36,32 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
-        if: startsWith(github.ref, 'refs/tags/')
       - name: Set up Python
         uses: actions/setup-python@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           python-version: 3.9
       - name: Install poetry
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
           python get-poetry.py -y
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Build and publish docs
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           poetry install -E dev_doc
-          poetry run mkdocs gh-deploy --force
+          poetry run mkdocs build
+      - name: Zip docs
+        run: bash ./scripts/zip-docs.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: docs-zip
+          path: ./docs.zip
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.1.5
+        with:
+          publish-dir: './site'
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
