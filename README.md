@@ -11,6 +11,8 @@
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![Generic badge](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) [![Join the chat at https://gitter.im/turbulette/turbulette](https://badges.gitter.im/turbulette/turbulette.svg)](https://gitter.im/turbulette/turbulette?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3d71e7d8-f219-41c3-9dce-1dc0c5b92251/deploy-status)](https://app.netlify.com/sites/turbulette/deploys)
+
 <p align="center">Turbulette packages all you need to build great GraphQL APIs :</p>
 
 <p align="center"><strong><em>ASGI framework, GraphQL library, ORM and data validation</em></strong></p>
