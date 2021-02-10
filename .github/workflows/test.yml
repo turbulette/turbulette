@@ -1,19 +1,11 @@
 # Adapted from https://github.com/python-gino/gino/blob/master/.github/workflows/test.yml
 
-name: CI
+name: Test
+
 on:
   push:
-    branches:
-      - main
-      - ci/*
-      - v*.*.x
-    tags:
-      - "v*.*.*"
-  pull_request_target:
-    branches:
-      - main
-      - develop
-      - v*.*.x
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   test:
