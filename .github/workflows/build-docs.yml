@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-docs:
-    needs: release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
