@@ -55,7 +55,7 @@ def db(func: FunctionType):
         # the Turbulette db may already exists, so we want
         # to use the existing one.
         if TEST_MODE not in environ:
-            _load()
+            _load()  # pragma: no cover
         async with conf.db.with_bind(bind=conf.settings.DB_DSN):
             if TEST_MODE in environ:
                 _load()

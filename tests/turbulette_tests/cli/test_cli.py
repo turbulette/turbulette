@@ -100,6 +100,15 @@ def test_create_user(create_project, create_db_cli, auth_app, blank_conf, monkey
         res = runner.invoke(cli, ["createuser", "user_1", "1234"])
         assert res.exit_code == 0
 
+    # The CLI should guess if a settings module is present in CWD
+    with working_directory(create_project):
+        tmp = environ.pop(PROJECT_SETTINGS_MODULE)
+
+        res = runner.invoke(cli, ["createuser", "user_2", "1234"])
+        assert res.exit_code == 1
+
+        environ[PROJECT_SETTINGS_MODULE] = tmp
+
     # The command doe not work outside project directory
     with working_directory(create_project.parent):
         tmp = environ.pop(PROJECT_SETTINGS_MODULE)

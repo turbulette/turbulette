@@ -47,7 +47,7 @@ test: test-setup
 
 .PHONY: cov-setup
 cov-setup:
-	find "$$(poetry env info -p)/lib/python3.9/site-packages/" -iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
+	find "$$(poetry env info -p)/lib/python$$(poetry env info -p | grep -E "3\..*" -o)/site-packages/" -iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
 
 .PHONY: testcov
 testcov: cov-setup
