@@ -1,3 +1,5 @@
+"""Policy grammar."""
+
 KEY_PRINCIPAL = "principal"
 KEY_CONDITIONS = "conditions"
 KEY_ALLOW_FIELDS = "fields"

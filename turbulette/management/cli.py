@@ -1,3 +1,5 @@
+"""Turbulette's command line tool."""
+
 import asyncio
 import configparser
 from os import chdir, environ, remove, sep
@@ -13,7 +15,7 @@ from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
-from turbulette import turbulette_starlette
+from turbulette import conf, turbulette_starlette
 from turbulette.conf.constants import (
     FILE_ALEMBIC_INI,
     FOLDER_MIGRATIONS,
@@ -37,24 +39,26 @@ def db(func: FunctionType):
     """Decorator to access database in commands."""
 
     async def wrap(**kwargs):
-        try:
-            TEST_MODE not in environ and turbulette_starlette(
-                get_project_settings(guess=True)
-            )
-        except ModuleNotFoundError as error:  # pragma: no cover
-            raise click.ClickException(
-                "Project settings module not found, are you in the project directory?"
-                f" You may want to set the {PROJECT_SETTINGS_MODULE} environment variable."
-            ) from error
-        from turbulette.conf import (
-            db as turb_db,  # pylint: disable=import-outside-toplevel
-        )
-        from turbulette.conf import settings
+        def _load():
+            """Wrapper to load a Turbulette instance."""
+            try:
+                turbulette_starlette(get_project_settings(guess=True))
+            except ModuleNotFoundError as error:  # pragma: no cover
+                raise click.ClickException(
+                    "Project settings module not found,"
+                    "are you in the project directory?"
+                    f" You may want to set the {PROJECT_SETTINGS_MODULE}"
+                    f" environment variable."
+                ) from error
 
-        async with turb_db.with_bind(bind=settings.DB_DSN):
-            TEST_MODE in environ and turbulette_starlette(
-                get_project_settings(guess=True)
-            )
+        # When using this decorator within a test session,
+        # the Turbulette db may already exists, so we want
+        # to use the existing one.
+        if TEST_MODE not in environ:
+            _load()
+        async with conf.db.with_bind(bind=conf.settings.DB_DSN):
+            if TEST_MODE in environ:
+                _load()
             await func(**kwargs)
 
     return wrap
@@ -233,7 +237,7 @@ def app_(name):
     help=(
         "Apply alembic revisions."
         " If an app name is given, upgrade to the latest revision for this app only."
-        " If no app is given, upgrade to the latest revision for all apps in the current project"
+        " If no app is given, upgrade to the latest revision for all apps"
     )
 )
 @click.argument("app", required=False)

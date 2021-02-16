@@ -1,3 +1,5 @@
+"""Pydantic models to validate user and tokens."""
+
 from datetime import datetime as dt
 from typing import Optional
 
@@ -41,7 +43,7 @@ class BaseUserCreate(BaseModel):
         return super().dict(exclude={"password_one", "password_two"}, **kwargs)
 
     @root_validator(pre=True)
-    def check_passwords_and_hash(cls, values):
+    def check_passwords_and_hash(cls, values):  # pylint: disable=no-self-argument
         """Hash the password if it's confirmed."""
         pw1, pw2 = values.get("password_one"), values.get("password_two")
         if pw1 and pw2 and pw1 != pw2:

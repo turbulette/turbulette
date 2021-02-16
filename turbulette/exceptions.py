@@ -1,3 +1,6 @@
+"""Global exceptions that may occur in several places."""
+
+
 class NotReady(Exception):
     pass
 

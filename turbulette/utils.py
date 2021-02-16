@@ -1,3 +1,5 @@
+"""Helpers used internally by Turbulette."""
+
 from os import environ
 from pathlib import Path
 from random import SystemRandom
@@ -18,12 +20,12 @@ def get_project_settings(given_path: Optional[str] = None, guess: bool = False) 
     if PROJECT_SETTINGS_MODULE in environ:
         return environ[PROJECT_SETTINGS_MODULE]
 
-    if guess:
+    if guess and (Path(f"{Path.cwd()}") / "settings.py").is_file():
         return f"{Path.cwd().name}.settings"
 
     raise ImproperlyConfigured(
         "Unable to find project settings module,"
-        + " you may set the PROJECT_SETTINGS_MODULE environment variable"
+        + f" you may set the {PROJECT_SETTINGS_MODULE} environment variable."
     )
 
 
@@ -89,7 +91,7 @@ class LazyInitMixin:
         self.__initialized__ = environ.get("TURBULETTE_NO_LAZY_INIT") == "True"
 
     def __getattribute__(self, name: str) -> Any:
-        """Proxy that delegates attribute accesses to the wrapped object after initialization."""
+        """Delegates attribute accesses to the wrapped object after initialization."""
         # Don't delegate when accessing `LazyInitMixin` attributes
         if name in object.__getattribute__(self, "lazy_attributes"):
             return object.__getattribute__(self, name)

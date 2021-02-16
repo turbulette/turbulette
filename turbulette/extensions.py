@@ -1,3 +1,5 @@
+"""Defines Ariadne extensions."""
+
 from ariadne.types import Extension
 
 from turbulette.errors import errors

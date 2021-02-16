@@ -1,3 +1,5 @@
+"""Auth decorators exposing most of the auth logic."""
+
 from datetime import datetime
 from typing import Any, Callable
 
@@ -23,7 +25,7 @@ def scope_required(func: Callable[..., Any]):
     @access_token_required
     async def wrapper(obj, info, claims, **kwargs):
         if await authorized(claims, info):
-            return await func(obj, info, claims, **kwargs)
+            return await func(obj, info, claims=claims, **kwargs)
         if is_query(info):
             add_error(ErrorCode.QUERY_NOT_ALLOWED)
             return None
@@ -70,7 +72,7 @@ def fresh_token_required(func: Callable[..., Any]):
             datetime.utcnow() - datetime.utcfromtimestamp(claims["iat"])
         ) > settings.JWT_FRESH_DELTA:
             raise JWTNotFresh()
-        return await func(obj, info, claims, **kwargs)
+        return await func(obj, info, claims=claims, **kwargs)
 
     return wrapper
 
@@ -88,7 +90,7 @@ def refresh_token_required(func: Callable[..., Any]):
 
     @_jwt_required(TokenType.REFRESH)
     async def wrapper(obj, info, claims, **kwargs):
-        return await func(obj, info, claims, **kwargs)
+        return await func(obj, info, claims=claims, **kwargs)
 
     return wrapper
 
@@ -104,7 +106,7 @@ def _jwt_required(token_type: TokenType):
                 raise JWTInvalidTokenType(
                     f"The provided JWT is not a {token_type.value} token"
                 )
-            return await func(obj, info, claims, **kwargs)
+            return await func(obj, info, claims=claims, **kwargs)
 
         return wrapped_func
 

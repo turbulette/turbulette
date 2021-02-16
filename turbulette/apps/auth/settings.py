@@ -1,3 +1,5 @@
+"""Default settings for the auth app."""
+
 from datetime import timedelta
 from typing import List, Optional
 

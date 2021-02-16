@@ -1,3 +1,5 @@
+"""Integrates GINO by subclassing the base model class."""
+
 from inspect import getmodule
 
 from ariadne.utils import convert_camel_case_to_snake
@@ -16,9 +18,9 @@ class BaseModelMeta(ModelType):
     """
 
     def __new__(
-        cls, name, bases, namespace, **kwargs
+        mcs, name, bases, namespace, **kwargs
     ):  # pylint: disable=unused-argument
-        model = type.__new__(cls, name, bases, namespace)
+        model = type.__new__(mcs, name, bases, namespace)
         model.__namespace__ = namespace
         if model.__table__ is None:
             if (

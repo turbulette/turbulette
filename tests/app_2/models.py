@@ -1,3 +1,5 @@
+"""GINO models."""
+
 from sqlalchemy import Column, String
 
 from turbulette.apps.auth.models import AbstractUser

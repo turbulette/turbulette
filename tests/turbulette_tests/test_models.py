@@ -1,6 +1,8 @@
+"""Test model helpers."""
+
 import pytest
 
-from .constants import CUSTOMER_PERMISSION, CUSTOMER_USERNAME, DEFAULT_PASSWORD
+from .constants import CUSTOMER_USERNAME, DEFAULT_PASSWORD
 from .queries import mutation_create_comic
 
 pytestmark = pytest.mark.asyncio
@@ -9,7 +11,6 @@ pytestmark = pytest.mark.asyncio
 @pytest.fixture(scope="session")
 async def create_custom_user(create_permission_role):
     from tests.app_1.models import CustomUser
-    from turbulette.apps.auth.models import UserRole
 
     custom_user = await CustomUser.create(
         username="custom_user",

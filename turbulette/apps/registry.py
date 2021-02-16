@@ -1,3 +1,5 @@
+"""The registry stores and manages Turbulette apps."""
+
 from importlib import import_module
 from inspect import ismodule
 from types import ModuleType
@@ -117,11 +119,11 @@ class Registry:
             return self.apps[package_name.rsplit(".", maxsplit=1)[-1]]
         except KeyError as error:
             raise RegistryError(
-                f'App with package name "{package_name}" cannot be found in the registry'
+                f'App "{package_name}" cannot be found in the registry'
             ) from error
 
     def setup(self) -> GraphQLSchema:
-        """Load GraphQL resources and settings for each app and create the global executable schema.
+        """Load GraphQL resources, settings and create the global executable schema.
 
         Returns:
             GraphQLSchema: The aggregated schema from all apps
@@ -188,7 +190,9 @@ class Registry:
             all_settings.append(self.project_settings_path)
 
             settings = LazySettings(*all_settings)
-            settings._dict["SIMPLE_SETTINGS"] = conf.SIMPLE_SETTINGS
+            settings._dict[  # pylint: disable=protected-access
+                "SIMPLE_SETTINGS"
+            ] = conf.SIMPLE_SETTINGS
             settings.strategies = (TurbuletteSettingsLoadStrategy,)
             # Make settings variable availble in the `turbulette.conf` package
             conf.settings = settings

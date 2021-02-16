@@ -1,3 +1,5 @@
+"""Turbulette's pytest plugin."""
+
 import asyncio
 from datetime import datetime
 from importlib import import_module, reload
@@ -14,8 +16,7 @@ from starlette.config import Config as starlette_config
 from turbulette import conf, setup
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
-
-from .tester import Tester
+from turbulette.test.tester import Tester
 
 
 def pytest_addoption(parser):
@@ -66,7 +67,7 @@ def db_name():
 
 @pytest.fixture(scope="session")
 async def turbulette_setup(project_settings, create_db):
-    """Create a test database, apply alembic revisions for the installed apps and setup  turbulette project.
+    """Create a test database, apply alembic revisions and setup turbulette project.
 
     Scope: `session`
 

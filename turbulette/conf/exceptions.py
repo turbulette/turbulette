@@ -1,3 +1,6 @@
+"""Exceptions raised on configuration problems."""
+
+
 class ImproperlyConfigured(Exception):
     """Trubulette is somehow improperly configured."""
 

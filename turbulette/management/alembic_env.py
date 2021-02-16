@@ -1,3 +1,5 @@
+"""Interact with the alembic API to run migrations."""
+
 import sys
 from importlib import import_module
 from logging.config import fileConfig
@@ -83,7 +85,9 @@ def run_migrations(project_settings: Optional[str] = None):
     # for 'autogenerate' support
     metadata = database
     registry.load_models()
-    alembic_config.set_main_option("sqlalchemy.url", str(settings.DB_DSN))  # type: ignore
+    alembic_config.set_main_option(
+        "sqlalchemy.url", str(settings.DB_DSN)  # type: ignore
+    )
 
     if context.is_offline_mode():  # pragma: no cover
         _run_migrations_offline(metadata, alembic_config)

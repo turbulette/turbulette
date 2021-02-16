@@ -1,3 +1,5 @@
+"""Base models to store users, permissions and roles."""
+
 import datetime
 from typing import List, Optional, Type
 
@@ -26,25 +28,18 @@ def auth_user_tablename() -> str:
 
 
 class Permission(Model):
-    """A permission specify a certain right a user has.
-
-    Fields:
-
-    - `name`
-
-        Required (`nullable=False`). Should be human readable
-
-        <br />
-
-    - `key`
-
-        Required (`nullable=False`), and must be unique.
-            Used to identify the permission in JWT
-    """
+    """A permission specify a certain right a user has."""
 
     id = Column(Integer, primary_key=True)
+    """Primary key Required (`nullable=False`) and must be"""
+
     name = Column(String, nullable=False)
+    """Required (`nullable=False`). Should be human readable."""
+
     key = Column(String, nullable=False, unique=True)
+    """Required (`nullable=False`), and must be unique.
+        Used to identify the permission in JWT.
+    """
 
     def __repr__(self, key: str = None):
         """Use the key to identify the Permission object."""
@@ -52,25 +47,13 @@ class Permission(Model):
 
 
 class RolePermission(Model):
-    """Simple table to link roles and permissions.
-
-    Both `role` and `permission` are part of the primary key.
-
-    Fields:
-
-    - `role`
-
-        Foreign key to the linked role. Part of the primary key
-
-    <br />
-
-    - `permission`
-
-        Foreign key to the linked permission. Part of the primary key
-    """
+    """Simple table to link roles and permissions."""
 
     role = Column(Integer, primary_key=True)
+    """Foreign key to the linked role. Part of the primary key."""
+
     permission = Column(Integer, primary_key=True)
+    """Foreign key to the linked permission. Part of the primary key."""
 
     permission_fk = ForeignKeyConstraint(
         ["permission"],
@@ -90,18 +73,15 @@ class RolePermission(Model):
 
 
 class Role(Model):
-    """A role is a permission group to which users belong.
-
-    Fields:
-
-    - `name`
-
-        Required (`nulllable=False`) and must be unique Must be unique.
-            Used to identify the role in JWT
-    """
+    """A role is a permission group to which users belong."""
 
     id = Column(Integer, primary_key=True)
+    """Primary key Required (`nullable=False`) and must be"""
+
     name = Column(String, nullable=False, unique=True)
+    """Required (`nulllable=False`) and must be unique Must be unique.
+        Used to identify the role in JWT.
+    """
 
     def __init__(self, **values):
         super().__init__(**values)
@@ -121,30 +101,18 @@ class Role(Model):
 
 
 class UserRole(Model):
-    """Link users to roles.
-
-    Both `user` and `role` column compose the model primary key.
-
-    Fields:
-
-    - `user`
-
-        Foreign key to the user defined by `AUTH_USER_MODEL` setting.
-        part of the primary key.
-
-    <br />
-
-    - `role`
-
-        Foreign key to the associated role. Part of the primary key
-    """
+    """Link users to roles."""
 
     user = Column(
         Integer,
         ForeignKey(auth_user_tablename() + ".id"),
         primary_key=True,
     )
+    """Foreign key to the user defined by `AUTH_USER_MODEL` setting.
+        part of the primary key.
+    """
     role = Column(Integer, ForeignKey("auth_role.id"), primary_key=True)
+    """Foreign key to the associated role. Part of the primary key."""
 
     user_fk = ForeignKeyConstraint(
         ["user"],
@@ -160,58 +128,47 @@ class UserRole(Model):
 
 
 class AbstractUser:
-    """
-    Abstract user class serving as a base to implement a concrete user model.
-
-    Fields:
-
-    - `username`
-
-        Required (`nullable=False`) and must be unique. username is used to create user JWT
-        and retrieve roles and permissions.
-
-    - `email`
-
-        Required (`nullable=False`) and must be unique.
-
-    - `hashed_password`
-
-        Stores the hashed user password. Every time the user logs in, the hash of the provided
-            password is compared against `hashed_password`. Hash algorithm is defined by the
-            `HASH_ALGORITHM` setting.
-
-    - `date_joined`
-
-        Stores the current datetime (UTC) when the user is created in the database.
-
-    - `first_name`
-
-        Optional (`nullable=True`)
-
-    - `last_name`
-
-        Optional (`nullable=True`)
-
-    - `is_staff`
-
-        Indicates if the user is a "staff" member. Staff is a special role stored in database
-        as a convenience. It's up to you to define what's "staff" means in your use case.
-    """
+    """Abstract user class serving as a base to implement a concrete user model."""
 
     id = Column(Integer, primary_key=True)
-    email = Column(String, nullable=False, unique=True)
-    username = Column(String, unique=True)
-    hashed_password = Column(String, nullable=False)
-    date_joined = Column(DateTime(), default=datetime.datetime.utcnow())
-    first_name = Column(String)
-    last_name = Column(String)
-    is_staff = Column(Boolean, default=False, nullable=False)
+    """Primary key Required (`nullable=False`) and must be"""
 
+    email = Column(String, nullable=False, unique=True)
+    """Required (`nullable=False`) and must be unique."""
+
+    username = Column(String, unique=True)
+    """Required (`nullable=False`) and must be unique.
+        username is used to create user JWT and retrieve roles and.
+    """
+
+    hashed_password = Column(String, nullable=False)
+    """Stores the hashed user password. Every time the user logs in,
+        the hash of the provided password is compared against `hashed_password`.
+        Hash algorithm is defined by the `HASH_ALGORITHM` setting.
+    """
+
+    date_joined = Column(DateTime(), default=datetime.datetime.utcnow())
+    """Stores the current datetime (UTC) when the user is created in the database."""
+
+    first_name = Column(String)
+    """Optional (`nullable=True`)"""
+
+    last_name = Column(String)
+    """Optional (`nullable=True`)"""
+
+    is_staff = Column(Boolean, default=False, nullable=False)
+    """Indicates if the user is a "staff" member.
+        Staff is a special role stored in database as a convenience.
+        It's up to you to define what's "staff" means in your use case.
+    """
     # Used as the unique identifier.
     USERNAME_FIELD = "username"
 
     def __repr__(self):
-        """Will work only if it's lower than __repr__ of `Model` in the MRO of the concrete user class.
+        """Identify concrete user by their `USERNAME` field.
+
+        Only work if it's lower than __repr__ of `Model`
+        in the MRO of the concrete user class.
 
         example :
 
@@ -251,7 +208,7 @@ class AbstractUser:
         return obj_
 
     def get_username(self) -> str:
-        """Return username of this user using `USERNAME_FIELD` to determine the column to look for.
+        """Return username of this user using `USERNAME_FIELD` attribute.
 
         Returns:
             str: The username
@@ -355,7 +312,7 @@ class AbstractUser:
         """Loads user roles and permissions.
 
         Returns:
-            List of [Role][turbulette.apps.auth.models.Role] an their associated permissions
+            List of [Role][turbulette.apps.auth.models.Role] an their permissions
         """
         query = UserRole.join(Role).join(RolePermission).join(Permission).select()
         return (

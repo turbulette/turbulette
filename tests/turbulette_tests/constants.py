@@ -1,3 +1,5 @@
+"""Some mock data."""
+
 # Fake data
 STAFF_USERNAME = "test_user_staff"
 CUSTOMER_USERNAME = "test_user"

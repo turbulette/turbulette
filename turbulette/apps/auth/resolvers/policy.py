@@ -1,3 +1,5 @@
+"""Base policy resolvers."""
+
 from graphql.type.definition import GraphQLResolveInfo
 
 from turbulette.apps.auth import policy

@@ -1,3 +1,5 @@
+"""Settings with CSRF middleware enabled."""
+
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import CommaSeparatedStrings, Secret
 

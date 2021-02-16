@@ -12,7 +12,7 @@ repos:
     hooks:
       - id: prospector
         name: prospector
-        entry: prospector
+        entry: poetry run prospector
         language: system
         types: [python]
         exclude: ^(tests/|turbulette/management/templates/|docs/)

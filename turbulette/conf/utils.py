@@ -1,3 +1,5 @@
+"""Conf helpers."""
+
 from importlib import import_module
 from pathlib import Path
 from typing import List, Type

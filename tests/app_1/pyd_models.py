@@ -1,3 +1,5 @@
+"""Pydantic models used for input validation."""
+
 from turbulette.validation.pyd_model import GraphQLModel
 
 

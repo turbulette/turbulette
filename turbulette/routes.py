@@ -1,3 +1,5 @@
+"""REST routes providing additional features that cannot be achieved with GraphQL."""
+
 from starlette.responses import JSONResponse
 
 from turbulette.conf import settings
@@ -9,7 +11,8 @@ async def csrf(request):  # pylint: disable=unused-argument
     """Set the CSRF cookie and return a `JSONResponse` with the token.
 
     We need this REST endpoint to protect against CSRF
-    because all GraphQL queries use `POST` method, so they are not safe to transmit the token.
+    because all GraphQL queries use `POST` method,
+    so they are not safe to transmit the token.
 
     This function is meant to be used in the `routing` module of the Turbulette project
     to create the actual CSRF route, if you need it.

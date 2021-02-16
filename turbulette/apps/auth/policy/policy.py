@@ -1,3 +1,5 @@
+"""Core policy logic."""
+
 from typing import Callable, Dict, List
 
 from graphql.pyutils import Path
@@ -121,7 +123,7 @@ class PolicyType:
     async def involved(
         self, claims: Claims, policies: List[Policy], info: GraphQLResolveInfo
     ) -> List[Policy]:
-        """Given a list of policies, return only those where one of the principal patterns match.
+        """Given a list of policies, return only those where one of the principal match.
 
         All principal resolvers will be tested. For a policy to be involved,
         at least one of the resolvers must return True.
@@ -184,7 +186,7 @@ class PolicyType:
         return any(self._match(key, val, info) for key, val in policy[key].items())
 
     def apply(self, info: GraphQLResolveInfo, policies: List[Policy]) -> List[bool]:
-        """Given a list of policies, return whether not each of them allow or deny the access.
+        """Return whether or not each of the policies allow or deny the access.
 
         Args:
             info (GraphQLResolveInfo): GraphQL infos for the current query

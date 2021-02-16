@@ -1,3 +1,5 @@
+"""Expose functions to evaluate policies."""
+
 import json
 from pathlib import Path
 

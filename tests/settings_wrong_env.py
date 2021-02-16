@@ -1,3 +1,5 @@
+"""Falsy settings with wrong paths to env files."""
+
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import Secret
 

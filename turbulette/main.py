@@ -1,3 +1,5 @@
+"""Expose functions to instantiate a Turbulette instance."""
+
 from importlib import import_module
 from typing import List, Type
 
@@ -14,8 +16,6 @@ from turbulette.utils import get_project_settings
 
 from .apps import Registry
 
-# from .apps.config import get_project_settings_by_env
-
 
 def get_gino_instance() -> Gino:
     if conf.db.initialized:
@@ -29,7 +29,8 @@ def setup(project_settings: str = None, database: bool = False) -> GraphQL:
     """Load Turbulette applications and return the GraphQL route."""
     project_settings_module = import_module(get_project_settings(project_settings))
 
-    # The database connection has to be initialized before the LazySettings object to be setup
+    # The database connection has to be initialized
+    # before the LazySettings object to be setup
     # so we have to connect to the database before the registry to be setup
     if database:
         get_gino_instance()
@@ -37,7 +38,8 @@ def setup(project_settings: str = None, database: bool = False) -> GraphQL:
     registry = Registry(project_settings_module=project_settings_module)
     conf.registry.__setup__(registry)
     schema = registry.setup()
-    # At this point, settings are now available through `settings` from `turbulette.conf` module
+    # At this point, settings are now available through
+    # `settings` from `turbulette.conf` module
     settings = conf.settings
 
     # Now that the database connection is established, we can use `settings`

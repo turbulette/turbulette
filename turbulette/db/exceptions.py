@@ -1,5 +1,8 @@
+"""Exceptions raised in models."""
+
+
 class DoesNotExist(Exception):
-    """Raised when a query on the model fail because no row was returned from the database."""
+    """A query on the model failed because no row was returned from the database."""
 
     def __init__(self, obj):
         # Handle classmethod calls

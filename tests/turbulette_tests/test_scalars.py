@@ -1,3 +1,5 @@
+"""Test behavior of custom scalar defined by Turbulette."""
+
 from datetime import datetime
 
 import pytest
@@ -101,11 +103,11 @@ async def test_date():
     mutation_type = MutationType()
 
     @mutation_type.field("createEvent")
-    async def createEvent(obj, parent, **kwargs):
+    async def createEvent(*_, **kwargs):
         return True
 
     @query_type.field("event")
-    async def event(obj, parent, **kwargs):
+    async def event(*_):
         return {"date": datetime.now()}
 
     schema = make_executable_schema(

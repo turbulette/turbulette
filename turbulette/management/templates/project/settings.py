@@ -1,3 +1,8 @@
+"""Project settings.
+
+These settings overrides the defaults ones set by Turbulette.
+"""
+
 from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import CommaSeparatedStrings, Secret
 

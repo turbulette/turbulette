@@ -1,3 +1,5 @@
+"""Unify error formatting in GraphQL responses."""
+
 from enum import Enum
 from typing import Dict, List
 
@@ -33,7 +35,7 @@ class ErrorCode(Enum):
     JWT_NOT_FRESH = "JWT is not fresh enough"
     """JWT is not fresh enough"""
 
-    JWT_INVALID_TOKEN_TYPE = "JWT type is invalid"
+    JWT_INVALID_TOKEN_TYPE = "JWT type is invalid"  # nosec
     """JWT type is invalid"""
 
     FIELD_NOT_ALLOWED = "Some fields are not allowed"
@@ -45,7 +47,7 @@ class ErrorCode(Enum):
     QUERY_NOT_ALLOWED = "You are not allowed to perform this query"
     """You are not allowed to perform this query"""
 
-    JWE_INVALID_TOKEN = "JWE token is invalid"
+    JWE_INVALID_TOKEN = "JWE token is invalid"  # nosec
     """JWE token is invalid"""
 
     JWE_DECRYPTION_ERROR = "JWE payload can't be decrypted or object is malformed"

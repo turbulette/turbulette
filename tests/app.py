@@ -1,3 +1,5 @@
+"""API entrypoint."""
+
 from os import environ
 
 from turbulette import turbulette_starlette

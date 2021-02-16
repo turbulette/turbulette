@@ -1,3 +1,5 @@
+"""Provide the tooling to generate pydantic models from the GraphQL schema."""
+
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
@@ -68,8 +70,8 @@ class GraphQLConfig:
 
 
 class GraphQLMetaclass(ModelMetaclass):
-    def __new__(cls, name, bases, namespace, **kwargs):
-        model = super().__new__(cls, name, bases, namespace, **kwargs)
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        model = super().__new__(mcs, name, bases, namespace, **kwargs)
         for attr_name, val in GraphQLConfig.__dict__.items():
             if not hasattr(model.GraphQL, attr_name):
                 setattr(model.GraphQL, attr_name, val)
@@ -84,7 +86,8 @@ class GraphQLModel(
     """Base pydantic model for GraphQL type binding.
 
     The GraphQL type must be assigned to `GraphQL.gql_type` when subclassing.
-    `__initialized__` is used at binding time, to avoid the model to be processed multiple times.
+    `__initialized__` is used at binding time, to avoid the model
+    to be processed multiple times.
     (ex : when the GraphQL type is referenced by fields of other GraphQL types)
 
 
@@ -93,19 +96,16 @@ class GraphQLModel(
     __initialized__: bool = False
     __vg__: Optional[ValidatorGroup] = None
 
-    GraphQL = GraphQLConfig
+    GraphQL = GraphQLConfig  # pylint: disable=invalid-name
 
     class Config:
-        """Set `orm_mode` to `True` to allow referencing custom GraphQL types in models."""
+        """Needed to allow referencing custom GraphQL types in models."""
 
         orm_mode = True
 
     @classmethod
     def add_fields(cls, **field_definitions: Tuple[str, Any]) -> None:
-        """Add fields to the model.
-
-        Adapted from [here](https://github.com/samuelcolvin/pydantic/issues/1937#issuecomment-695313040)
-        """
+        """Add fields to the model."""
         new_fields: Dict[str, ModelField] = {}
         new_annotations: Dict[str, Optional[type]] = {}
         validators = None
@@ -133,21 +133,18 @@ class PydanticBindable(SchemaBindable):
 
     All GraphQL scalars will be converted to their Python equivalent :
 
-    | GraphQL Scalar | Python annotation |
-    | -------------- | ----------------- |
-    | Int            | `int`             |
-    | Float          | `float`           |
-    | String         | `str`             |
-    | Boolean        | `bool`            |
-    | ID             | `Union[str, int]` |
+    Int        int
+    Float      float
+    String     str
+    Boolean    bool
+    ID         Union[str, int]
 
 
     The same goes for wrapping types :
 
-    | GraphQL Wrapping type | Python annotation                                                                  |
-    | --------------------- | ---------------------------------------------------------------------------------- |
-    | List                  | `List`                                                                             |
-    | Non-Null              | Every nullable fields have `None` as default value, non-nullable ones are required |
+    List        List
+    Non-Null    Every nullable fields have `None` as default value,
+                non-nullable ones are required
 
     For non scalar fields (i.e: other GraphQL types), the bindable will look
     for an existing `GraphQLModel` that describes it. If it can't found it,
@@ -185,11 +182,12 @@ class PydanticBindable(SchemaBindable):
             schema (GraphQLSchema): GraphQL schema
 
         Raises:
-            PydanticBindError: Raised when the GraphQL field type is a custom type for which
+            PydanticBindError: The GraphQL field type is a custom type for which
                 no pydantic model has been defined.
 
         Returns:
-            Tuple[Any, Optional[Any]]: A tuple `(typing, default_value)` to pass to `add_fields`.
+            Tuple[Any, Optional[Any]]:
+                A tuple `(typing, default_value)` to pass to `add_fields`.
         """
         field_type: Any = None
         default_value = None
@@ -198,7 +196,8 @@ class PydanticBindable(SchemaBindable):
             sub_model: Optional[Type[GraphQLModel]] = self.models.get(gql_field.name)
             if not sub_model:
                 raise PydanticBindError(
-                    f'There is no pydantic model binded to "{gql_field.name}" GraphQL type'
+                    f"There is no pydantic model binded to"
+                    f'"{gql_field.name}" GraphQL type'
                 )
             if not sub_model.__initialized__:
                 self.process_model(sub_model, schema)
@@ -231,7 +230,8 @@ class PydanticBindable(SchemaBindable):
             PydanticBindError: Raised when a fields can't be translated
 
         Returns:
-            Dict[str, Any]: A dict with pydantic field names as keys and pydantic fields as values.
+            Dict[str, Any]:
+                A dict with pydantic field names as keys and pydantic fields as values.
 
         All field names are converted to snake_case
         """
@@ -259,7 +259,8 @@ class PydanticBindable(SchemaBindable):
                     field_type = model.GraphQL.fields[name]
                 if field_type is None:
                     raise PydanticBindError(
-                        f'Don\'t know how to map "{name}" field from GraphQL type {gql_type.name}'
+                        f'Don\'t know how to map "{name}"'
+                        f"field from GraphQL type {gql_type.name}"
                     )
                 if default_value is None:
                     field_type = Optional[field_type]

@@ -1,3 +1,5 @@
+"""Test helper to make resolver testing more convenient."""
+
 from importlib import import_module
 from typing import Any, Dict, List
 
@@ -64,14 +66,14 @@ class Tester:
         Additional options can be used to assert specific results :
 
         Args:
-            query (str): The GraphQL query to execute
-            op_name (str): The name of the GraphQL operation
-            variables (dict, optional): Operation variables.
-            headers (dict, optional): Request headers.
-            jwt (str, optional): JWT (must be formatted as `prefix token`).
-            op_errors (bool, optional): If `True`, will assert the presence of the error
+            query: The GraphQL query to execute
+            op_name: The name of the GraphQL operation
+            variables: Operation variables.
+            headers: Request headers.
+            jwt: JWT (must be formatted as `prefix token`).
+            op_errors: If `True`, will assert the presence of the error
                 field (defined by the `ERROR_FIELD` setting) in operation response data.
-            error_codes (List[ErrorCode], optional): List of error codes that must be present in the response.
+            error_codes: List of error codes that must be present in the response.
 
         Returns:
             Ariadne's GraphQLResult object response
@@ -113,14 +115,15 @@ class Tester:
         Additional options can be used to assert specific results :
 
         Args:
-            query (str): The GraphQL query to execute
-            op_name (str): The name of the GraphQL operation
-            variables (dict, optional): Operation variables.
-            headers (dict, optional): Request headers.
-            jwt (str, optional): JWT (must be formatted as `prefix token`).
-            errors: If `True`, assert that the response data contains `errors` array at the top level
-            error_codes (List[ErrorCode], optional): List of error codes that must be present in the response.
-            raises ErrorCode: Error code that must be present in `["extension"]["code"]`.
+            query: The GraphQL query to execute
+            op_name: The name of the GraphQL operation
+            variables: Operation variables.
+            headers: Request headers.
+            jwt: JWT (must be formatted as `prefix token`).
+            errors: Assert that the response data contains the GraphQL `errors` array
+            error_codes: List of error codes that must be present in the response.
+            raises ErrorCode: Error code that must be present
+                                 in `["extension"]["code"]`.
 
         Returns:
             Ariadne's GraphQLResult object response
@@ -155,7 +158,7 @@ class Tester:
 
     @classmethod
     def assert_data_in_response(cls, response: dict, data: Dict[str, Any]):
-        """Assert that the response contains the specified key with the corresponding values.
+        """Assert that the response contains the specified data dict.
 
         Args:
             response (dict): Response data to check

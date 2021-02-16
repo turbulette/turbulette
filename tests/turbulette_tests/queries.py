@@ -1,3 +1,5 @@
+"""GraphQL queries used in tests."""
+
 query_get_jwt = """
     query getJWT($username: String! $password: String!) {
         getJWT(username: $username, password: $password){

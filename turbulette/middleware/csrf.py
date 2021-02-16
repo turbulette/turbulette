@@ -1,3 +1,5 @@
+"""CSRF Middleware."""
+
 # Adapted from https://github.com/piccolo-orm/piccolo_api
 
 from enum import Enum
@@ -71,8 +73,8 @@ class CSRFMiddleware(BaseHTTPMiddleware):
     This uses the Double Submit Cookie style of CSRF prevention. For more
     information:
 
-    - [Double Submit Cookie](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie)
-    - [Use of custom request headers](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#use-of-custom-request-headers)
+    [Double Submit Cookie](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie)
+    [Use of custom request headers](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#use-of-custom-request-headers)
 
     !!! warning
         This is currently only intended for use using AJAX - since the CSRF token

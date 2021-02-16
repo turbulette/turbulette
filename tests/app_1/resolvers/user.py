@@ -1,3 +1,5 @@
+"""GraphQL resolvers for user operations."""
+
 import logging
 
 from ariadne import convert_kwargs_to_snake_case
@@ -14,7 +16,8 @@ from turbulette.validation.decorators import validate
 @mutation.field("createUser")
 @convert_kwargs_to_snake_case
 @validate(BaseUserCreate)
-async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
+async def resolve_user_create(*_, **kwargs) -> dict:
+    valid_input = kwargs["valid_input"]
     user = await user_model.query.where(
         user_model.username == valid_input["username"]
     ).gino.first()
@@ -37,7 +40,7 @@ async def resolve_user_create(obj, info, valid_input, **kwargs) -> dict:
 
 
 @query.field("books")
-async def resolve_books(_, info, **kwargs):
+async def resolve_books(*_, **kwargs):
     return {
         "books": [
             {
@@ -57,19 +60,19 @@ async def resolve_books(_, info, **kwargs):
 
 
 @mutation.field("addBook")
-async def add_books(_, __, **kwargs):
+async def add_books(*_, **kwargs):
     return {"success": True}
 
 
 @mutation.field("borrowBook")
-async def borrow_book(_, __, **kwargs):
+async def borrow_book(*_, **kwargs):
     book = await Book.get(int(kwargs["id"]))
     await book.update(borrowings=book.borrowings + 1).apply()
     return {"success": True}
 
 
 @query.field("exclusiveBooks")
-async def is_logged(_, __, **kwargs):
+async def is_logged(*_, **kwargs):
     return {
         "books": [
             {"title": "Game Of Thrones", "author": "G.R.R Martin"},
@@ -78,33 +81,34 @@ async def is_logged(_, __, **kwargs):
 
 
 @query.field("book")
-async def resolve_book(_, __, id):
-    book = await Book.query.where(Book.id == int(id)).gino.first()
+async def resolve_book(*_, **kwargs):
+    book = await Book.query.where(Book.id == int(kwargs["id"])).gino.first()
     return {"book": book.to_dict()}
 
 
 @mutation.field("createBook")
 @convert_kwargs_to_snake_case
 @validate(CreateBook)
-async def create_book(_, __, valid_input, **kwargs):
-    book = await Book.create(**valid_input)
+async def create_book(*_, **kwargs):
+    book = await Book.create(**kwargs["valid_input"])
     return {"book": book.to_dict()}
 
 
 @mutation.field("updatePassword")
-async def update_password(_, __, claims, **kwargs):
-    await user_model.set_password(claims["sub"], kwargs["password"])
+async def update_password(*_, **kwargs):
+    await user_model.set_password(kwargs["claims"]["sub"], kwargs["password"])
     return {"success": True}
 
 
 @mutation.field("createComic")
 @convert_kwargs_to_snake_case
 @validate(CreateComics)
-async def create_cartoon(_, __, valid_input, **kwargs):
+async def create_cartoon(*_, **kwargs):
     """Validate input data against multiple models.
     This can be useful to add entries in multiple tables linked
     with a foreign key
     """
+    valid_input = kwargs["valid_input"]
     book_input, comics_input = valid_input.pop("book"), valid_input
     book = await Book.create(**book_input)
     comic = await Comics.create(**comics_input, book=book.id)
@@ -112,17 +116,17 @@ async def create_cartoon(_, __, valid_input, **kwargs):
 
 
 @mutation.field("borrowUnlimitedBooks")
-async def borrow_unlimited(_, __, user, **kwargs):
+async def borrow_unlimited(*_):
     return {"success": True}
 
 
 @mutation.field("destroyLibrary")
-async def destroy_library(_, __, **kwargs):
+async def destroy_library(*_, **kwargs):
     return {"sucess": True}
 
 
 @query.field("comics")
-async def resolve_comics(_, __, **kwargs):
+async def resolve_comics(*_):
     return {
         "comics": [
             {"title": "The Blue Lotus", "author": "Hergé", "artist": "Hergé"},

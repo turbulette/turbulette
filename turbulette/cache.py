@@ -1,3 +1,5 @@
+"""Act as a singleton for the cache instance."""
+
 from caches import Cache as AsyncCache
 
 from turbulette.utils import LazyInitMixin

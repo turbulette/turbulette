@@ -1,3 +1,5 @@
+"""Base classes to manage Turbulette apps."""
+
 from importlib import import_module
 from importlib.util import find_spec
 from inspect import getmembers, isclass
@@ -80,7 +82,8 @@ class TurbuletteApp:
         if not spec or not spec.submodule_search_locations:
             raise TurbuletteAppError(self.label, "Cannot find the module path")
 
-        # Cast to a list ensure its indexable if `submodule_search_locations` is a _NamespacePath
+        # Cast to a list ensure its indexable if
+        # `submodule_search_locations` is a _NamespacePath
         self.package_path = Path(list(spec.submodule_search_locations)[0])
 
         self.schema = schema
@@ -97,8 +100,9 @@ class TurbuletteApp:
     def load_resolvers(self) -> None:
         """Load app resolvers.
 
-        This assumes that all python modules under the `resolvers` package contains resolvers
-        functions. non-resolver functions should live outside this folder to avoid
+        This assumes that all python modules under the `resolvers`
+        package contains resolvers functions.
+        non-resolver functions should live outside this folder to avoid
         unnecessary imports at startup.
 
         Resolvers defined outside the `resolvers` package won't be loaded
@@ -157,14 +161,18 @@ class TurbuletteApp:
                 self.schema = [*type_defs]
 
     def load_graphql_ressources(self) -> None:
-        """Load all needed resources to enable GraphQL queries (schema, directives and resolvers)."""
+        """Load all needed resources to enable GraphQL queries."""
         self.load_schema()
         self.load_directives()
         self.load_resolvers()
         self.ready = True
 
     def load_pydantic_models(self) -> Dict[str, Type[GraphQLModel]]:
-        """Load pydantic models subclassing [GraphQLModel][turbulette.validation.pyd_model.GraphQLModel].
+        """Load pydantic models.
+
+        Only models subclassing
+        [GraphQLModel][turbulette.validation.pyd_model.GraphQLModel]
+        are loaded.
 
         Returns:
             A dict containing all loaded pydantic models for the current app
@@ -191,5 +199,5 @@ class TurbuletteApp:
         return f"<{type(self).__name__}: {self.package_name}>"
 
     def __str__(self):
-        """Should be enough to identify an app since the registry store them in a dict."""
+        """Enough to identify an app since the registry store them in a dict."""
         return self.label

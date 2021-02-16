@@ -1,3 +1,5 @@
+"""Alembic script for the test project."""
+
 from os import environ
 
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE

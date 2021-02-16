@@ -1,3 +1,5 @@
+"""Exceptions raised when encoding/decoding JWTs."""
+
 from turbulette.errors import BaseError, ErrorCode
 
 

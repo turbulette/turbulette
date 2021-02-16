@@ -1,3 +1,5 @@
+"""Names used to compose an app structure."""
+
 # Folders
 FOLDER_SCHEMA = "graphql"
 

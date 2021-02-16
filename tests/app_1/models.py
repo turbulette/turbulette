@@ -1,3 +1,5 @@
+"""GINO models."""
+
 from gino.json_support import ObjectProperty
 from sqlalchemy import Column, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import JSONB

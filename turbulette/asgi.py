@@ -1,3 +1,5 @@
+"""Wrap creation of the ASGI app."""
+
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
@@ -76,7 +78,8 @@ def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
-        project_settings (str, optional): project settings module name. Defaults to None.
+        project_settings (str, optional): project settings module name.
+        Defaults to None.
 
     Raises:
         ASGIFrameworkError: Raised if Starlette cannot be imported
@@ -91,7 +94,9 @@ def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
 
     is_database = (
         hasattr(settings_module, SETTINGS_DATABASE_CONNECTION)
-        and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)["DB_HOST"]  # type: ignore
+        and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)[
+            "DB_HOST"
+        ]  # type: ignore
     )
 
     if is_database:

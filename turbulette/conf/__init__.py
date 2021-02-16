@@ -53,7 +53,8 @@ and the project parameters (can replace them).
 
 !!! info
     The application parameters are loaded first, as they define the default values.
-    The project parameters come last, so they can override the default settings of the applications.
+    The project parameters come last,
+    so they can override the default settings of the applications.
 """
 
 app: LazyStarlette = LazyStarlette()

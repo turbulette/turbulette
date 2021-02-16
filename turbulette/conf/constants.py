@@ -1,3 +1,5 @@
+"""Global names for modules, settings and files."""
+
 # Locations
 PROJECT_SETTINGS_MODULE = "TURBULETTE_SETTINGS_MODULE"
 

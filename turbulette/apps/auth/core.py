@@ -1,3 +1,5 @@
+"""Core authentication logic."""
+
 from enum import Enum
 from importlib import import_module
 from typing import List, Tuple
@@ -195,7 +197,7 @@ def decode_jwt(jwt: str) -> Tuple:
         jwt: The JSON web token
 
     Raises:
-        JSONWebTokenError: Raised if the signature has expired or if the token is invalid
+        JSONWebTokenError: The signature has expired or the token is invalid
 
     Returns:
         The user id

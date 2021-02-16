@@ -1,3 +1,5 @@
+"""Settings that doesn't source any en file."""
+
 from sqlalchemy.engine.url import URL
 
 ###########################

@@ -1,3 +1,6 @@
+"""Exceptions raised by Turbulette apps."""
+
+
 class TurbuletteAppError(Exception):
     """Something went wrong with the app."""
 

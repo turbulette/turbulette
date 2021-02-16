@@ -1,3 +1,5 @@
+"""GraphQL resolvers for the auth app."""
+
 from turbulette import query
 from turbulette.apps.auth import user_model
 from turbulette.apps.auth.core import (
@@ -14,7 +16,7 @@ from turbulette.errors import ErrorField
 
 
 @query.field("getJWT")
-async def get_jwt(_, __, username, password):
+async def get_jwt(*_, username, password):
     """Get access and refresh token from username and password."""
     user = await user_model.query.where(user_model.username == username).gino.first()
     error = ErrorField()
@@ -36,7 +38,7 @@ async def get_jwt(_, __, username, password):
 
 @query.field("refreshJWT")
 @refresh_token_required
-async def refresh_jwt_token(_, __, jwt_claims: dict):
+async def refresh_jwt_token(*_, **kwargs):
     """Refresh an access token."""
-    payload = jwt_payload_from_claims(jwt_claims)
+    payload = jwt_payload_from_claims(kwargs["claims"])
     return AccessToken(access_token=encode_jwt(payload, TokenType.ACCESS))

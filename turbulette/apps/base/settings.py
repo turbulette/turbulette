@@ -1,3 +1,5 @@
+"""Default settings for the base app."""
+
 OVERRIDE_BY_ENV = True
 
 # Base settings rules

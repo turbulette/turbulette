@@ -1,3 +1,5 @@
+"""GraphQL directives for the auth app."""
+
 from ariadne import SchemaDirectiveVisitor
 from graphql import default_field_resolver
 from graphql.type.definition import GraphQLNonNull
@@ -9,6 +11,8 @@ from .decorators import access_token_required, fresh_token_required, scope_requi
 
 
 class AccessTokenRequiredDirective(SchemaDirectiveVisitor):
+    """Require a valid access token."""
+
     name = "access_token_required"
 
     def visit_field_definition(
@@ -25,6 +29,8 @@ class AccessTokenRequiredDirective(SchemaDirectiveVisitor):
 
 
 class FreshTokenRequiredDirective(SchemaDirectiveVisitor):
+    """Require a valid fresh token."""
+
     name = "fresh_token_required"
 
     def visit_field_definition(
@@ -41,6 +47,8 @@ class FreshTokenRequiredDirective(SchemaDirectiveVisitor):
 
 
 class PolicyDirective(SchemaDirectiveVisitor):
+    """Tell Turbulette to evaluate the policy schema for this field."""
+
     name = "policy"
 
     def visit_field_definition(
