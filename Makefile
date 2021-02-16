@@ -78,6 +78,11 @@ testcov: test-setup cov-setup ## Run tests with coverage (HTML output)
 	pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
 	pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
 
+.PHONY: testcov-xml
+testcov-xml: test-setup cov-setup ## Run tests with coverage (XML output)
+	pytest --cov=turbulette --cov-report=xml --ignore tests/turbulette_tests/cli
+	pytest --cov=turbulette --cov-report=xml --cov-append tests/turbulette_tests/cli/
+
 .PHONY: clean
 clean: ## Clean build / cache directories
 	rm -rf `find . -name __pycache__`
