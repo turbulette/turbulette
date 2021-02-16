@@ -1,15 +1,18 @@
 .DEFAULT_GOAL := all
-pydocstyle := pydocstyle --match "turbulette/*.py" --ignore D107,D203,D205,D212,D213,D413,D402,D406,D407,D413
-mypy := mypy turbulette --ignore-missing-imports
 isort := isort -rc turbulette tests
 black := black .
-bandit := bandit -s B101 .
+
+.PHONY: install-pre-commit
+install-pre-commit:
+	pre-commit install --install-hooks
+
+.PHONY: install-lint
+install-lint:
+	poetry install -E dev_lint
 
 .PHONY: lint
 lint:
-	$(pydocstyle)
-	$(mypy)
-	$(bandit)
+	prospector turbulette
 	$(isort) --check-only -df
 	$(black) --check --diff
 

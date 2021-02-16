@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v3.4.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -8,23 +8,14 @@ repos:
       - id: check-merge-conflict
       - id: end-of-file-fixer
       - id: check-added-large-files
-  - repo: https://github.com/PyCQA/prospector
-    rev: 1.3.0 # The version of Prospector to use, at least 1.1.7
+  - repo: local
     hooks:
       - id: prospector
-        exclude: ^tests/
-  -   repo: https://github.com/pre-commit/mirrors-mypy
-      rev: 'v0.782'
-      hooks:
-      -   id: mypy
-          args: [--ignore-missing-imports]
-          exclude: ^(tests/|turbulette/core/management/templates)
-          additional_dependencies: [ariadne==0.12.0]
-  - repo: https://github.com/psf/black
-    rev: 20.8b1
-    hooks:
-      - id: black
-        language_version: python3
+        name: prospector
+        entry: prospector
+        language: system
+        types: [python]
+        exclude: ^(tests/|turbulette/management/templates/|docs/)
   - repo: https://github.com/pycqa/isort
     rev: 5.7.0
     hooks:
@@ -36,3 +27,8 @@ repos:
       - id: isort
         name: isort (pyi)
         types: [pyi]
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        language_version: python3
