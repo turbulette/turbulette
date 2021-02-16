@@ -154,3 +154,5 @@ docker-compose.yml
 !turbulette/management/templates/project/.env
 
 *TODO
+
+.tool-versions
