@@ -2,31 +2,46 @@
 isort := isort -rc turbulette tests
 black := black .
 
-.PHONY: install-pre-commit
-install-pre-commit:
-	pre-commit install --install-hooks
+.PHONY: all
+all: lint testcov
 
 .PHONY: install-lint
-install-lint:
+install-lint: ## Install main deps plus lint deps
 	poetry install -E dev_lint
 
+.PHONY: install-test
+install-test: ## Install main deps plus tests deps
+	poetry install -E dev_test
+
+.PHONY: install-doc
+install-doc: ## Install main deps plus doc deps
+	poetry install -E dev_doc
+
+.PHONY: install-all
+install-all: ## Install main deps, plus every optionals ones
+	poetry install -E dev_test -E dev_lint -E dev_doc
+
+.PHONY: install-pre-commit
+install-pre-commit: ## Instal pre-commit hooks
+	pre-commit install --install-hooks
+
 .PHONY: lint
-lint:
+lint: ## Run linting tools
 	prospector turbulette
 	$(isort) --check-only -df
 	$(black) --check --diff
 
 .PHONY: format
-format:
+format: ## Run formatting tools
 	$(isort)
 	$(black)
 
 .PHONY: docs
-docs:
+docs: ## Build documentation
 	mkdocs build
 
 .PHONY: docs
-docs-serve:
+docs-serve: ## Build and serve documentation locally
 	mkdocs serve
 
 .PHONY: postgres
@@ -41,21 +56,30 @@ test-setup:
 	&& sleep 5)
 
 .PHONY: test
-test: test-setup
+test: test-setup ## Run the full test suite
 	pytest --ignore tests/turbulette_tests/cli
 	pytest tests/turbulette_tests/cli/
 
+.PHONY: test-cli
+test-cli: test-setup ## Only run CLI tests
+	pytest tests/turbulette_tests/cli/
+
+.PHONY: test-no-cli
+test-no-cli: test-setup ## Run every tests excepts CLI ones
+	pytest --ignore tests/turbulette_tests/cli
+
 .PHONY: cov-setup
 cov-setup:
-	find "$$(poetry env info -p)/lib/python$$(poetry env info -p | grep -E "3\..*" -o)/site-packages/" -iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
+	find "$$(poetry env info -p)/lib/python$$(poetry env info -p | grep -E "3\..*" -o)/site-packages/" \
+		-iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
 
 .PHONY: testcov
-testcov: cov-setup
+testcov: test-setup cov-setup ## Run tests with coverage (HTML output)
 	pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
 	pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
 
 .PHONY: clean
-clean:
+clean: ## Clean build / cache directories
 	rm -rf `find . -name __pycache__`
 	rm -f `find . -type f -name '*.py[co]' `
 	rm -f `find . -type f -name '*~' `
@@ -75,3 +99,7 @@ clean:
 	rm -rf docs/.changelog.md docs/.version.md docs/.tmp_schema_mappings.html
 	rm -rf codecov.sh
 	rm -rf coverage.xml
+
+.PHONY: help
+help: ## Print this help
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {gsub("\\\\n",sprintf("\n%22c",""), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
