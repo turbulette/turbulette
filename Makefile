@@ -38,11 +38,11 @@ format: ## Run formatting tools
 
 .PHONY: docs
 docs: ## Build documentation
-	mkdocs build
+	poetry run mkdocs build
 
 .PHONY: docs
 docs-serve: ## Build and serve documentation locally
-	mkdocs serve
+	poetry run mkdocs serve
 
 .PHONY: postgres
 test-setup:
@@ -56,32 +56,32 @@ test-setup:
 	&& sleep 5)
 
 .PHONY: test
-test: test-setup ## Run the full test suite
-	pytest --ignore tests/turbulette_tests/cli
-	pytest tests/turbulette_tests/cli/
+test: ## Run the full test suite
+	poetry run pytest --ignore tests/turbulette_tests/cli
+	poetry run pytest tests/turbulette_tests/cli/
 
 .PHONY: test-cli
-test-cli: test-setup ## Only run CLI tests
-	pytest tests/turbulette_tests/cli/
+test-cli: ## Only run CLI tests
+	poetry run pytest tests/turbulette_tests/cli/
 
 .PHONY: test-no-cli
-test-no-cli: test-setup ## Run every tests excepts CLI ones
-	pytest --ignore tests/turbulette_tests/cli
+test-no-cli: ## Run every tests excepts CLI ones
+	poetry run pytest --ignore tests/turbulette_tests/cli
 
-.PHONY: cov-setup
+.PHONY:
 cov-setup:
 	find "$$(poetry env info -p)/lib/python$$(poetry env info -p | grep -E "3\..*" -o)/site-packages/" \
 		-iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
 
 .PHONY: testcov
-testcov: test-setup cov-setup ## Run tests with coverage (HTML output)
-	pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
-	pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
+testcov: ## Run tests with coverage (HTML output)
+	poetry run pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
+	poetry run pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
 
 .PHONY: testcov-xml
-testcov-xml: test-setup cov-setup ## Run tests with coverage (XML output)
-	pytest --cov=turbulette --cov-report=xml --ignore tests/turbulette_tests/cli
-	pytest --cov=turbulette --cov-report=xml --cov-append tests/turbulette_tests/cli/
+testcov-xml: ## Run tests with coverage (XML output)
+	poetry run pytest --cov=turbulette --cov-report=xml --ignore tests/turbulette_tests/cli
+	poetry run pytest --cov=turbulette --cov-report=xml --cov-append tests/turbulette_tests/cli/
 
 .PHONY: clean
 clean: ## Clean build / cache directories
