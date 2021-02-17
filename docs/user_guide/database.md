@@ -86,9 +86,12 @@ When creating an application with the CLI, you can see that the `📁 migrations
 
 Alembic is able to find difference between the database schema and models, and can automatically generate a migration to make the schema up-to-date with models:
 
-```console
-turb makerevision grocery # Autogenerate grocery revision
+
+<div class="termy">
+``` console
+$ turb makerevision grocery
 ```
+</div>
 
 Again, `makerevision` is just a convenient frontend to alembic, the above is equivalent to:
 
@@ -100,9 +103,11 @@ alembic revision --autogenerate --head=grocery@head
 
 Once you have generated your revisions, apply them to update the database schema:
 
-```console
-turb upgrade grocery # Apply grocery revisions
+<div class="termy">
+``` console
+$ turb upgrade grocery
 ```
+</div>
 
 Alembic equivalent:
 
@@ -112,6 +117,8 @@ alembic upgrade grocery@head
 
 You can also apply revisions from all apps at once by omitting app name:
 
-```console
-turb upgrade
+<div class="termy">
+``` console
+$ turb upgrade
 ```
+</div>

@@ -78,17 +78,28 @@ Python 3.6+
 - [async-caches](https://github.com/rafalp/async-caches) - Async caching library
 - [Click](https://palletsprojects.com/p/click/) - A "Command Line Interface Creation Kit"
 
+
+
+
 ## 📝 Installation
 
-``` bash
-pip install turbulette
+<div class="termy">
+```console
+$ pip install turbulette
+
+---> 100%
 ```
+</div>
 
 You will also need an ASGI server, such as [uvicorn](https://www.uvicorn.org/) :
 
-``` bash
-pip install uvicorn
+<div class="termy">
+```console
+$ pip install turbulette
+
+---> 100%
 ```
+</div>
 
 ----
 
@@ -106,7 +117,7 @@ poetry init
 Then, install Turbulette from PyPI :
 
 ``` bash
-poetry add turbulette
+poetry add uvicorn
 ```
 
 For the rest of the tutorial, we will assume that commands will be executed under the virtualenv.  You can either prepend all commands with `poetry run` , or spawn a shell inside the virtualenv :
@@ -121,9 +132,11 @@ First, create a directory that will contain the whole project.
 
 Now, inside this folder, create your Turbulette project using the `turb` CLI :
 
-``` bash
-turb project --name eshop
+<div class="termy">
+``` console
+$ turb project --name eshop
 ```
+</div>
 
 You should get with something like this :
 
@@ -165,9 +178,11 @@ Now it's time to create a Turbulette application!
 
 Run this command under the project directory (`eshop`) :
 
-```bash
-turb app -n account
+<div class="termy">
+``` console
+$ turb app -n account
 ```
+</div>
 
 !!! info
     You need to run `turb app` under the project dir because the CLI needs to access the `almebic.ini` file to create the initial database migration.
@@ -337,16 +352,24 @@ but here the `#!python @validate` decorator handles the exception and will add e
 
 ### 5: Run it
 
-Our `user` mutation is now binded to the schema, so let's test it.
+Our `registerCard` mutation is now binded to the schema, so let's test it.
 
 Start the server in the root directory (the one containing `📁 eshop` folder) :
 
-```bash
-uvicorn eshop.app:app --port 8000
+<div class="termy">
+```console
+$ uvicorn eshop.app:app --port 8000
+
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [306818] using statreload
+INFO:     Started server process [306831]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
 ```
+</div>
 
 Now, go to [http://localhost:8000/graphql](http://localhost:8000/graphql), you will see the [GraphQL Playground](https://github.com/graphql/graphql-playground) IDE.
-Finally, run the user mutation, for example :
+Finally, run the `registerCard` mutation, for example :
 
 ``` graphql
 mutation card {
