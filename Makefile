@@ -3,7 +3,7 @@ isort := isort -rc turbulette tests
 black := black .
 
 .PHONY: all
-all: lint testcov
+all: lint testcov ## Run linting and testcov
 
 .PHONY: install-lint
 install-lint: ## Install main deps plus lint deps
@@ -45,7 +45,7 @@ docs-serve: ## Build and serve documentation locally
 	poetry run mkdocs serve
 
 .PHONY: postgres
-test-setup:
+test-setup: ## Run the postgres docker container for use with tests
 	[[ $$(docker ps -f "name=turbulette-test" --format '{{.Names}}') == "turbulette-test" ]] || \
 	(docker run --rm --name turbulette-test -p 5432:5432/tcp \
 		-e POSTGRES_PASSWORD="" \
@@ -69,7 +69,7 @@ test-no-cli: ## Run every tests excepts CLI ones
 	poetry run pytest --ignore tests/turbulette_tests/cli
 
 .PHONY:
-cov-setup:
+cov-setup: ## Remove Turbulette package form the virtualenv to avoid wrong coverage reporting
 	find "$$(poetry env info -p)/lib/python$$(poetry env info -p | grep -E "3\..*" -o)/site-packages/" \
 		-iname "turbulette-*.dist-info" -type d -exec rm -rfd {} \;
 
