@@ -324,7 +324,7 @@ from turbulette import mutation
 from ..pyd_models import CreditCard
 
 @mutation.field("registerCard")
-async def register(obj, info, valid_input, **kwargs):
+async def register(obj, info, **kwargs):
     return {"success": True}
 ```
 
@@ -342,13 +342,13 @@ from turbulette.validation import validate
 
 @mutation.field("registerCard")
 @validate(CreditCard)
-async def register(obj, info, valid_input, **kwargs):
+async def register(obj, info, **kwargs):
     return {"success": True}
 ```
 
-Note the new `valid_input` param. The `#!python @validate` decorator produces it if the validation succeeds.
+If the validation succeeds, you can access the validated input data in `#!python kwargs["_valid_data"]`.
 But what happens otherwise? Normally, if the validation fails, pydantic will raise a `ValidationError`,
-but here the `#!python @validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
+but here the `@validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
 
 ### 5: Run it
 
