@@ -1,3 +1,18 @@
+## 0.5.1 (2021-02-18)
+### Changes
+- JWT claims has been moved to `info.context["claims"]` when requiring using auth directive
+- Add `VALIDATION_KWARG_NAME` settings, default to `"_val_data"`
+
+### Internals
+- Update linting configuration
+- Add a documented makefile
+- Add a [code of conduct](https://github.com/turbulette/turbulette/blob/main/CODE_OF_CONDUCT.md)
+
+### Docs
+- Use netlify for deploys
+- Add [termynal](https://github.com/ines/termynal) to prettify terminal commands
+
+
 ## 0.5.0 (2021-02-04)
 ### Features
 - Add `createuser` command to turb CLI
