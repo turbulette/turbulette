@@ -17,7 +17,7 @@ from turbulette.validation.decorators import validate
 @convert_kwargs_to_snake_case
 @validate(BaseUserCreate)
 async def resolve_user_create(*_, **kwargs) -> dict:
-    valid_input = kwargs["valid_input"]
+    valid_input = kwargs["_val_data"]
     user = await user_model.query.where(
         user_model.username == valid_input["username"]
     ).gino.first()
@@ -90,7 +90,7 @@ async def resolve_book(*_, **kwargs):
 @convert_kwargs_to_snake_case
 @validate(CreateBook)
 async def create_book(*_, **kwargs):
-    book = await Book.create(**kwargs["valid_input"])
+    book = await Book.create(**kwargs["_val_data"])
     return {"book": book.to_dict()}
 
 
@@ -108,7 +108,7 @@ async def create_cartoon(*_, **kwargs):
     This can be useful to add entries in multiple tables linked
     with a foreign key
     """
-    valid_input = kwargs["valid_input"]
+    valid_input = kwargs["_val_data"]
     book_input, comics_input = valid_input.pop("book"), valid_input
     book = await Book.create(**book_input)
     comic = await Comics.create(**comics_input, book=book.id)

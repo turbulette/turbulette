@@ -79,3 +79,5 @@ CONFIGURE_LOGGING = False
 CACHE = "locmem://null"
 
 ERROR_FIELD = "errors"
+
+VALIDATION_KWARG_NAME = "_val_data"

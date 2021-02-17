@@ -5,6 +5,8 @@ from typing import Type, Union
 
 from pydantic import BaseModel, ValidationError
 
+from turbulette import conf
+
 from ..errors import PydanticsValidationError
 
 
@@ -27,7 +29,9 @@ def validate(
     def wrap(func: FunctionType):
         async def wrapped_func(obj, info, **kwargs) -> Union[FunctionType, dict]:
             try:
-                kwargs["valid_input"] = model(**kwargs[input_kwarg]).dict()
+                kwargs[conf.settings.VALIDATION_KWARG_NAME] = model(
+                    **kwargs[input_kwarg]
+                ).dict()
                 return await func(obj, info, **kwargs)
             except ValidationError as exception:
                 return PydanticsValidationError(exception).dict()
