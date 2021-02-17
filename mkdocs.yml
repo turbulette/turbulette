@@ -83,6 +83,10 @@ nav:
   - Release Notes: changelogs.md
 extra_css:
   - css/custom.css
+  - css/termynal.css
+extra_javascript:
+  - js/termynal.js
+  - js/custom.js
 extra:
   social:
     - icon: fontawesome/brands/github

@@ -68,4 +68,4 @@ Take the following example showing an authorization error:
 Here the response tells us that we are not allowed to access the `"borrowings"` field, but it doesn't means that we can't see the other ones,
 hence the "partial" response.
 
-See [here](/turbulette/reference/error_codes) for a comprehensive list of error codes
+See [here](/reference/error_codes) for a comprehensive list of error codes

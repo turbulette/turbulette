@@ -22,9 +22,11 @@ Basically, a Turbulette project is a composition of applications, each one havin
 
 To create a project, use the built-in *turb* CLI:
 
-``` bash
-turb project --name eshop
+<div class="termy">
+``` console
+$ turb project --name eshop
 ```
+</div>
 
 You should get with something like this :
 
@@ -85,9 +87,11 @@ At this stage your API is not functional. To start coding, you need to create an
 
 Run this command under the project directory (`eshop`) :
 
-```bash
-turb app -n account
+<div class="termy">
+``` console
+$ turb app -n account
 ```
+</div>
 
 !!! info
     You need to run `turb app` under the project directory because the CLI needs to access the `almebic.ini` file to create the initial database migration.
