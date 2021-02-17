@@ -38,7 +38,7 @@ async def get_jwt(*_, username, password):
 
 @query.field("refreshJWT")
 @refresh_token_required
-async def refresh_jwt_token(*_, **kwargs):
+async def refresh_jwt_token(_, info):
     """Refresh an access token."""
-    payload = jwt_payload_from_claims(kwargs["claims"])
+    payload = jwt_payload_from_claims(info.context["claims"])
     return AccessToken(access_token=encode_jwt(payload, TokenType.ACCESS))

@@ -21,8 +21,8 @@ class AccessTokenRequiredDirective(SchemaDirectiveVisitor):
         original_resolver = field.resolve or default_field_resolver
 
         @access_token_required
-        async def resolve_login_required(obj, info, claims, **kwargs):
-            return await original_resolver(obj, info, claims=claims, **kwargs)
+        async def resolve_login_required(obj, info, **kwargs):
+            return await original_resolver(obj, info, **kwargs)
 
         field.resolve = resolve_login_required
         return field
@@ -39,8 +39,8 @@ class FreshTokenRequiredDirective(SchemaDirectiveVisitor):
         original_resolver = field.resolve or default_field_resolver
 
         @fresh_token_required
-        async def resolve_fresh_token_required(obj, info, claims, **kwargs):
-            return await original_resolver(obj, info, claims=claims, **kwargs)
+        async def resolve_fresh_token_required(obj, info, **kwargs):
+            return await original_resolver(obj, info, **kwargs)
 
         field.resolve = resolve_fresh_token_required
         return field
@@ -60,9 +60,9 @@ class PolicyDirective(SchemaDirectiveVisitor):
             raise SchemaError("Fields with @policy directive cannot be non-null")
 
         @scope_required
-        async def resolve_scope(obj, info, claims, **kwargs):
+        async def resolve_scope(obj, info, **kwargs):
             if is_query(info):
-                return await original_resolver(obj, info, claims=claims, **kwargs)
+                return await original_resolver(obj, info, **kwargs)
             return original_resolver(obj, info, **kwargs)
 
         field.resolve = resolve_scope

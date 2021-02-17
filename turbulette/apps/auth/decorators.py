@@ -23,9 +23,9 @@ def scope_required(func: Callable[..., Any]):
     """
 
     @access_token_required
-    async def wrapper(obj, info, claims, **kwargs):
-        if await authorized(claims, info):
-            return await func(obj, info, claims=claims, **kwargs)
+    async def wrapper(obj, info, **kwargs):
+        if await authorized(info.context["claims"], info):
+            return await func(obj, info, **kwargs)
         if is_query(info):
             add_error(ErrorCode.QUERY_NOT_ALLOWED)
             return None
@@ -47,8 +47,8 @@ def access_token_required(func: Callable[..., Any]):
     """
 
     @_jwt_required(TokenType.ACCESS)
-    async def wrapper(obj, info, claims, **kwargs):
-        return await func(obj, info, claims, **kwargs)
+    async def wrapper(obj, info, **kwargs):
+        return await func(obj, info, **kwargs)
 
     return wrapper
 
@@ -67,12 +67,12 @@ def fresh_token_required(func: Callable[..., Any]):
     """
 
     @_jwt_required(TokenType.ACCESS)
-    async def wrapper(obj, info, claims, **kwargs):
+    async def wrapper(obj, info, **kwargs):
         if (
-            datetime.utcnow() - datetime.utcfromtimestamp(claims["iat"])
+            datetime.utcnow() - datetime.utcfromtimestamp(info.context["claims"]["iat"])
         ) > settings.JWT_FRESH_DELTA:
             raise JWTNotFresh()
-        return await func(obj, info, claims=claims, **kwargs)
+        return await func(obj, info, **kwargs)
 
     return wrapper
 
@@ -89,8 +89,8 @@ def refresh_token_required(func: Callable[..., Any]):
     """
 
     @_jwt_required(TokenType.REFRESH)
-    async def wrapper(obj, info, claims, **kwargs):
-        return await func(obj, info, claims=claims, **kwargs)
+    async def wrapper(obj, info, **kwargs):
+        return await func(obj, info, **kwargs)
 
     return wrapper
 
@@ -106,7 +106,8 @@ def _jwt_required(token_type: TokenType):
                 raise JWTInvalidTokenType(
                     f"The provided JWT is not a {token_type.value} token"
                 )
-            return await func(obj, info, claims=claims, **kwargs)
+            info.context["claims"] = claims
+            return await func(obj, info, **kwargs)
 
         return wrapped_func
 

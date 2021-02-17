@@ -40,7 +40,7 @@ async def resolve_user_create(*_, **kwargs) -> dict:
 
 
 @query.field("books")
-async def resolve_books(*_, **kwargs):
+async def resolve_books(*_):
     return {
         "books": [
             {
@@ -60,7 +60,7 @@ async def resolve_books(*_, **kwargs):
 
 
 @mutation.field("addBook")
-async def add_books(*_, **kwargs):
+async def add_books(*_):
     return {"success": True}
 
 
@@ -72,7 +72,7 @@ async def borrow_book(*_, **kwargs):
 
 
 @query.field("exclusiveBooks")
-async def is_logged(*_, **kwargs):
+async def is_logged(*_):
     return {
         "books": [
             {"title": "Game Of Thrones", "author": "G.R.R Martin"},
@@ -95,8 +95,8 @@ async def create_book(*_, **kwargs):
 
 
 @mutation.field("updatePassword")
-async def update_password(*_, **kwargs):
-    await user_model.set_password(kwargs["claims"]["sub"], kwargs["password"])
+async def update_password(_, info, **kwargs):
+    await user_model.set_password(info.context["claims"]["sub"], kwargs["password"])
     return {"success": True}
 
 
@@ -121,7 +121,7 @@ async def borrow_unlimited(*_):
 
 
 @mutation.field("destroyLibrary")
-async def destroy_library(*_, **kwargs):
+async def destroy_library(*_):
     return {"sucess": True}
 
 
