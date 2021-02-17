@@ -346,7 +346,7 @@ async def register(obj, info, **kwargs):
     return {"success": True}
 ```
 
-If the validation succeeds, you can access the validated input data in `#!python kwargs["_valid_data"]`.
+If the validation succeeds, you can access the validated input data in `#!python kwargs["_val_data"]`.
 But what happens otherwise? Normally, if the validation fails, pydantic will raise a `ValidationError`,
 but here the `@validate` decorator handles the exception and will add error messages returned by pydantic into a dedicated error field in the GraphQL response.
 

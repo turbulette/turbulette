@@ -82,14 +82,13 @@ from turbulette import mutation
 
 @mutation.field("registerCard")
 @validate(CardInput)
-async def add_card(obj, info, valid_input, **kwargs):
+async def add_card(obj, info, **kwargs):
     return {
         "success": True
     }
 ```
 
-When using the `#!python @validate()`, you must add a `valid_input` parameter to your resolver,
-as it will contains validated data if the pydantic validation succeed.
+When using the `#!python @validate()`, you will find validated data in `!#python kwargs["_val_data"]` if the pydantic validation succeed.
 
 ## Validators
 
