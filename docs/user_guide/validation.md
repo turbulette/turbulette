@@ -88,7 +88,7 @@ async def add_card(obj, info, **kwargs):
     }
 ```
 
-When using the `#!python @validate()`, you will find validated data in `!#python kwargs["_val_data"]` if the pydantic validation succeed.
+When using the `#!python @validate()`, you will find validated data in `#!python kwargs["_val_data"]` if the pydantic validation succeed.
 
 ## Validators
 
