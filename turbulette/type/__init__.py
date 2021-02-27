@@ -3,13 +3,11 @@
 Define custom Turbulette types
 """
 
-from typing import Any, Awaitable, Callable, Dict, List, Union
+from typing import Any, Awaitable, Callable, Dict, List, Sequence, Union
 
 from ariadne.types import GraphQLResolveInfo
-
-from .definition import DatabaseSettings
-
-__all__ = ["DatabaseSettings"]
+from starlette.config import Config
+from starlette.requests import Request
 
 
 Principal = List[str]
@@ -19,4 +17,12 @@ Policy = Dict[str, Dict]
 PrincipalResolver = Callable[[str, Claims, GraphQLResolveInfo], Awaitable[bool]]
 ConditionResolver = Callable[
     [Dict[str, Union[str, List[str]]], Claims, GraphQLResolveInfo], Awaitable[bool]
+]
+DatabaseSettings = Dict[str, Union[Config, str]]
+LoaderFunction = Callable[[Sequence[Any]], Awaitable[Sequence[Any]]]
+
+GraphQLContext = Dict[str, Any]
+GraphQLContextAction = Callable[[Request], Awaitable[GraphQLContext]]
+GraphQLContextFilter = Callable[
+    [GraphQLContextAction, Request], Awaitable[GraphQLContext]
 ]

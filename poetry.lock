@@ -1,4 +1,15 @@
 [[package]]
+name = "aiodataloader"
+version = "0.2.0"
+description = "Asyncio DataLoader implementation for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["pytest (>=3.6)", "pytest-cov", "coveralls", "mock", "pytest-asyncio"]
+
+[[package]]
 name = "aioredis"
 version = "1.3.1"
 description = "asyncio (PEP 3156) Redis support"
@@ -1427,9 +1438,12 @@ dev_test = ["pytest", "pytest-cov", "pytest-asyncio", "async-asgi-testclient", "
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "fe5c3feadf32de28590edae57d97869db3160e79c3021c6fc7f20631c8b5edd8"
+content-hash = "fae663bc9f9f98f0f0714184c929705dace22a9f413d2066348c37121e0b50c5"
 
 [metadata.files]
+aiodataloader = [
+    {file = "aiodataloader-0.2.0.tar.gz", hash = "sha256:dd1bbd9c107e6089c41e8aa478ef8e96ec8df16b78bb1d92d027aa663eb657fa"},
+]
 aioredis = [
     {file = "aioredis-1.3.1-py3-none-any.whl", hash = "sha256:b61808d7e97b7cd5a92ed574937a079c9387fdadd22bfbfa7ad2fd319ecc26e3"},
     {file = "aioredis-1.3.1.tar.gz", hash = "sha256:15f8af30b044c771aee6787e5ec24694c048184c7b9e54c3b60c750a4b93273a"},

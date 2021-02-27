@@ -15,7 +15,7 @@ from sqlalchemy import (
 
 from turbulette.apps import auth
 from turbulette.conf import settings
-from turbulette.db import Model, get_tablename
+from turbulette.db.database import Model, get_tablename
 from turbulette.db.exceptions import DoesNotExist
 
 
