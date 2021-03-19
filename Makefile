@@ -80,8 +80,8 @@ testcov: ## Run tests with coverage (HTML output)
 
 .PHONY: testcov-xml
 testcov-xml: ## Run tests with coverage (XML output)
-	pytest --cov=turbulette --cov-report=xml --ignore tests/turbulette_tests/cli
-	pytest --cov=turbulette --cov-report=xml --cov-append tests/turbulette_tests/cli/
+	poetry run pytest --cov=turbulette --cov-report=xml --ignore tests/turbulette_tests/cli
+	poetry run pytest --cov=turbulette --cov-report=xml --cov-append tests/turbulette_tests/cli/
 
 .PHONY: clean
 clean: ## Clean build / cache directories
