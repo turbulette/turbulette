@@ -33,13 +33,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      - name: Set up Poetry cache for Python dependencies
-        uses: actions/cache@v2.1.4
-        if: startsWith(runner.os, 'Linux')
-        with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
+      # - name: Set up Poetry cache for Python dependencies
+      #   uses: actions/cache@v2.1.4
+      #   if: startsWith(runner.os, 'Linux')
+      #   with:
+      #     path: ~/.cache/pypoetry
+      #     key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
+      #     restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
+      - name: virtualenv cache
+        uses: syphar/restore-virtualenv@v1.1
       - name: Install poetry
         run: bash ./scripts/install-poetry.sh
       - name: Install dependencies
