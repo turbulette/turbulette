@@ -26,6 +26,7 @@ jobs:
 
       - uses: syphar/restore-pip-download-cache@v1
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
       - name: Install poetry
         env:
           POETRY_VERSION: 1.1.4
@@ -35,10 +36,12 @@ jobs:
           source $HOME/.poetry/env
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
+      - name: Install dependencies
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction -E dev_test -E dev_doc
+
       - name: Build and publish docs
-        run: |
-          poetry install --no-interaction -E dev_test -E dev_doc
-          make docs
+        run: make docs
 
       - name: Zip docs
         run: bash ./scripts/zip-docs.sh
