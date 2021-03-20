@@ -1,3 +1,5 @@
+# Adapted from https://github.com/python-gino/gino/blob/master/.github/workflows/test.yml
+
 name: Test
 
 on:
@@ -75,9 +77,6 @@ jobs:
   test-coverage:
     needs: create-virtualenv
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9"]
     services:
       postgres:
         image: postgres
@@ -119,7 +118,7 @@ jobs:
       - name: coverage
         uses: codacy/codacy-coverage-reporter-action@master
         with:
-          python-version: ${{ matrix.python-version }}
+          project-token: ${{ secrets.CODACY_TOKEN }}
           coverage-reports: coverage.xml
 
   test:
