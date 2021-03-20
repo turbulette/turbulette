@@ -3,13 +3,13 @@
 import asyncio
 from datetime import datetime
 from importlib import import_module, reload
-from importlib.util import find_spec
+# from importlib.util import find_spec
 from os import environ
 from pathlib import Path
 
 import pytest
-from alembic.command import upgrade
-from alembic.config import Config
+# from alembic.command import upgrade
+# from alembic.config import Config
 from gino import create_engine  # type: ignore
 from starlette.config import Config as starlette_config
 
@@ -17,7 +17,11 @@ from turbulette import conf, setup
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.test.tester import Tester
+from turbulette.utils import import_class
 
+import debugpy
+debugpy.listen(5678)
+debugpy.wait_for_client()
 
 def pytest_addoption(parser):
     parser.addoption("--settings", action="store", help="Turbulette settings")
@@ -66,7 +70,7 @@ def db_name():
 
 
 @pytest.fixture(scope="session")
-async def turbulette_setup(project_settings, create_db):
+async def turbulette_setup(project_settings):
     """Create a test database, apply alembic revisions and setup turbulette project.
 
     Scope: `session`
@@ -74,22 +78,26 @@ async def turbulette_setup(project_settings, create_db):
     Depends on : [create_db][turbulette.test.pytest_plugin.create_db]
     """
     conf_module = reload(import_module("turbulette.conf"))
-    setup(project_settings.__name__, database=True)
-    async with conf.db.with_bind(bind=project_settings.DB_DSN) as engine:
-        settings_file = Path(find_spec(project_settings.__name__).origin)
-        alembic_config = (settings_file.parent / "alembic.ini").as_posix()
-        script_location = (settings_file.parent / "alembic").as_posix()
-
-        config = Config(file_=alembic_config)
-        config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
-        config.set_main_option("script_location", script_location)
-        upgrade(config, "heads")
+    setup(project_settings.__name__)
+    conn_params = project_settings.DATABASES["connection"]
+    db_backend = import_class(project_settings.DATABASES["backend"])
+    async with db_backend.create_test_database(conn_params, project_settings):
         cache = getattr(import_module("turbulette.cache"), "cache")
         await cache.connect()
         yield conf_module
         if cache.is_connected:
             await cache.disconnect()
-    await engine.close()
+    # async with conf.db.with_bind(bind=project_settings.DB_DSN) as engine:
+    #     settings_file = Path(find_spec(project_settings.__name__).origin)
+    #     alembic_config = (settings_file.parent / "alembic.ini").as_posix()
+    #     script_location = (settings_file.parent / "alembic").as_posix()
+
+    #     config = Config(file_=alembic_config)
+    #     config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
+    #     config.set_main_option("script_location", script_location)
+    #     upgrade(config, "heads")
+    #     cache = getattr(import_module("turbulette.cache"), "cache")
+    #     await cache.connect()
 
 
 @pytest.fixture(scope="session")

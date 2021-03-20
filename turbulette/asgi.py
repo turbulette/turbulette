@@ -3,10 +3,8 @@
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Any, Optional, Type
+from typing import Optional
 
-from gino_starlette import Gino
-from sqlalchemy.engine.url import URL
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.routing import Route, WebSocketRoute
@@ -15,77 +13,12 @@ from turbulette import conf
 from turbulette.cache import cache
 from turbulette.conf.constants import (
     ROUTING_MODULE_ROUTES,
-    SETTINGS_DATABASE_CONNECTION,
-    SETTINGS_DATABASE_SETTINGS,
-    SETTINGS_DB_DSN,
     SETTINGS_MIDDLEWARES,
     TURBULETTE_ROUTING_MODULE,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.main import setup
-from turbulette.type import DatabaseSettings
-from turbulette.utils import get_project_settings
-
-
-def gino_starlette(settings: DatabaseSettings, dsn: URL) -> Gino:
-    pass
-
-
-class DatabaseConnection:
-    """Manage connection to a data source."""
-
-    @classmethod
-    def connect(cls, settings: DatabaseSettings, dsn: URL) -> Any:
-        raise NotImplementedError()
-
-    @classmethod
-    def on_startup(cls, app: Starlette) -> None:
-        pass
-
-
-class GinoConnection(DatabaseConnection):
-    @classmethod
-    def connect(cls, settings: DatabaseSettings, dsn: URL) -> Any:
-        """Setup db connection using `gino_starlette` extension.
-
-        Args:
-            settings (DatabaseSettings): Settings to use when establishing the connection
-            dsn (URL): db credentials
-
-        Raises:
-            ImproperlyConfigured: Raised if either `settings` or `dsn`
-                                are incorrect or have missing values
-
-        Returns:
-            The GINO instance
-        """
-        if not settings:
-            raise ImproperlyConfigured(
-                f"You did not set the {SETTINGS_DATABASE_SETTINGS} setting"
-            )
-        if not dsn:
-            raise ImproperlyConfigured(f"You did not set the {SETTINGS_DB_DSN} setting")
-        try:
-            database = Gino(
-                dsn=dsn,
-                pool_min_size=settings["DB_POOL_MIN_SIZE"],
-                pool_max_size=settings["DB_POOL_MAX_SIZE"],
-                echo=settings["DB_ECHO"],
-                ssl=settings["DB_SSL"],
-                use_connection_for_request=settings["DB_USE_CONNECTION_FOR_REQUEST"],
-                retry_limit=settings["DB_RETRY_LIMIT"],
-                retry_interval=settings["DB_RETRY_INTERVAL"],
-            )
-        except KeyError as error:
-            raise ImproperlyConfigured(
-                f"You did not set {error.args[0]} in {SETTINGS_DATABASE_SETTINGS}"
-            ) from error
-        conf.db.__setup__(database)
-        return database
-
-    @classmethod
-    def on_startup(cls, app: Starlette) -> None:
-        conf.db.init_app(app)
+from turbulette.utils import get_project_settings, import_class
 
 
 async def startup():
@@ -96,10 +29,7 @@ async def shutdown():
     await cache.disconnect()
 
 
-def turbulette_starlette(
-    project_settings: Optional[str] = None,
-    db_connection: Optional[Type[DatabaseConnection]] = None,
-) -> Starlette:
+def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
@@ -116,21 +46,22 @@ def turbulette_starlette(
 
     settings_path = get_project_settings(project_settings)
     settings_module = import_module(settings_path)
+    db_connection = None
 
-    is_database = (
-        hasattr(settings_module, SETTINGS_DATABASE_CONNECTION)
-        and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)[
-            "DB_HOST"
-        ]  # type: ignore
-    )
+    is_database = hasattr(settings_module, "DATABASES")
 
-    if is_database and db_connection:
-        db_connection.connect(
-            getattr(settings_module, SETTINGS_DATABASE_SETTINGS),
-            getattr(settings_module, SETTINGS_DB_DSN),
+    # and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)[
+    #     "DB_HOST"
+    # ]  # type: ignore
+
+    if is_database:
+        db_connection = import_class(getattr(settings_module, "DATABASES")["backend"])(
+            getattr(settings_module, "DATABASES")["settings"],
+            getattr(settings_module, "DATABASES")["connection"],
         )
+        db_connection.connect()
 
-    graphql_route = setup(settings_path, is_database)
+    graphql_route = setup(settings_path)
 
     # Register middlewares
     if hasattr(conf.settings, SETTINGS_MIDDLEWARES):
@@ -175,8 +106,9 @@ def turbulette_starlette(
         )
 
         conf.app.__setup__(app)
-        if is_database and db_connection:
+        if db_connection:
             db_connection.on_startup(app)
+            conf.db.__setup__(db_connection.database)
         return app
 
     raise ImproperlyConfigured(

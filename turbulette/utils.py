@@ -1,5 +1,6 @@
 """Helpers used internally by Turbulette."""
 
+from importlib import import_module
 from os import environ
 from pathlib import Path
 from random import SystemRandom
@@ -107,3 +108,10 @@ class LazyInitMixin:
     @property
     def initialized(self) -> bool:
         return self.__initialized__
+
+
+def import_class(cls_path: str) -> Type[Any]:
+    return getattr(
+        import_module(cls_path.rsplit(".", 1)[0]),
+        cls_path.rsplit(".", 1)[-1],
+    )

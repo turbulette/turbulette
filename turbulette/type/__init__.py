@@ -18,7 +18,7 @@ PrincipalResolver = Callable[[str, Claims, GraphQLResolveInfo], Awaitable[bool]]
 ConditionResolver = Callable[
     [Dict[str, Union[str, List[str]]], Claims, GraphQLResolveInfo], Awaitable[bool]
 ]
-DatabaseSettings = Dict[str, Union[Config, str]]
+DatabaseSettings = Dict[str, Config]
 LoaderFunction = Callable[[Sequence[Any]], Awaitable[Sequence[Any]]]
 
 GraphQLContext = Dict[str, Any]
@@ -26,3 +26,4 @@ GraphQLContextAction = Callable[[Request], Awaitable[GraphQLContext]]
 GraphQLContextFilter = Callable[
     [GraphQLContextAction, Request], Awaitable[GraphQLContext]
 ]
+DatabaseConnectionParams = Dict[str, Config]

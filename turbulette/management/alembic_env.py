@@ -11,7 +11,6 @@ from sqlalchemy import engine_from_config, pool
 
 from turbulette import conf
 from turbulette.apps import Registry
-from turbulette.main import get_gino_instance
 from turbulette.utils import get_project_settings
 
 
@@ -71,8 +70,6 @@ def run_migrations(project_settings: Optional[str] = None):
         conf.registry.__setup__(registry)
     registry.load_settings()
 
-    database = get_gino_instance()
-
     # this is the Alembic Config object, which provides
     # access to the values within the .ini file in use.
     alembic_config = context.config
@@ -83,7 +80,7 @@ def run_migrations(project_settings: Optional[str] = None):
 
     # add your model's MetaData object here
     # for 'autogenerate' support
-    metadata = database
+    metadata = conf.db
     registry.load_models()
     alembic_config.set_main_option(
         "sqlalchemy.url", str(settings.DB_DSN)  # type: ignore

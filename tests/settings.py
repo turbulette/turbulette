@@ -68,38 +68,25 @@ ENCRYPTION_KEY = {"kty": "oct", "k": config("ENCRYPTION_KEY_K", cast=Secret)}
 # DATABASE
 ###########################
 
-# DB connection
-DATABASE_CONNECTION = {
-    "DB_DRIVER": config("DB_DRIVER", default="postgresql"),
-    "DB_HOST": config("DB_HOST", default=None),
-    "DB_PORT": config("DB_PORT", cast=int, default=None),
-    "DB_USER": config("DB_USER", default=None),
-    "DB_PASSWORD": config("DB_PASSWORD", cast=Secret, default=None),
-    "DB_DATABASE": config("DB_DATABASE", default=None),
+DATABASES = {
+    "backend": "turbulette.db_backend.gino.GinoConnection",
+    "connection": {
+        "DB_DRIVER": config("DB_DRIVER", default="postgresql"),
+        "DB_HOST": config("DB_HOST", default=None),
+        "DB_PORT": config("DB_PORT", cast=int, default=None),
+        "DB_USER": config("DB_USER", default=None),
+        "DB_PASSWORD": config("DB_PASSWORD", cast=Secret, default=None),
+        "DB_DATABASE": config("DB_DATABASE", default=None),
+    },
+    "settings": {
+        "DB_POOL_MIN_SIZE": config("DB_POOL_MIN_SIZE", cast=int, default=1),
+        "DB_POOL_MAX_SIZE": config("DB_POOL_MAX_SIZE", cast=int, default=16),
+        "DB_ECHO": config("DB_ECHO", cast=bool, default=False),
+        "DB_SSL": config("DB_SSL", default=None),
+        "DB_USE_CONNECTION_FOR_REQUEST": config(
+            "DB_USE_CONNECTION_FOR_REQUEST", cast=bool, default=True
+        ),
+        "DB_RETRY_LIMIT": config("DB_RETRY_LIMIT", cast=int, default=1),
+        "DB_RETRY_INTERVAL": config("DB_RETRY_INTERVAL", cast=int, default=1),
+    }
 }
-
-# DB settings
-DATABASE_SETTINGS = {
-    "DB_POOL_MIN_SIZE": config("DB_POOL_MIN_SIZE", cast=int, default=1),
-    "DB_POOL_MAX_SIZE": config("DB_POOL_MAX_SIZE", cast=int, default=16),
-    "DB_ECHO": config("DB_ECHO", cast=bool, default=False),
-    "DB_SSL": config("DB_SSL", default=None),
-    "DB_USE_CONNECTION_FOR_REQUEST": config(
-        "DB_USE_CONNECTION_FOR_REQUEST", cast=bool, default=True
-    ),
-    "DB_RETRY_LIMIT": config("DB_RETRY_LIMIT", cast=int, default=1),
-    "DB_RETRY_INTERVAL": config("DB_RETRY_INTERVAL", cast=int, default=1),
-}
-
-DB_DSN = config(
-    "DB_DSN",
-    cast=make_url,
-    default=URL(
-        drivername=DATABASE_CONNECTION["DB_DRIVER"],
-        username=DATABASE_CONNECTION["DB_USER"],
-        password=DATABASE_CONNECTION["DB_PASSWORD"],
-        host=DATABASE_CONNECTION["DB_HOST"],
-        port=DATABASE_CONNECTION["DB_PORT"],
-        database=DATABASE_CONNECTION["DB_DATABASE"],
-    ),
-)
