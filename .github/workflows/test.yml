@@ -45,7 +45,7 @@ jobs:
       - name: Install poetry
         run: bash ./scripts/install-poetry.sh
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root -E dev_test -E dev_lint
+        run: poetry install --no-interaction --no-root -E dev_test -E dev_lint -E dev_doc
       - name: List installed packages
         run: poetry show
       - name: test
