@@ -51,6 +51,7 @@ jobs:
         run: poetry show
 
   test:
+    needs: create-virtualenv
     runs-on: ubuntu-latest
     strategy:
       matrix:
