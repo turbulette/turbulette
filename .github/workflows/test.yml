@@ -42,10 +42,13 @@ jobs:
       #     restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
       - name: virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
+      - uses: syphar/restore-pip-download-cache@v1
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       - name: Install poetry
         run: bash ./scripts/install-poetry.sh
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root -E dev_test -E dev_lint -E dev_doc
+        run: poetry install --no-interaction --no-root -E dev_test -E dev_lint
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       - name: List installed packages
         run: poetry show
       - name: test
