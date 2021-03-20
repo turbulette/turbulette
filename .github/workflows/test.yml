@@ -28,6 +28,7 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -40,17 +41,24 @@ jobs:
       #     path: ~/.cache/pypoetry
       #     key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
       #     restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
-      # - name: virtualenv cache
-      #   uses: syphar/restore-virtualenv@v1.1
-      # - uses: syphar/restore-pip-download-cache@v1
-      #   if: steps.cache-virtualenv.outputs.cache-hit != 'true'
-      - name: Install poetry
-        run: bash ./scripts/install-poetry.sh
+
+      - name: Virtualenv cache
+        uses: syphar/restore-virtualenv@v1.1
+
+      - uses: syphar/restore-pip-download-cache@v1
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root -E dev_test -E dev_lint
-        # if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        env:
+          POETRY_VERSION: 1.1.4
+        run: |
+          bash ./scripts/install-poetry.sh
+          poetry install --no-interaction --no-root -E dev_test -E dev_lint
+
       - name: List installed packages
         run: poetry show
+
       - name: test
         env:
           DB_DRIVER: postgresql

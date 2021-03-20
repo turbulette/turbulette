@@ -3,6 +3,7 @@
 set -x
 set -e
 
-curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+pip install pip==20.3.1 setuptools==50.3.2
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 python get-poetry.py -y
-echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+source $HOME/.poetry/env
