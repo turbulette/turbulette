@@ -60,7 +60,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
           architecture: x64
 
       - name: Restore virtualenv cache
@@ -68,6 +68,7 @@ jobs:
         id: cache-virtualenv-tests
         with:
           custom_cache_key_element: tests
+
       - name: lint
         run: |
           black --check .
