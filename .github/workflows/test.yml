@@ -66,6 +66,7 @@ jobs:
           DB_PASSWORD: ""
           TURBULETTE_SETTINGS_MODULE: tests.settings
         run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make testcov-xml
+
       - name: lint
         run: |
           poetry run black --check .

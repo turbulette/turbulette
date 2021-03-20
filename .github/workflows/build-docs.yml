@@ -14,28 +14,38 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-      - name: Set up Poetry cache for Python dependencies
-        uses: actions/cache@v2.1.4
-        if: startsWith(runner.os, 'Linux')
-        with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-${{ matrix.python-version }}-poetry-docs-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.python-version }}-poetry-
+
+      - name: Virtualenv cache
+        uses: syphar/restore-virtualenv@v1.1
+
+      - uses: syphar/restore-pip-download-cache@v1
+        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       - name: Install poetry
-        run: bash ./scripts/install-poetry.sh
+        env:
+          POETRY_VERSION: 1.1.4
+        run: |
+          pip install pip==20.3.1 setuptools==50.3.2
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
       - name: Build and publish docs
         run: make install-test install-doc docs
+
       - name: Zip docs
         run: bash ./scripts/zip-docs.sh
+
       - uses: actions/upload-artifact@v2
         with:
           name: docs-zip
           path: ./docs.zip
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.1
         with:
