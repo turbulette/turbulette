@@ -95,7 +95,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
           architecture: x64
 
       - name: Restore virtualenv cache
@@ -104,7 +104,7 @@ jobs:
         with:
           custom_cache_key_element: tests
 
-      - name: test
+      - name: Test with coverage
         env:
           DB_DRIVER: postgresql
           DB_HOST: localhost
@@ -121,11 +121,11 @@ jobs:
           coverage-reports: coverage.xml
 
   test:
-    needs: create-virtualenv
+    needs: ["lint", "test-coverage"]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: ["3.6", "3.7", "3.8"]
     services:
       postgres:
         image: postgres
@@ -154,7 +154,7 @@ jobs:
         with:
           custom_cache_key_element: tests
 
-      - name: test
+      - name: Test
         env:
           DB_DRIVER: postgresql
           DB_HOST: localhost
