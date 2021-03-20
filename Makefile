@@ -38,14 +38,14 @@ format: ## Run formatting tools
 
 .PHONY: docs
 docs: ## Build documentation
-	poetry run mkdocs build
+	mkdocs build
 
 .PHONY: docs
 docs-serve: ## Build and serve documentation locally
-	poetry run mkdocs serve
+	mkdocs serve
 
 .PHONY: postgres
-test-setup: ## Run the postgres docker container for use with tests
+postgres: ## Run the postgres docker container for use with tests
 	[[ $$(docker ps -f "name=turbulette-test" --format '{{.Names}}') == "turbulette-test" ]] || \
 	(docker run --rm --name turbulette-test -p 5432:5432/tcp \
 		-e POSTGRES_PASSWORD="" \
@@ -57,16 +57,16 @@ test-setup: ## Run the postgres docker container for use with tests
 
 .PHONY: test
 test: ## Run the full test suite
-	poetry run pytest --ignore tests/turbulette_tests/cli
-	poetry run pytest tests/turbulette_tests/cli/
+	pytest --ignore tests/turbulette_tests/cli
+	pytest tests/turbulette_tests/cli/
 
 .PHONY: test-cli
 test-cli: ## Only run CLI tests
-	poetry run pytest tests/turbulette_tests/cli/
+	pytest tests/turbulette_tests/cli/
 
 .PHONY: test-no-cli
 test-no-cli: ## Run every tests excepts CLI ones
-	poetry run pytest --ignore tests/turbulette_tests/cli
+	pytest --ignore tests/turbulette_tests/cli
 
 .PHONY:
 cov-setup: ## Remove Turbulette package form the virtualenv to avoid wrong coverage reporting
@@ -75,8 +75,8 @@ cov-setup: ## Remove Turbulette package form the virtualenv to avoid wrong cover
 
 .PHONY: testcov
 testcov: ## Run tests with coverage (HTML output)
-	poetry run pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
-	poetry run pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
+	pytest --cov=turbulette --cov-report=html --ignore tests/turbulette_tests/cli
+	pytest --cov=turbulette --cov-report=html --cov-append tests/turbulette_tests/cli/
 
 .PHONY: testcov-xml
 testcov-xml: ## Run tests with coverage (XML output)
