@@ -25,10 +25,14 @@ jobs:
       - name: virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
         id: cache-virtualenv-tests
+        with:
+          custom_cache_key_element: tests
 
       - name: pip cache
         uses: syphar/restore-pip-download-cache@v1
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        with:
+          custom_cache_key_element: tests
 
       - name: Install poetry
         env:
@@ -76,6 +80,8 @@ jobs:
       - name: Restore virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
         id: cache-virtualenv-tests
+        with:
+          custom_cache_key_element: tests
 
       - name: test
         env:

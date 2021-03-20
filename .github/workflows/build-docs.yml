@@ -29,6 +29,8 @@ jobs:
 
       - uses: syphar/restore-pip-download-cache@v1
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        with:
+          custom_cache_key_element: docs
 
       - name: Install poetry
         env:
