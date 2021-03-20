@@ -24,7 +24,7 @@ jobs:
 
       - name: virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
-        id: cache-virtualenv
+        id: cache-virtualenv-tests
 
       - name: pip cache
         uses: syphar/restore-pip-download-cache@v1
@@ -75,7 +75,7 @@ jobs:
 
       - name: Restore virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
-        id: cache-virtualenv
+        id: cache-virtualenv-tests
 
       - name: test
         env:

@@ -23,6 +23,7 @@ jobs:
 
       - name: Virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
+        id: cache-virtualenv-docs
 
       - uses: syphar/restore-pip-download-cache@v1
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
