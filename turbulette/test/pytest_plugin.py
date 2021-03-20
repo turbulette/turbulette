@@ -3,11 +3,14 @@
 import asyncio
 from datetime import datetime
 from importlib import import_module, reload
+
 # from importlib.util import find_spec
 from os import environ
 from pathlib import Path
 
+import debugpy
 import pytest
+
 # from alembic.command import upgrade
 # from alembic.config import Config
 from gino import create_engine  # type: ignore
@@ -19,9 +22,9 @@ from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.test.tester import Tester
 from turbulette.utils import import_class
 
-import debugpy
 debugpy.listen(5678)
 debugpy.wait_for_client()
+
 
 def pytest_addoption(parser):
     parser.addoption("--settings", action="store", help="Turbulette settings")

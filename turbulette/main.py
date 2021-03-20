@@ -15,7 +15,6 @@ from turbulette.utils import get_project_settings
 
 from .apps import Registry
 
-
 # def get_gino_instance() -> Gino:
 #     if conf.db.initialized:
 #         return conf.db
