@@ -77,6 +77,9 @@ jobs:
   test-coverage:
     needs: create-virtualenv
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
     services:
       postgres:
         image: postgres
@@ -96,7 +99,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
           architecture: x64
 
       - name: Restore virtualenv cache
