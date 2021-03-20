@@ -36,7 +36,9 @@ jobs:
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Build and publish docs
-        run: make install-test install-doc docs
+        run: |
+          poetry install --no-interaction -E dev_test -E dev_doc
+          make docs
 
       - name: Zip docs
         run: bash ./scripts/zip-docs.sh

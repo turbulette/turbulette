@@ -38,6 +38,7 @@ jobs:
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
           source $HOME/.poetry/env
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          poetry install --no-interaction --no-root -E dev_test -E dev_lint
 
       - name: List installed packages
         run: poetry show
@@ -69,11 +70,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      - name: Virtualenv cache
+      - name: Restore virtualenv cache
         uses: syphar/restore-virtualenv@v1.1
-
-      - uses: syphar/restore-pip-download-cache@v1
-        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+        id: cache-virtualenv
 
       - name: test
         env:
