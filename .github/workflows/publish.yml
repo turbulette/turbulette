@@ -14,12 +14,21 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install poetry
-        run: bash ./scripts/install-poetry.sh
+        env:
+          POETRY_VERSION: 1.1.4
+        run: |
+          pip install pip==20.3.1 setuptools==50.3.2
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
       - name: Build Python package and publish to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
