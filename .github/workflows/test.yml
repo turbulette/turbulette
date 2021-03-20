@@ -74,62 +74,12 @@ jobs:
           black --check .
           mypy turbulette --ignore-missing-imports
 
-  test-coverage:
-    needs: create-virtualenv
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9"]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ""
-          POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
-      - name: Restore virtualenv cache
-        uses: syphar/restore-virtualenv@v1.1
-        id: cache-virtualenv-tests
-        with:
-          custom_cache_key_element: tests
-
-      - name: Test with coverage
-        env:
-          DB_DRIVER: postgresql
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: ""
-          TURBULETTE_SETTINGS_MODULE: tests.settings
-        run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make testcov-xml
-
-      - name: coverage
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_TOKEN }}
-          coverage-reports: coverage.xml
-
   test:
-    needs: ["lint", "test-coverage"]
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
     services:
       postgres:
         image: postgres
@@ -166,4 +116,11 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ""
           TURBULETTE_SETTINGS_MODULE: tests.settings
-        run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make test
+        run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make testcov-xml
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.9'
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_TOKEN }}
+          coverage-reports: coverage.xml
