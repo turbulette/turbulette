@@ -7,10 +7,12 @@ from pathlib import Path
 from typing import Optional
 
 from alembic import context
+from gino_starlette import Gino  # type: ignore [attr-defined]
 from sqlalchemy import engine_from_config, pool
 
 from turbulette import conf
 from turbulette.apps import Registry
+from .backend import GinoBackend
 from turbulette.utils import get_project_settings
 
 
@@ -58,6 +60,14 @@ def _run_migrations_online(metadata, config):  # pragma: no cover
             context.run_migrations()
 
 
+def get_gino_instance() -> Gino:
+    if conf.db.initialized:
+        return conf.db
+    database = Gino()
+    conf.db.__setup__(database)
+    return database
+
+
 def run_migrations(project_settings: Optional[str] = None):
     """Apply migrations for installed apps depending on the context (online/offline)."""
     # Add project folder to python path
@@ -80,10 +90,13 @@ def run_migrations(project_settings: Optional[str] = None):
 
     # add your model's MetaData object here
     # for 'autogenerate' support
-    metadata = conf.db
+    metadata = get_gino_instance()
     registry.load_models()
+
+    url = GinoBackend.make_url(getattr(settings, "DATABASES")["connection"])
+
     alembic_config.set_main_option(
-        "sqlalchemy.url", str(settings.DB_DSN)  # type: ignore
+        "sqlalchemy.url", str(url)  # type: ignore
     )
 
     if context.is_offline_mode():  # pragma: no cover

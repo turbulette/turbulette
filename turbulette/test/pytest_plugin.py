@@ -4,16 +4,10 @@ import asyncio
 from datetime import datetime
 from importlib import import_module, reload
 
-# from importlib.util import find_spec
 from os import environ
 from pathlib import Path
 
-import debugpy
 import pytest
-
-# from alembic.command import upgrade
-# from alembic.config import Config
-from gino import create_engine  # type: ignore
 from starlette.config import Config as starlette_config
 
 from turbulette import conf, setup
@@ -21,9 +15,6 @@ from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.test.tester import Tester
 from turbulette.utils import import_class
-
-debugpy.listen(5678)
-debugpy.wait_for_client()
 
 
 def pytest_addoption(parser):
@@ -73,7 +64,7 @@ def db_name():
 
 
 @pytest.fixture(scope="session")
-async def turbulette_setup(project_settings):
+async def turbulette_setup(project_settings, request, db_name):
     """Create a test database, apply alembic revisions and setup turbulette project.
 
     Scope: `session`
@@ -81,48 +72,19 @@ async def turbulette_setup(project_settings):
     Depends on : [create_db][turbulette.test.pytest_plugin.create_db]
     """
     conf_module = reload(import_module("turbulette.conf"))
-    setup(project_settings.__name__)
-    conn_params = project_settings.DATABASES["connection"]
-    db_backend = import_class(project_settings.DATABASES["backend"])
-    async with db_backend.create_test_database(conn_params, project_settings):
+    db_backend = import_class(project_settings.DATABASES["backend"])(
+        settings=project_settings.DATABASES["settings"],
+        conn_params=project_settings.DATABASES["connection"],
+    )
+    keep_db = request.config.getoption("--keep-db", default=False)
+
+    async with db_backend.create_test_db(project_settings, db_name, keep_db):
+        setup(project_settings.__name__)
         cache = getattr(import_module("turbulette.cache"), "cache")
         await cache.connect()
         yield conf_module
         if cache.is_connected:
             await cache.disconnect()
-    # async with conf.db.with_bind(bind=project_settings.DB_DSN) as engine:
-    #     settings_file = Path(find_spec(project_settings.__name__).origin)
-    #     alembic_config = (settings_file.parent / "alembic.ini").as_posix()
-    #     script_location = (settings_file.parent / "alembic").as_posix()
-
-    #     config = Config(file_=alembic_config)
-    #     config.set_main_option("sqlalchemy.url", str(project_settings.DB_DSN))
-    #     config.set_main_option("script_location", script_location)
-    #     upgrade(config, "heads")
-    #     cache = getattr(import_module("turbulette.cache"), "cache")
-    #     await cache.connect()
-
-
-@pytest.fixture(scope="session")
-async def create_db(db_name, project_settings, request):
-    """Create a test database.
-
-    Scope: `session`
-
-    Depends on : [db_name][turbulette.test.pytest_plugin.db_name]
-    """
-    # Connect to the default template1 database to create a new one
-    project_settings.DB_DSN.database = "template1"
-    # The pool must be able to authorize two connection to drop the test db if needed
-    engine = await create_engine(str(project_settings.DB_DSN), min_size=1, max_size=2)
-    async with engine.acquire():
-        await engine.status(f'CREATE DATABASE "{db_name}"')
-        project_settings.DB_DSN.database = db_name
-        yield
-        # Drop the test db if needed
-        if not request.config.getoption("--keep-db", default=False):
-            await engine.status(f'DROP DATABASE "{db_name}"')
-    await engine.close()
 
 
 @pytest.fixture(scope="session")

@@ -5,7 +5,7 @@ from graphql.type.definition import GraphQLResolveInfo
 from turbulette.apps.auth import policy
 from turbulette.apps.auth.core import STAFF_SCOPE
 from turbulette.cache import cache
-from turbulette.type import Claims
+from turbulette.types import Claims
 
 
 @policy.condition("claim")

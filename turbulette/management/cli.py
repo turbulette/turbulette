@@ -15,7 +15,7 @@ from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
-from turbulette import conf, turbulette_starlette
+from turbulette import conf, turbulette
 from turbulette.conf.constants import (
     FILE_ALEMBIC_INI,
     FOLDER_MIGRATIONS,
@@ -23,6 +23,7 @@ from turbulette.conf.constants import (
     TEST_MODE,
 )
 from turbulette.utils import get_project_settings
+from gino_backend import GinoBackend
 
 TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
 
@@ -42,7 +43,7 @@ def db(func: FunctionType):
         def _load():
             """Wrapper to load a Turbulette instance."""
             try:
-                turbulette_starlette(get_project_settings(guess=True))
+                turbulette(get_project_settings(guess=True))
             except ModuleNotFoundError as error:  # pragma: no cover
                 raise click.ClickException(
                     "Project settings module not found,"
@@ -51,12 +52,13 @@ def db(func: FunctionType):
                     f" environment variable."
                 ) from error
 
+        url = GinoBackend.make_url(getattr(conf.settings, "DATABASES")["connection"])
         # When using this decorator within a test session,
         # the Turbulette db may already exists, so we want
         # to use the existing one.
         if TEST_MODE not in environ:
             _load()  # pragma: no cover
-        async with conf.db.with_bind(bind=conf.settings.DB_DSN):
+        async with conf.db.with_bind(bind=url):
             if TEST_MODE in environ:
                 _load()
             await func(**kwargs)

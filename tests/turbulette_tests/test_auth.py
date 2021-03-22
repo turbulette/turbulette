@@ -162,7 +162,7 @@ async def test_get_user_by_payload(tester, create_user, get_user_tokens):
         jwt_payload_from_claims,
     )
     from turbulette.apps.auth.exceptions import JWTNoUsername
-    from turbulette.db.exceptions import DoesNotExist
+    from gino_backend.exceptions import DoesNotExist
 
     claims = decode_jwt(get_user_tokens[1])[1]
     user = await get_user_by_claims(claims)

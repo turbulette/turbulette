@@ -1,14 +1,14 @@
 from typing import Any
-
+from types import ModuleType
 from starlette.applications import Starlette
 
 from turbulette import conf
 from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
 from turbulette.conf.exceptions import ImproperlyConfigured
-from turbulette.type import DatabaseConnectionParams, DatabaseSettings
+from turbulette.types import DatabaseConnectionParams, DatabaseSettings
 
 
-class DatabaseConnection:
+class DatabaseBackend:
     """Manage connection to a data source."""
 
     def __init__(
@@ -46,3 +46,13 @@ class DatabaseConnection:
 
     def on_startup(self, app: Starlette) -> None:
         pass
+
+    @classmethod
+    def create_test_db(
+        cls,
+        project_settings: ModuleType,
+        db_name: str,
+        keep: bool,
+        **kwargs
+    ) -> Any:
+        raise NotImplementedError()

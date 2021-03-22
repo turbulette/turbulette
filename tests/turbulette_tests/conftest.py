@@ -6,7 +6,7 @@ import pytest
 
 from turbulette.test.pytest_plugin import (
     blank_conf,
-    create_db,
+    # create_db,
     db_name,
     event_loop,
     project_settings,

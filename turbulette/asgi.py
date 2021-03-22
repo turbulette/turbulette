@@ -3,8 +3,11 @@
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Type
 
+from ariadne.asgi import GraphQL
+from ariadne.types import Extension
+from caches import Cache
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.routing import Route, WebSocketRoute
@@ -17,8 +20,11 @@ from turbulette.conf.constants import (
     TURBULETTE_ROUTING_MODULE,
 )
 from turbulette.conf.exceptions import ImproperlyConfigured
-from turbulette.main import setup
+from turbulette.errors import error_formatter
+from turbulette.extensions import PolicyExtension
 from turbulette.utils import get_project_settings, import_class
+
+from .apps import Registry
 
 
 async def startup():
@@ -29,41 +35,42 @@ async def shutdown():
     await cache.disconnect()
 
 
-def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
-    """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
+def setup(project_settings: str = None) -> GraphQL:
+    """Load Turbulette applications and return the GraphQL route."""
+    project_settings_module = import_module(get_project_settings(project_settings))
 
-    Args:
-        project_settings (str, optional): project settings module name.
-        Defaults to None.
+    registry = Registry(project_settings_module=project_settings_module)
+    conf.registry.__setup__(registry)
+    schema = registry.setup()
+    # At this point, settings are now available through
+    # `settings` from `turbulette.conf` module
+    settings = conf.settings
 
-    Raises:
-        ASGIFrameworkError: Raised if Starlette cannot be imported
+    # Now that the database connection is established, we can use `settings`
 
-    Returns:
-        The Starlette instance
-    """
-    middlewares, routes = [], []
+    cache.__setup__(Cache(settings.CACHE))
 
-    settings_path = get_project_settings(project_settings)
-    settings_module = import_module(settings_path)
-    db_connection = None
-
-    is_database = hasattr(settings_module, "DATABASES")
-
-    # and getattr(settings_module, SETTINGS_DATABASE_CONNECTION)[
-    #     "DB_HOST"
-    # ]  # type: ignore
-
-    if is_database:
-        db_connection = import_class(getattr(settings_module, "DATABASES")["backend"])(
-            getattr(settings_module, "DATABASES")["settings"],
-            getattr(settings_module, "DATABASES")["connection"],
+    extensions: List[Type[Extension]] = [PolicyExtension]
+    for ext in settings.ARIADNE_EXTENSIONS:
+        module_class = ext.rsplit(".", 1)
+        extensions.append(
+            getattr(
+                import_module(module_class[0]),
+                module_class[1],
+            )
         )
-        db_connection.connect()
 
-    graphql_route = setup(settings_path)
+    graphql_route = GraphQL(
+        schema,
+        debug=settings.DEBUG,
+        extensions=extensions,
+        error_formatter=error_formatter,
+    )
+    return graphql_route
 
-    # Register middlewares
+
+def _register_middlewares() -> List[Middleware]:
+    middlewares = []
     if hasattr(conf.settings, SETTINGS_MIDDLEWARES):
         middleware_list = list(conf.settings.MIDDLEWARES)
 
@@ -81,6 +88,39 @@ def turbulette_starlette(project_settings: Optional[str] = None) -> Starlette:
                     **middleware_settings,
                 )
             )
+    return middlewares
+
+
+def turbulette(project_settings: Optional[str] = None) -> Starlette:
+    """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
+
+    Args:
+        project_settings (str, optional): project settings module name.
+        Defaults to None.
+
+    Raises:
+        ASGIFrameworkError: Raised if Starlette cannot be imported
+
+    Returns:
+        The Starlette instance
+    """
+    routes = []
+
+    settings_path = get_project_settings(project_settings)
+    settings_module = import_module(settings_path)
+    db_connection = None
+
+    is_database = hasattr(settings_module, "DATABASES")
+
+    if is_database:
+        db_connection = import_class(getattr(settings_module, "DATABASES")["backend"])(
+            getattr(settings_module, "DATABASES")["settings"],
+            getattr(settings_module, "DATABASES")["connection"],
+        )
+        db_connection.connect()
+
+    graphql_route = setup(settings_path)
+    middlewares = _register_middlewares()
 
     # Register routes
     spec = find_spec(settings_path)

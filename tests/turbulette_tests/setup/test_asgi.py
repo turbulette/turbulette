@@ -2,22 +2,22 @@ from importlib import import_module, reload
 
 import pytest
 
-from turbulette import turbulette_starlette
+from turbulette import turbulette
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 
 @pytest.mark.usefixtures("reload_resources")
 def test_missing_db_settings(settings):
     settings_module = import_module(settings)
-    settings_module.DATABASE_SETTINGS = None
+    settings_module.DATABASES["settings"] = None
     with pytest.raises(ImproperlyConfigured):
-        turbulette_starlette(settings)
+        turbulette(settings)
     reload(settings_module)
-    settings_module.DATABASE_SETTINGS = {"useless_key": "useless"}
+    settings_module.DATABASES["settings"] = {"useless_key": "useless"}
     with pytest.raises(ImproperlyConfigured):
-        turbulette_starlette(settings)
+        turbulette(settings)
     reload(settings_module)
-    settings_module.DB_DSN = {}
+    settings_module.DATABASES["connection"] = {}
     with pytest.raises(ImproperlyConfigured):
-        turbulette_starlette(settings)
+        turbulette(settings)
     reload(settings_module)

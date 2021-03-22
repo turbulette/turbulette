@@ -5,6 +5,7 @@ from importlib import import_module
 from os import chdir, environ
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from gino_backend import GinoBackend
 
 import pytest
 from click.testing import CliRunner
@@ -20,7 +21,7 @@ APP_3 = "__test_app_3"
 
 _USER_MODEL = """
 from turbulette.apps.auth.models import AbstractUser
-from turbulette.db import Model
+from gino_backend.model import Model
 
 class User(AbstractUser, Model):
     pass
@@ -112,15 +113,15 @@ def create_env(db_name_cli, create_project):
 async def create_db_cli(db_name_cli, project_settings_cli, request):
     db = Gino()
 
-    # Connect to the default template1 database to create a new one
-    project_settings_cli.DB_DSN.database = "template1"
+    # Connect to the default "template1" database to create a new one
+    url = GinoBackend.make_url(
+        getattr(project_settings_cli, "DATABASES")["connection"], database="template1"
+    )
 
-    async with db.with_bind(
-        str(project_settings_cli.DB_DSN), min_size=1, max_size=2
-    ) as engine:
+    async with db.with_bind(str(url), min_size=1, max_size=2) as engine:
         async with engine.acquire():
             await engine.status(f'CREATE DATABASE "{db_name_cli}"')
-            project_settings_cli.DB_DSN.database = db_name_cli
+            project_settings_cli.DATABASES["connection"]["DB_DATABASE"] = db_name_cli
             yield
             # Drop the test db if needed
             if not request.config.getoption("--keep-db", default=False):

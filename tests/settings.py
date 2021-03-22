@@ -1,6 +1,5 @@
 """Standard settings with auth app and test apps enabled."""
 
-from sqlalchemy.engine.url import URL, make_url
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
 from turbulette.conf import get_config_from_paths
@@ -69,7 +68,7 @@ ENCRYPTION_KEY = {"kty": "oct", "k": config("ENCRYPTION_KEY_K", cast=Secret)}
 ###########################
 
 DATABASES = {
-    "backend": "turbulette.db_backend.gino.GinoConnection",
+    "backend": "gino_backend.GinoBackend",
     "connection": {
         "DB_DRIVER": config("DB_DRIVER", default="postgresql"),
         "DB_HOST": config("DB_HOST", default=None),

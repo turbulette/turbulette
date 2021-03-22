@@ -4,7 +4,6 @@ from enum import Enum
 from importlib import import_module
 from typing import List, Tuple
 
-from gino.declarative import Model
 from jwcrypto.jwe import JWE, InvalidJWEData
 from jwcrypto.jwk import JWK
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
@@ -32,7 +31,7 @@ STAFF_SCOPE = "_staff"
 pwd_context = CryptContext(schemes=[settings.HASH_ALGORITHM], deprecated="auto")
 
 # Dynamically import user model
-user_model: Model = getattr(
+user_model = getattr(
     import_module(settings.AUTH_USER_MODEL.rsplit(".", 1)[0]),
     settings.AUTH_USER_MODEL.rsplit(".", 1)[-1],
 )

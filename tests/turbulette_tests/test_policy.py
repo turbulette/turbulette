@@ -86,7 +86,7 @@ async def test_get_role_permissions(tester, create_user):
 async def test_role_crud(tester):
     from turbulette.apps.auth.models import Role
     from turbulette.apps.auth.utils import create_user
-    from turbulette.db.exceptions import DoesNotExist
+    from gino_backend.exceptions import DoesNotExist
 
     user = await create_user(
         username="test_user_crud_role",

@@ -3,7 +3,7 @@
 from sqlalchemy import Column, String
 
 from turbulette.apps.auth.models import AbstractUser
-from turbulette.db import Model
+from gino_backend.model import Model
 
 
 class BaseUser(Model, AbstractUser):

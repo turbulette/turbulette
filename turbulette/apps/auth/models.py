@@ -15,8 +15,8 @@ from sqlalchemy import (
 
 from turbulette.apps import auth
 from turbulette.conf import settings
-from turbulette.db.database import Model, get_tablename
-from turbulette.db.exceptions import DoesNotExist
+from gino_backend.model import Model, get_tablename
+from gino_backend.exceptions import DoesNotExist
 
 
 def auth_user_tablename() -> str:

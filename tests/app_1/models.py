@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.sqltypes import Float, String
 
 from turbulette.apps.auth.models import AbstractUser
-from turbulette.db import Model
+from gino_backend.model import Model
 
 
 class BaseUser(Model, AbstractUser):
