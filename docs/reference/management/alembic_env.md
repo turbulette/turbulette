@@ -1,3 +1,3 @@
 # alembic_env
 
-::: turbulette.management.alembic_env
+::: gino_backend.alembic_env

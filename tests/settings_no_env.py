@@ -60,32 +60,23 @@ ENCRYPTION_KEY = {"kty": "oct", "k": "iRBGS_lqSiPH_jRLt7jQPzMNzpnQGfL2Ac3tc20ou8
 # DATABASE
 ###########################
 
-# DB connection
-DATABASE_CONNECTION = {
-    "DB_DRIVER": "postgresql",
-    "DB_HOST": "localhost",
-    "DB_PORT": 5432,
-    "DB_USER": "postgres",
-    "DB_PASSWORD": "",
-    "DB_DATABASE": "test",
+DATABASES = {
+    "backend": "gino_backend.GinoBackend",
+    "connection": {
+        "DB_DRIVER": "postgresql",
+        "DB_HOST": "localhost",
+        "DB_PORT": 5432,
+        "DB_USER": "postgres",
+        "DB_PASSWORD": "",
+        "DB_DATABASE": "test"
+    },
+    "settings": {
+        "DB_POOL_MIN_SIZE": 1,
+        "DB_POOL_MAX_SIZE": 16,
+        "DB_ECHO": False,
+        "DB_SSL": None,
+        "DB_USE_CONNECTION_FOR_REQUEST": True,
+        "DB_RETRY_LIMIT": 1,
+        "DB_RETRY_INTERVAL": 1
+    },
 }
-
-# DB settings
-DATABASE_SETTINGS = {
-    "DB_POOL_MIN_SIZE": 1,
-    "DB_POOL_MAX_SIZE": 16,
-    "DB_ECHO": False,
-    "DB_SSL": None,
-    "DB_USE_CONNECTION_FOR_REQUEST": True,
-    "DB_RETRY_LIMIT": 1,
-    "DB_RETRY_INTERVAL": 1,
-}
-
-DB_DSN = URL(
-    drivername=DATABASE_CONNECTION["DB_DRIVER"],
-    username=DATABASE_CONNECTION["DB_USER"],
-    password=DATABASE_CONNECTION["DB_PASSWORD"],
-    host=DATABASE_CONNECTION["DB_HOST"],
-    port=DATABASE_CONNECTION["DB_PORT"],
-    database=DATABASE_CONNECTION["DB_DATABASE"],
-)

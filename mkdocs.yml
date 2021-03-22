@@ -23,8 +23,8 @@ plugins:
             # Disable lazy init to enable pytkdocs to collect objects
             - from os import environ
             - environ.setdefault("TURBULETTE_NO_LAZY_INIT", "True")
-            - from turbulette import turbulette_starlette
-            - turbulette_starlette("tests.settings_no_env")
+            - from turbulette import turbulette
+            - turbulette("tests.settings_no_env")
           selection:
             new_path_syntax: yes
             filters:

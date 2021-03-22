@@ -23,7 +23,7 @@ If the following model leaves in a Turbulette app named `vehicle` :
 Then the resulting generated `__tablename__` attribute will be `vehicle_super_car`
 
 
-::: turbulette.db.database
+::: gino_backend.model
     selection:
         filters:
             - "!^(Model|BaseModelMeta)$$"
