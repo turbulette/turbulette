@@ -45,4 +45,4 @@ def reload_resources(settings, settings_no_apps, base_app_module_name):
 
 @pytest.fixture
 def registry(settings_no_apps):
-    return Registry(project_settings=settings_no_apps)
+    return Registry(settings_path=settings_no_apps)

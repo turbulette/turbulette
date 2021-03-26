@@ -14,7 +14,7 @@ GRAPHQL_ENDPOINT = config("GRAPHQL_ENDPOINT", cast=str, default="/graphql")
 
 # List installed Turbulette apps
 # that defines some GraphQL schema
-INSTALLED_APPS = ["turbulette.apps.auth", "tests.app_1", "tests.app_2"]
+INSTALLED_APPS = ["turbulette.apps.auth", "tests.app_1", "tests.app_2", "gino_backend"]
 
 MIDDLEWARES = config("MIDDLEWARES", cast=CommaSeparatedStrings)
 CORSMiddleware = {

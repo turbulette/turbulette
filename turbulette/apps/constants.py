@@ -5,6 +5,8 @@ FOLDER_SCHEMA = "graphql"
 
 # Packages
 PACKAGE_RESOLVERS = "resolvers"
+PACKAGE_MANAGEMENT = "management"
+PACKAGES_CMDS = "commands"
 
 # Modules
 MODULE_MODELS = "models"

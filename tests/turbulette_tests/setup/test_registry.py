@@ -18,7 +18,7 @@ def test_init():
 
 @pytest.mark.usefixtures("reload_resources")
 def test_setup(settings_no_apps):
-    registry = Registry(project_settings=settings_no_apps)
+    registry = Registry(settings_path=settings_no_apps)
     registry.setup()
 
 

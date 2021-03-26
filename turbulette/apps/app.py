@@ -2,12 +2,13 @@
 
 from importlib import import_module
 from importlib.util import find_spec
-from inspect import getmembers, isclass
+from inspect import getmembers, isclass, isfunction
 from os import sep
 from pathlib import Path
 from typing import Dict, List, Type
 
 from ariadne import SchemaDirectiveVisitor, load_schema_from_path
+from click.core import Command
 from pydantic import BaseModel
 
 from turbulette.validation.pyd_model import GraphQLModel
@@ -18,6 +19,8 @@ from .constants import (
     MODULE_MODELS,
     MODULE_PYDANTIC,
     MODULE_SETTINGS,
+    PACKAGES_CMDS,
+    PACKAGE_MANAGEMENT,
     PACKAGE_RESOLVERS,
 )
 from .exceptions import TurbuletteAppError
@@ -58,6 +61,8 @@ class TurbuletteApp:
         "settings_module",
         "ready",
         "pydantic_module",
+        "cmds_package",
+        "management_package",
     )
 
     def __init__(
@@ -72,6 +77,8 @@ class TurbuletteApp:
         directives_module: str = MODULE_DIRECTIVES,
         settings_module: str = MODULE_SETTINGS,
         pydantic_module: str = MODULE_PYDANTIC,
+        cmds_package: str = PACKAGES_CMDS,
+        management_package: str = PACKAGE_MANAGEMENT,
     ):
         self.package_name = package
         self.label = package.rsplit(".", maxsplit=1)[-1] if label is None else label
@@ -95,6 +102,8 @@ class TurbuletteApp:
         self.directives_module = directives_module
         self.settings_module = settings_module
         self.pydantic_module = pydantic_module
+        self.cmds_package = cmds_package
+        self.management_package = management_package
         self.ready = False
 
     def load_resolvers(self) -> None:
@@ -189,6 +198,36 @@ class TurbuletteApp:
                 ):
                     models[member.GraphQL.gql_type] = member
         return models
+
+    def load_cmd(self) -> List[Command]:
+        """Load user defined click commands
+
+        Returns:
+            List[Command]: List of commands
+        """
+        cmds = []
+        cmd_modules = [
+            m.as_posix()[:-3]
+            .replace(sep, ".")
+            .split(
+                f"{self.package_name}.{self.management_package}.{self.cmds_package}"
+            )[1]
+            for m in (
+                self.package_path / self.management_package / self.cmds_package
+            ).glob("*.py")
+        ]
+
+        for module_path in cmd_modules:
+            # Relative import
+            module = import_module(
+                f"{module_path}",
+                f"{self.package_name}.{self.management_package}.{self.cmds_package}",
+            )
+            for _, member in getmembers(module):
+                # Every function decorated with `click.command()`
+                if isinstance(member, Command):
+                    cmds.append(member)
+        return cmds
 
     def __bool__(self):
         """An app is True if it's ready."""

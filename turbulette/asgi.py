@@ -4,7 +4,7 @@ from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
 from typing import List, Optional, Type
-
+from types import ModuleType
 from ariadne.asgi import GraphQL
 from ariadne.types import Extension
 from caches import Cache
@@ -35,13 +35,16 @@ async def shutdown():
     await cache.disconnect()
 
 
-def setup(project_settings: str = None) -> GraphQL:
+def setup(settings_path: str = None, settings_module: ModuleType = None) -> GraphQL:
     """Load Turbulette applications and return the GraphQL route."""
-    project_settings_module = import_module(get_project_settings(project_settings))
+    settings_module = settings_module or import_module(
+        get_project_settings(settings_path)
+    )
 
-    registry = Registry(project_settings_module=project_settings_module)
+    registry = Registry(settings_module=settings_module)
     conf.registry.__setup__(registry)
     schema = registry.setup()
+
     # At this point, settings are now available through
     # `settings` from `turbulette.conf` module
     settings = conf.settings
@@ -53,12 +56,7 @@ def setup(project_settings: str = None) -> GraphQL:
     extensions: List[Type[Extension]] = [PolicyExtension]
     for ext in settings.ARIADNE_EXTENSIONS:
         module_class = ext.rsplit(".", 1)
-        extensions.append(
-            getattr(
-                import_module(module_class[0]),
-                module_class[1],
-            )
-        )
+        extensions.append(getattr(import_module(module_class[0]), module_class[1],))
 
     graphql_route = GraphQL(
         schema,
@@ -81,11 +79,7 @@ def _register_middlewares() -> List[Middleware]:
             )
             middlewares.append(
                 Middleware(
-                    getattr(
-                        import_module(package),
-                        class_,
-                    ),
-                    **middleware_settings,
+                    getattr(import_module(package), class_,), **middleware_settings,
                 )
             )
     return middlewares
@@ -119,7 +113,7 @@ def turbulette(project_settings: Optional[str] = None) -> Starlette:
         )
         db_connection.connect()
 
-    graphql_route = setup(settings_path)
+    graphql_route = setup(settings_module=settings_module)
     middlewares = _register_middlewares()
 
     # Register routes

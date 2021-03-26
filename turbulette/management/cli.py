@@ -1,29 +1,22 @@
 """Turbulette's command line tool."""
 
-import asyncio
 import configparser
-from os import chdir, environ, remove, sep
+from os import chdir, remove, sep, environ
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
-from types import FunctionType
-
+import sys
+from turbulette.conf.exceptions import ImproperlyConfigured
 import click
+import cloup
 from alembic.command import revision
-from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
-from turbulette import conf, turbulette
-from turbulette.conf.constants import (
-    FILE_ALEMBIC_INI,
-    FOLDER_MIGRATIONS,
-    PROJECT_SETTINGS_MODULE,
-    TEST_MODE,
-)
-from turbulette.utils import get_project_settings
-from gino_backend import GinoBackend
+from turbulette.apps import Registry
+from turbulette.conf.constants import FOLDER_MIGRATIONS, PROJECT_SETTINGS_MODULE
+from turbulette.utils import get_project_settings, to_dotted_path
 
 TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
 
@@ -36,36 +29,6 @@ DEFAULT_KTY = "EC"
 DEFAULT_CRV = "P-256"
 
 
-def db(func: FunctionType):
-    """Decorator to access database in commands."""
-
-    async def wrap(**kwargs):
-        def _load():
-            """Wrapper to load a Turbulette instance."""
-            try:
-                turbulette(get_project_settings(guess=True))
-            except ModuleNotFoundError as error:  # pragma: no cover
-                raise click.ClickException(
-                    "Project settings module not found,"
-                    "are you in the project directory?"
-                    f" You may want to set the {PROJECT_SETTINGS_MODULE}"
-                    f" environment variable."
-                ) from error
-
-        url = GinoBackend.make_url(getattr(conf.settings, "DATABASES")["connection"])
-        # When using this decorator within a test session,
-        # the Turbulette db may already exists, so we want
-        # to use the existing one.
-        if TEST_MODE not in environ:
-            _load()  # pragma: no cover
-        async with conf.db.with_bind(bind=url):
-            if TEST_MODE in environ:
-                _load()
-            await func(**kwargs)
-
-    return wrap
-
-
 def process_tags(file: Path, tags: dict):
     text = file.read_text()
     for tag, value in tags.items():
@@ -73,18 +36,11 @@ def process_tags(file: Path, tags: dict):
     file.write_text(text)
 
 
-def get_alembic_ini():
-    alembic_ini = Path.cwd() / FILE_ALEMBIC_INI
-
-    if not alembic_ini.is_file():
-        raise click.ClickException(
-            f"{FILE_ALEMBIC_INI} not found, are you in the project directory?"
-        )
-    return alembic_ini
-
-
-@click.group()
-def cli():
+@cloup.group("Turbulette")
+# Hacky solution to make it appear in help message,
+# but the option will never be parsed by click
+@click.option("--settings", "-s", help="Project settings module")
+def cli(settings):
     pass
 
 
@@ -101,7 +57,7 @@ def cli():
     multiple=True,
 )
 @click.pass_context
-def project(ctx, name, first_app):
+def projeact(ctx, name, first_app):
     project_dir = Path.cwd() / name
     copytree(Path(__file__).parent / "templates" / "project", project_dir)
 
@@ -128,7 +84,9 @@ def project(ctx, name, first_app):
         ctx.invoke(app_, name=first_app)
 
 
-@click.command(help="Generate a JSON Web Key to put in the settings.py or .env")
+@click.command(
+    name="jwk", help="Generate a JSON Web Key to put in the settings.py or .env"
+)
 @click.option(
     "--kty",
     "-k",
@@ -199,7 +157,7 @@ def jwk_(kty, size, crv, exp, env):
         pprint(jwk_key)
 
 
-@click.command(help="Create a Turbulette application")
+@click.command(name="app", help="Create a Turbulette application")
 @click.option(
     "--name",
     "-n",
@@ -208,105 +166,61 @@ def jwk_(kty, size, crv, exp, env):
 )
 def app_(name):
     for app_name in name:
-        alembic_ini = get_alembic_ini()
+        # alembic_ini = get_alembic_ini()
         copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
         for gitkeep in (Path.cwd() / app_name).rglob(".gitkeep"):
             remove(gitkeep)
-        alembic_config = configparser.ConfigParser(interpolation=None)
-        alembic_config.read(alembic_ini)
-        migration_dir = f"%(here)s{sep}{app_name}{sep}{FOLDER_MIGRATIONS}"
 
-        if "version_locations" in alembic_config["alembic"]:
-            alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
-        else:
-            alembic_config["alembic"]["version_locations"] = migration_dir
+        # TODO move to gino_backend
+        # alembic_config = configparser.ConfigParser(interpolation=None)
+        # alembic_config.read(alembic_ini)
+        # migration_dir = f"%(here)s{sep}{app_name}{sep}{FOLDER_MIGRATIONS}"
 
-        with open(alembic_ini, "w") as alembic_file:
-            alembic_config.write(alembic_file)
+        # if "version_locations" in alembic_config["alembic"]:
+        #     alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
+        # else:
+        #     alembic_config["alembic"]["version_locations"] = migration_dir
 
-        config = Config(file_=alembic_ini.as_posix())
+        # with open(alembic_ini, "w") as alembic_file:
+        #     alembic_config.write(alembic_file)
 
-        revision(
-            config,
-            message="initial",
-            head="base",
-            branch_label=app_name,
-            version_path=(Path(app_name) / FOLDER_MIGRATIONS).as_posix(),
-        )
+        # config = Config(file_=alembic_ini.as_posix())
 
-
-@click.command(
-    help=(
-        "Apply alembic revisions."
-        " If an app name is given, upgrade to the latest revision for this app only."
-        " If no app is given, upgrade to the latest revision for all apps"
-    )
-)
-@click.argument("app", required=False)
-def upgrade(app):
-    alembic_ini = get_alembic_ini()
-    config = Config(file_=alembic_ini.as_posix())
-    if not app:
-        alembic_upgrade(config, "heads")
-    else:
-        alembic_upgrade(config, f"{app}@head")
+        # revision(
+        #     config,
+        #     message="initial",
+        #     head="base",
+        #     branch_label=app_name,
+        #     version_path=(Path(app_name) / FOLDER_MIGRATIONS).as_posix(),
+        # )
 
 
-@click.command(
-    help=(
-        "Autogenerate alembic revision for the given app."
-        " This is a shortcut to `alembic revision --autogenerate --head=<app>@head`"
-    )
-)
-@click.argument("app", required=True, nargs=1)
-@click.option("--message", "-m", help="Revision message")
-def makerevision(app, message):
-    alembic_ini = get_alembic_ini()
-    config = Config(file_=alembic_ini.as_posix())
-    revision(config, message=message, autogenerate=True, head=f"{app}@head")
+cli.section("Turbulette", project, app_, jwk_)
 
+# Parse --settings option manually
+# as it's needed to get the registry
+settings_path_str, settings_path, settings_module = None, None, None
 
-@click.command(help="Create a user using the AUTH_USER_MODEL setting")
-@click.argument("username", nargs=1)
-@click.argument("password", nargs=1)
-@click.option("--email", "-e", help="User email")
-@click.option("--first-name", "-f", help="First name", default=None)
-@click.option("--last-name", "-l", help="Last name", default=None)
-@click.option(
-    "--is-staff", "-s", help="Wether the user is a staff member or not", is_flag=True
-)
-@click.option("--others", "-o", help="Other fields", default="")
-def create_user_cmd(username, password, email, first_name, last_name, is_staff, others):
-    # username must be unique so we can use it to generate the email
-    email = f"{username}@example.com" if not email else email
+if sys.argv[1] in ["--settings", "-s"]:
+    settings_path_str = sys.argv[2]
+    sys.argv.pop(1)
+    sys.argv.pop(1)
+elif sys.argv[1].startswith("--settings="):
+    settings_path_str = sys.argv[1].split("--settings=")[1]
+    sys.argv.pop(1)
 
-    kwargs = {kv.split("=")[0]: kv.split("=")[1] for kv in others.split()}
+if settings_path_str:
+    settings_path = Path(settings_path_str).resolve()
+    if not settings_path.is_file():
+        raise click.ClickException("The provided settings module does not exist")
+    settings_module = to_dotted_path(settings_path.relative_to(Path.cwd()))
 
-    @db
-    async def _create_user():
-        from turbulette.apps.auth.utils import (  # pylint: disable=import-outside-toplevel
-            create_user,
-        )
+try:
+    settings_module = get_project_settings(settings_module, guess=True)
+    environ.setdefault(PROJECT_SETTINGS_MODULE, settings_module)
+    registry = Registry(settings_path=settings_module)
 
-        await create_user(
-            username=username,
-            password_one=password,
-            password_two=password,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            is_staff=is_staff,
-            **kwargs,
-        )
-
-    # Python 3.6 does not have asyncio.run() (added in 3.7)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(_create_user())
-
-
-cli.add_command(project)
-cli.add_command(app_, "app")
-cli.add_command(upgrade)
-cli.add_command(makerevision)
-cli.add_command(jwk_, "jwk")
-cli.add_command(create_user_cmd, "createuser")
+    for app, cmds in registry.load_cmds().items():
+        cli.section(app, *cmds)
+except ImproperlyConfigured:
+    pass

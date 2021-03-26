@@ -75,7 +75,7 @@ def run_migrations(project_settings: Optional[str] = None):
 
     settings = import_module(get_project_settings(project_settings))
 
-    registry = Registry(project_settings_module=settings)
+    registry = Registry(settings_module=settings)
     if not conf.registry.__initialized__:
         conf.registry.__setup__(registry)
     registry.load_settings()

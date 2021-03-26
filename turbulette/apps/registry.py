@@ -27,6 +27,7 @@ from turbulette.validation import pydantic_binder
 from .app import TurbuletteApp
 from .constants import MODULE_SETTINGS
 from .exceptions import RegistryError
+from click import Command
 
 
 class TurbuletteSettingsLoadStrategy(SettingsLoadStrategyPython):
@@ -62,22 +63,22 @@ class Registry:
     def __init__(
         self,
         path_list: List[str] = None,
-        project_settings: str = None,
-        project_settings_module: ModuleType = None,
+        settings_path: str = None,
+        settings_module: ModuleType = None,
         app_settings_module: str = MODULE_SETTINGS,
     ):
         self.apps: Dict[str, TurbuletteApp] = {}
         self._ready = False
 
-        project_settings_module = (
-            import_module(get_project_settings(project_settings))
-            if not project_settings_module
-            else project_settings_module
+        settings_module = (
+            import_module(get_project_settings(settings_path))
+            if not settings_module
+            else settings_module
         )
 
-        self.project_settings_path = project_settings_module.__name__
+        self.project_settings_path = settings_module.__name__
         path_list = (
-            list(getattr(project_settings_module, SETTINGS_INSTALLED_APPS))
+            list(getattr(settings_module, SETTINGS_INSTALLED_APPS))
             + TURBULETTE_CORE_APPS
         )
 
@@ -199,6 +200,12 @@ class Registry:
 
             return settings
         return conf.settings
+
+    def load_cmds(self) -> Dict[str, List[Command]]:
+        cmds = {}
+        for name, app in self.apps.items():
+            cmds[name] = app.load_cmd()
+        return cmds
 
     def register(self, app: TurbuletteApp):
         """Register an existing [TurbuletteApp][turbulette.apps.app:TurbuletteApp].

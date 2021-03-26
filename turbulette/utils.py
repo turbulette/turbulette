@@ -115,3 +115,19 @@ def import_class(cls_path: str) -> Type[Any]:
         import_module(cls_path.rsplit(".", 1)[0]),
         cls_path.rsplit(".", 1)[-1],
     )
+
+
+def to_dotted_path(path: Path) -> str:
+    """Convert a python file path to a dotted path.
+
+    Ex: "/path/to/my_script.py" -> "path.to.my_script"
+
+    We assume that `path` ends with the `.py` extension
+
+    Args:
+        path (Path): [description]
+
+    Returns:
+        str: [description]
+    """
+    return path.as_posix()[:-3].replace("/", ".")
