@@ -120,7 +120,7 @@ jobs:
         run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make testcov-xml
 
       - name: Upload coverage artifact
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         if: matrix.python-version == '3.9'
         with:
           name: coverage
