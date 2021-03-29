@@ -20,7 +20,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: test.yml
           run_id: ${{ github.event.workflow_run.id }}
-          name: docs-zip
+          name: coverage
 
       - name: Upload coverage
         uses: codacy/codacy-coverage-reporter-action@master
