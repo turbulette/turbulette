@@ -1,9 +1,10 @@
-# Adapted from https://github.com/python-gino/gino/blob/master/.github/workflows/test.yml
-
 name: Test
 
 on:
   push:
+    branches:
+      - "main"
+      - "ci/*"
   pull_request:
     types: [opened, synchronize]
 
@@ -118,9 +119,9 @@ jobs:
           TURBULETTE_SETTINGS_MODULE: tests.settings
         run: export PYTHONPATH=$PYTHONPATH:$(pwd)/turbulette && make testcov-xml
 
-      - name: Upload coverage
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v2
         if: matrix.python-version == '3.9'
-        uses: codacy/codacy-coverage-reporter-action@master
         with:
-          project-token: ${{ secrets.CODACY_TOKEN }}
-          coverage-reports: coverage.xml
+          name: coverage
+          path: ./coverage.xml
