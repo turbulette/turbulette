@@ -660,6 +660,18 @@ PyYAML = ">=3.10"
 tornado = ">=5.0"
 
 [[package]]
+name = "mkdocs-autorefs"
+version = "0.1.1"
+description = "Automatically link across pages in MkDocs."
+category = "main"
+optional = true
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+Markdown = ">=3.3,<4.0"
+mkdocs = ">=1.1,<2.0"
+
+[[package]]
 name = "mkdocs-git-revision-date-plugin"
 version = "0.3.1"
 description = "MkDocs plugin for setting revision date from git per markdown file."
@@ -700,7 +712,7 @@ mkdocs-material = ">=5.0.0"
 
 [[package]]
 name = "mkdocstrings"
-version = "0.14.0"
+version = "0.15.0"
 description = "Automatic documentation from sources, for MkDocs."
 category = "main"
 optional = true
@@ -711,8 +723,9 @@ Jinja2 = ">=2.11,<3.0"
 Markdown = ">=3.3,<4.0"
 MarkupSafe = ">=1.1,<2.0"
 mkdocs = ">=1.1,<2.0"
+mkdocs-autorefs = ">=0.1,<0.2"
 pymdown-extensions = ">=6.3,<9.0"
-pytkdocs = ">=0.2.0,<0.11.0"
+pytkdocs = ">=0.2.0,<0.12.0"
 
 [[package]]
 name = "multidict"
@@ -1427,7 +1440,7 @@ dev_test = ["pytest", "pytest-cov", "pytest-asyncio", "async-asgi-testclient", "
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "76104ffee1c3f5863e5daecab0eee7afb6ef48b539b426509bdbe6769bc94531"
+content-hash = "e13722e3ebe56ee79060f34e5db8e141a58c00a7a279c6120a2bc8bd632747f4"
 
 [metadata.files]
 aioredis = [
@@ -1954,6 +1967,10 @@ mkdocs = [
     {file = "mkdocs-1.1.2-py3-none-any.whl", hash = "sha256:096f52ff52c02c7e90332d2e53da862fde5c062086e1b5356a6e392d5d60f5e9"},
     {file = "mkdocs-1.1.2.tar.gz", hash = "sha256:f0b61e5402b99d7789efa032c7a74c90a20220a9c81749da06dbfbcbd52ffb39"},
 ]
+mkdocs-autorefs = [
+    {file = "mkdocs-autorefs-0.1.1.tar.gz", hash = "sha256:ff9386ceb1ceeb88786696c7534ec31a6248a4828a5a2f8fea9d2699f650e3ab"},
+    {file = "mkdocs_autorefs-0.1.1-py3-none-any.whl", hash = "sha256:8bed8e81db45bb8d25e30e09d9d2943a7ceb92d3ad6b51e84618027c55c398eb"},
+]
 mkdocs-git-revision-date-plugin = [
     {file = "mkdocs-git-revision-date-plugin-0.3.1.tar.gz", hash = "sha256:4abaef720763a64c952bed6829dcc180f67c97c60dd73914e90715e05d1cfb23"},
     {file = "mkdocs_git_revision_date_plugin-0.3.1-py3-none-any.whl", hash = "sha256:8ae50b45eb75d07b150a69726041860801615aae5f4adbd6b1cf4d51abaa03d5"},
@@ -1967,8 +1984,8 @@ mkdocs-material-extensions = [
     {file = "mkdocs_material_extensions-1.0.1-py3-none-any.whl", hash = "sha256:d90c807a88348aa6d1805657ec5c0b2d8d609c110e62b9dce4daf7fa981fa338"},
 ]
 mkdocstrings = [
-    {file = "mkdocstrings-0.14.0-py3-none-any.whl", hash = "sha256:ac821a339c53e843045d3915de208e389d48493f2612a4317cde841677bcbe48"},
-    {file = "mkdocstrings-0.14.0.tar.gz", hash = "sha256:f1b832943c4fe980fcfc17d07abfe9a8091044dbf553cb7be0ca263953130b2c"},
+    {file = "mkdocstrings-0.15.0-py3-none-any.whl", hash = "sha256:a9891420c6b9e91903a4cdf4eaf5b79dab71f3af992f7871fb43fb0f869bb26f"},
+    {file = "mkdocstrings-0.15.0.tar.gz", hash = "sha256:f1e46125c7381beccb79f213468fb4e5c4492d1c6881c06b8afbec30c737733c"},
 ]
 multidict = [
     {file = "multidict-5.1.0-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:b7993704f1a4b204e71debe6095150d43b2ee6150fa4f44d6d966ec356a8d61f"},
