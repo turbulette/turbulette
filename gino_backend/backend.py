@@ -10,9 +10,9 @@ from gino_starlette import Gino  # type: ignore [attr-defined]
 from sqlalchemy.engine.url import URL
 from starlette.applications import Starlette
 
-from turbulette import conf
+from turbulette.conf import app
 from turbulette.conf.exceptions import ImproperlyConfigured
-from turbulette.db_backend import DatabaseBackend
+from turbulette.db_backend import DatabaseBackend, db
 from turbulette.types import DatabaseConnectionParams
 
 
@@ -24,6 +24,7 @@ class GinoBackend(DatabaseBackend):
             The GINO instance
         """
         return Gino(
+            app,
             dsn=URL(
                 drivername=self.conn_params["DB_DRIVER"],
                 username=self.conn_params["DB_USER"],
@@ -42,8 +43,8 @@ class GinoBackend(DatabaseBackend):
         )
 
     @classmethod
-    def on_startup(cls, app: Starlette) -> None:
-        conf.db.init_app(app)
+    def on_startup(cls) -> None:
+        db.init_app(app)
 
     def create_test_db(
         self,
@@ -97,8 +98,8 @@ class _CreateTestDatabase:
 
         self.url.database = self.db_name
         self.project_settings.DATABASES["connection"]["DB_DATABASE"] = self.db_name
-        conf.db.__setup__(Gino())
-        self.engine_2 = await conf.db.set_bind(bind=self.url)
+        db.__setup__(Gino())
+        self.engine_2 = await db.set_bind(bind=self.url)
 
         settings_file = Path(find_spec(self.project_settings.__name__).origin)
         alembic_config = (settings_file.parent / "alembic.ini").as_posix()

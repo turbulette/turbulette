@@ -1,6 +1,6 @@
 import asyncio
-from importlib import import_module
-from os import environ
+import sys
+from importlib import import_module, reload
 from pathlib import Path
 from types import FunctionType
 
@@ -10,14 +10,12 @@ from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 
 from gino_backend import GinoBackend
-from turbulette import conf, turbulette
-from turbulette.conf.constants import (
-    FILE_ALEMBIC_INI,
-    PROJECT_SETTINGS_MODULE,
-    TEST_MODE,
-)
+from turbulette import turbulette
+from turbulette import db_backend
+from turbulette.conf.constants import FILE_ALEMBIC_INI, PROJECT_SETTINGS_MODULE, FOLDER_MIGRATIONS
 from turbulette.utils import get_project_settings
-
+import configparser
+import os
 
 def db(func: FunctionType):
     """Decorator to access database in commands."""
@@ -36,15 +34,15 @@ def db(func: FunctionType):
                     f" environment variable."
                 ) from error
 
-        settings_module = import_module(settings_path)
+        settings_module = reload(import_module(settings_path))
         url = GinoBackend.make_url(getattr(settings_module, "DATABASES")["connection"])
         # When using this decorator within a test session,
         # the Turbulette db may already exists, so we want
         # to use the existing one.
-        if TEST_MODE not in environ:
+        if "pytest" not in sys.modules:
             _load()  # pragma: no cover
-        async with conf.db.with_bind(bind=url):
-            if TEST_MODE in environ:
+        async with db_backend.db.with_bind(bind=url):
+            if "pytest" in sys.modules:
                 _load()
             await func(**kwargs)
 
@@ -92,7 +90,7 @@ def makerevision(app, message):
     revision(config, message=message, autogenerate=True, head=f"{app}@head")
 
 
-@click.command(name="create-user", help="Create a user using the AUTH_USER_MODEL setting")
+@click.command(name="createuser", help="Create a user using the AUTH_USER_MODEL setting")
 @click.argument("username", nargs=1)
 @click.argument("password", nargs=1)
 @click.option("--email", "-e", help="User email")
@@ -128,3 +126,30 @@ def create_user_cmd(username, password, email, first_name, last_name, is_staff, 
     # Python 3.6 does not have asyncio.run() (added in 3.7)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(_create_user())
+
+
+@click.command(name="initrevision", help="Create the initial alembic revision")
+@click.argument("app", required=True, nargs=1)
+def create_alembic_ini(app):
+    alembic_ini = get_alembic_ini()
+    alembic_config = configparser.ConfigParser(interpolation=None)
+    alembic_config.read(alembic_ini)
+    migration_dir = f"%(here)s{os.path.sep}{app}{os.path.sep}{FOLDER_MIGRATIONS}"
+
+    if "version_locations" in alembic_config["alembic"]:
+        alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
+    else:
+        alembic_config["alembic"]["version_locations"] = migration_dir
+
+    with open(alembic_ini, "w") as alembic_file:
+        alembic_config.write(alembic_file)
+
+    config = Config(file_=alembic_ini.as_posix())
+
+    revision(
+        config,
+        message="initial",
+        head="base",
+        branch_label=app,
+        version_path=(Path(app) / FOLDER_MIGRATIONS).as_posix(),
+    )

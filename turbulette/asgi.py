@@ -13,6 +13,7 @@ from starlette.middleware import Middleware
 from starlette.routing import Route, WebSocketRoute
 
 from turbulette import conf
+from turbulette.db_backend import db
 from turbulette.cache import cache
 from turbulette.conf.constants import (
     ROUTING_MODULE_ROUTES,
@@ -26,6 +27,9 @@ from turbulette.utils import get_project_settings, import_class
 
 from .apps import Registry
 
+# import debugpy
+# debugpy.listen(5678)
+# debugpy.wait_for_client()
 
 async def startup():
     await cache.connect()
@@ -139,10 +143,10 @@ def turbulette(project_settings: Optional[str] = None) -> Starlette:
             on_shutdown=[shutdown],
         )
 
+        app.mount()
         conf.app.__setup__(app)
         if db_connection:
-            db_connection.on_startup(app)
-            conf.db.__setup__(db_connection.database)
+            db_connection.on_startup()
         return app
 
     raise ImproperlyConfigured(

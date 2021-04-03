@@ -179,27 +179,27 @@ class Registry:
         Returns:
             LazySettings: LazySettings initialized with all settings module found
         """
-        if not conf.settings:
-            all_settings = []
+        # if not conf.settings:
+        all_settings = []
 
-            for app in self.apps.values():
-                if (app.package_path / f"{self.settings_module}.py").is_file():
-                    all_settings.append(f"{app.package_name}.{self.settings_module}")
+        for app in self.apps.values():
+            if (app.package_path / f"{self.settings_module}.py").is_file():
+                all_settings.append(f"{app.package_name}.{self.settings_module}")
 
-            # Add project settings at last position to let user
-            # defined settings overwrite default ones
-            all_settings.append(self.project_settings_path)
+        # Add project settings at last position to let user
+        # defined settings overwrite default ones
+        all_settings.append(self.project_settings_path)
 
-            settings = LazySettings(*all_settings)
-            settings._dict[  # pylint: disable=protected-access
-                "SIMPLE_SETTINGS"
-            ] = conf.SIMPLE_SETTINGS
-            settings.strategies = (TurbuletteSettingsLoadStrategy,)
-            # Make settings variable availble in the `turbulette.conf` package
-            conf.settings = settings
+        settings = LazySettings(*all_settings)
+        settings._dict[  # pylint: disable=protected-access
+            "SIMPLE_SETTINGS"
+        ] = conf.SIMPLE_SETTINGS
+        settings.strategies = (TurbuletteSettingsLoadStrategy,)
+        # Make settings variable availble in the `turbulette.conf` package
+        conf.settings = settings
 
-            return settings
-        return conf.settings
+        return settings
+        # return conf.settings
 
     def load_cmds(self) -> Dict[str, List[Command]]:
         cmds = {}

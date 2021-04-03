@@ -27,7 +27,6 @@ class User(AbstractUser, Model):
     pass
 """
 
-
 @contextlib.contextmanager
 def working_directory(path):
     """Changes working directory and returns to previous on exit."""
@@ -39,7 +38,7 @@ def working_directory(path):
         chdir(prev_cwd)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def create_project():
     tmp_dir = TemporaryDirectory()
     with working_directory(tmp_dir.name):
@@ -52,7 +51,7 @@ def create_project():
     tmp_dir.cleanup()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def create_apps(create_project):
     runner = CliRunner()
     with working_directory(create_project):
@@ -62,7 +61,7 @@ def create_apps(create_project):
         assert res.exit_code == 0
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def auth_app(create_project, create_apps):
     # AUTH_USER_MODEL setting
     settings_file = (create_project / "settings.py").read_text()
@@ -77,7 +76,7 @@ def auth_app(create_project, create_apps):
     # Add auth to INSTALLED_APPS
     env_file = (create_project / ".env").read_text()
     add_auth_app = env_file.replace(
-        "INSTALLED_APPS=", f"INSTALLED_APPS=turbulette.apps.auth,{PROJECT}.{APP_1}"
+        "INSTALLED_APPS=", f"INSTALLED_APPS=turbulette.apps.auth,{PROJECT}.{APP_1},"
     )
     (create_project / ".env").write_text(add_auth_app)
 
@@ -89,27 +88,28 @@ def auth_app(create_project, create_apps):
     (create_project / ".env").write_text(env_file)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def db_name_cli():
     return f"test_cli_{datetime.now().replace(microsecond=0).isoformat()}"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def project_settings_cli(create_env, create_project):
     sys.path.insert(1, create_project.parent.as_posix())
     with working_directory(create_project.parent.as_posix()):
         return import_module(f"{PROJECT}.settings")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def create_env(db_name_cli, create_project):
     env_file = (create_project / ".env").read_text()
     env_file = env_file.replace("DB_DATABASE=", f"DB_DATABASE={db_name_cli}")
     env_file = env_file.replace("DB_HOST=", "DB_HOST=localhost")
+    env_file = env_file.replace("INSTALLED_APPS=", "INSTALLED_APPS=gino_backend")
     (create_project / ".env").write_text(env_file)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 async def create_db_cli(db_name_cli, project_settings_cli, request):
     db = Gino()
 

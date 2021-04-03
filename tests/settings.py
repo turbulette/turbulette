@@ -38,7 +38,7 @@ AUTH_USER_MODEL = config("AUTH_USER_MODEL", cast=str)
 
 # A valid hash algorithm that can be passed to CryptContext
 # see https://passlib.readthedocs.io/en/stable/lib/passlib.hash.html#module-passlib.hash
-HASH_ALGORITHM = config("HASH_ALGORITHM", cast=str, default="bcrypt")
+# HASH_ALGORITHM = config("HASH_ALGORITHM", cast=str, default="bcrypt")
 
 # Used to encode the JSON Web token
 JWT_VERIFY = config("JWT_VERIFY", cast=bool, default=True)

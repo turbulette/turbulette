@@ -11,6 +11,7 @@ from gino_starlette import Gino  # type: ignore [attr-defined]
 from sqlalchemy import engine_from_config, pool
 
 from turbulette import conf
+from turbulette.db_backend import db
 from turbulette.apps import Registry
 from .backend import GinoBackend
 from turbulette.utils import get_project_settings
@@ -61,10 +62,10 @@ def _run_migrations_online(metadata, config):  # pragma: no cover
 
 
 def get_gino_instance() -> Gino:
-    if conf.db.initialized:
-        return conf.db
+    if db.initialized:
+        return db
     database = Gino()
-    conf.db.__setup__(database)
+    db.__setup__(database)
     return database
 
 

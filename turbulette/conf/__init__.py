@@ -26,12 +26,6 @@ class LazyStarlette(LazyInitMixin, Starlette):
         super().__init__("Starlette app")
 
 
-class LazyGino(LazyInitMixin, Gino):
-    """Lazy init the GINO instance."""
-
-    def __init__(self):
-        super().__init__("GINO")
-
 
 registry: LazyRegistry = LazyRegistry()
 """`LazyRegistry` instance.
@@ -39,11 +33,6 @@ registry: LazyRegistry = LazyRegistry()
 Holds all Turbulette apps in use.
 """
 
-db: LazyGino = LazyGino()
-"""`LazyGino` instance.
-
-This is the main access point to interact with the database.
-"""
 
 settings: LazySettings = None
 """`LazySettings` instance.

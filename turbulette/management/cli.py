@@ -1,21 +1,19 @@
 """Turbulette's command line tool."""
 
-import configparser
-from os import chdir, remove, sep, environ
+import sys
+from os import chdir, environ, remove
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
-import sys
-from turbulette.conf.exceptions import ImproperlyConfigured
+
 import click
 import cloup
-from alembic.command import revision
-from alembic.config import Config
 from click.exceptions import ClickException
 from jwcrypto import jwk
 
 from turbulette.apps import Registry
-from turbulette.conf.constants import FOLDER_MIGRATIONS, PROJECT_SETTINGS_MODULE
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
+from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.utils import get_project_settings, to_dotted_path
 
 TEMPLATE_FILES = ["app.py", ".env", "settings.py"]
@@ -57,7 +55,7 @@ def cli(settings):
     multiple=True,
 )
 @click.pass_context
-def projeact(ctx, name, first_app):
+def project(ctx, name, first_app):
     project_dir = Path.cwd() / name
     copytree(Path(__file__).parent / "templates" / "project", project_dir)
 
@@ -170,29 +168,6 @@ def app_(name):
         copytree(Path(__file__).parent / "templates" / "app", Path.cwd() / app_name)
         for gitkeep in (Path.cwd() / app_name).rglob(".gitkeep"):
             remove(gitkeep)
-
-        # TODO move to gino_backend
-        # alembic_config = configparser.ConfigParser(interpolation=None)
-        # alembic_config.read(alembic_ini)
-        # migration_dir = f"%(here)s{sep}{app_name}{sep}{FOLDER_MIGRATIONS}"
-
-        # if "version_locations" in alembic_config["alembic"]:
-        #     alembic_config["alembic"]["version_locations"] += f" {migration_dir}"
-        # else:
-        #     alembic_config["alembic"]["version_locations"] = migration_dir
-
-        # with open(alembic_ini, "w") as alembic_file:
-        #     alembic_config.write(alembic_file)
-
-        # config = Config(file_=alembic_ini.as_posix())
-
-        # revision(
-        #     config,
-        #     message="initial",
-        #     head="base",
-        #     branch_label=app_name,
-        #     version_path=(Path(app_name) / FOLDER_MIGRATIONS).as_posix(),
-        # )
 
 
 cli.section("Turbulette", project, app_, jwk_)

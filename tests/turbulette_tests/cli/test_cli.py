@@ -4,11 +4,15 @@ from tempfile import TemporaryDirectory
 
 from click.testing import CliRunner
 
-from turbulette.conf.constants import PROJECT_SETTINGS_MODULE, TEST_MODE
+import turbulette
+from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.management.cli import cli
 
-from .conftest import APP_1, working_directory
+from .conftest import APP_1, APP_2, APP_3, working_directory
 
+import debugpy
+debugpy.listen(5678)
+debugpy.wait_for_client()
 
 def test_create_project():
     runner = CliRunner()
@@ -31,14 +35,6 @@ def test_create_project():
             assert res.exit_code == 0
 
 
-def test_not_a_project_dir():
-    runner = CliRunner()
-    with TemporaryDirectory() as tmp_dir:
-        with working_directory(tmp_dir):
-            res = runner.invoke(cli, ["app", "--name", "app_1"])
-            assert res.exit_code != 0
-
-
 def test_create_app(create_project):
     with working_directory(create_project):
         runner = CliRunner()
@@ -50,12 +46,17 @@ def test_create_app(create_project):
 
 def test_revision(create_project, create_db_cli, create_apps):
     with working_directory(create_project):
+        cli_module = reload(turbulette.management.cli)
         runner = CliRunner()
-        res = runner.invoke(cli, ["makerevision", APP_1])
-        res = runner.invoke(cli, ["upgrade", APP_1])
+        res = runner.invoke(cli_module.cli, ["initrevision", APP_1])
+        assert res.exit_code == 0
+        res = runner.invoke(cli_module.cli, ["initrevision", APP_2])
+        res = runner.invoke(cli_module.cli, ["initrevision", APP_3])
+        res = runner.invoke(cli_module.cli, ["makerevision", APP_1])
+        res = runner.invoke(cli_module.cli, ["upgrade", APP_1])
         assert res.exit_code == 0
         # Should upgrade APP_2 and APP_3
-        res = runner.invoke(cli, ["upgrade"])
+        res = runner.invoke(cli_module.cli, ["upgrade"])
         assert res.exit_code == 0
 
 
@@ -81,30 +82,37 @@ def test_secret_key(create_project):
         assert res.exit_code != 0
 
 
-def test_create_user(create_project, create_db_cli, auth_app, blank_conf, monkeypatch):
-    monkeypatch.setenv(TEST_MODE, "1")
+def test_create_user(create_project, create_db_cli, auth_app):
+    # monkeypatch.setenv(TEST_MODE, "1")
     with working_directory(create_project):
+        cli_module = reload(turbulette.management.cli)
         runner = CliRunner()
 
         # Update `INSTALLED_APPS` setting
-        reload(import_module(f"{create_project.name}.settings"))
+        # reload(import_module(f"{create_project.name}.settings"))
 
-        # Generate and apply migrations to create the user table
-        res = runner.invoke(cli, ["makerevision", auth_app])
+        res = runner.invoke(cli_module.cli, ["initrevision", auth_app])
         assert res.exit_code == 0
 
-        res = runner.invoke(cli, ["upgrade"])
+        res = runner.invoke(cli_module.cli, ["upgrade"])
+        assert res.exit_code == 0
+
+        # Generate and apply migrations to create the user table
+        res = runner.invoke(cli_module.cli, ["makerevision", auth_app])
+        assert res.exit_code == 0
+
+        res = runner.invoke(cli_module.cli, ["upgrade"])
         assert res.exit_code == 0
 
         # Create the user
-        res = runner.invoke(cli, ["createuser", "user_1", "1234"])
+        res = runner.invoke(cli_module.cli, ["createuser", "user_1", "1234"])
         assert res.exit_code == 0
 
     # The CLI should guess if a settings module is present in CWD
     with working_directory(create_project):
         tmp = environ.pop(PROJECT_SETTINGS_MODULE)
 
-        res = runner.invoke(cli, ["createuser", "user_2", "1234"])
+        res = runner.invoke(cli_module.cli, ["createuser", "user_2", "1234"])
         assert res.exit_code == 1
 
         environ[PROJECT_SETTINGS_MODULE] = tmp
@@ -113,7 +121,7 @@ def test_create_user(create_project, create_db_cli, auth_app, blank_conf, monkey
     with working_directory(create_project.parent):
         tmp = environ.pop(PROJECT_SETTINGS_MODULE)
 
-        res = runner.invoke(cli, ["createuser", "user_2", "1234"])
+        res = runner.invoke(cli_module.cli, ["createuser", "user_2", "1234"])
         assert res.exit_code == 1
 
         environ[PROJECT_SETTINGS_MODULE] = tmp

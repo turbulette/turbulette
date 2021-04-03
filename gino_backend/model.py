@@ -5,7 +5,8 @@ from inspect import getmodule
 from ariadne.utils import convert_camel_case_to_snake
 from gino.declarative import ModelType
 
-from turbulette.conf import db, registry
+from turbulette.conf import registry
+from turbulette.db_backend import db
 
 
 class BaseModelMeta(ModelType):
