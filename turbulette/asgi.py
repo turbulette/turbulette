@@ -13,7 +13,7 @@ from starlette.middleware import Middleware
 from starlette.routing import Route, WebSocketRoute
 
 from turbulette import conf
-from turbulette.db_backend import db
+from turbulette.db_backend import db, db_backend
 from turbulette.cache import cache
 from turbulette.conf.constants import (
     ROUTING_MODULE_ROUTES,
@@ -26,10 +26,6 @@ from turbulette.extensions import PolicyExtension
 from turbulette.utils import get_project_settings, import_class
 
 from .apps import Registry
-
-# import debugpy
-# debugpy.listen(5678)
-# debugpy.wait_for_client()
 
 async def startup():
     await cache.connect()
@@ -44,6 +40,17 @@ def setup(settings_path: str = None, settings_module: ModuleType = None) -> Grap
     settings_module = settings_module or import_module(
         get_project_settings(settings_path)
     )
+
+    db_connection = None
+
+    is_database = hasattr(settings_module, "DATABASES")
+
+    if is_database:
+        db_connection = import_class(getattr(settings_module, "DATABASES")["backend"])(
+            getattr(settings_module, "DATABASES")["settings"],
+            getattr(settings_module, "DATABASES")["connection"],
+        )
+        db_connection.connect()
 
     registry = Registry(settings_module=settings_module)
     conf.registry.__setup__(registry)
@@ -68,6 +75,7 @@ def setup(settings_path: str = None, settings_module: ModuleType = None) -> Grap
         extensions=extensions,
         error_formatter=error_formatter,
     )
+
     return graphql_route
 
 
@@ -89,7 +97,7 @@ def _register_middlewares() -> List[Middleware]:
     return middlewares
 
 
-def turbulette(project_settings: Optional[str] = None) -> Starlette:
+def get_app(project_settings: Optional[str] = None) -> Starlette:
     """Setup turbulette apps and mount the GraphQL route on a Starlette instance.
 
     Args:
@@ -106,16 +114,6 @@ def turbulette(project_settings: Optional[str] = None) -> Starlette:
 
     settings_path = get_project_settings(project_settings)
     settings_module = import_module(settings_path)
-    db_connection = None
-
-    is_database = hasattr(settings_module, "DATABASES")
-
-    if is_database:
-        db_connection = import_class(getattr(settings_module, "DATABASES")["backend"])(
-            getattr(settings_module, "DATABASES")["settings"],
-            getattr(settings_module, "DATABASES")["connection"],
-        )
-        db_connection.connect()
 
     graphql_route = setup(settings_module=settings_module)
     middlewares = _register_middlewares()
@@ -143,10 +141,11 @@ def turbulette(project_settings: Optional[str] = None) -> Starlette:
             on_shutdown=[shutdown],
         )
 
-        app.mount()
         conf.app.__setup__(app)
-        if db_connection:
-            db_connection.on_startup()
+
+        if db_backend.initialized:
+            db_backend.startup()
+
         return app
 
     raise ImproperlyConfigured(

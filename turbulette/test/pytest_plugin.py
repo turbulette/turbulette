@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from starlette.config import Config as starlette_config
 
-from turbulette import conf, setup
+from turbulette import conf, db_backend, setup
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.test.tester import Tester
@@ -104,7 +104,8 @@ def blank_conf():
 
     Scope: `function`
     """
-    app, registry, db, settings = conf.app, conf.registry, conf.db, conf.settings
+    app, registry, db, settings = conf.app, conf.registry, db_backend.db, conf.settings
     reload(conf)
+    reload(db_backend)
     yield
-    conf.app, conf.db, conf.registry, conf.settings = app, db, registry, settings
+    conf.app, db_name.db, conf.registry, conf.settings = app, db, registry, settings

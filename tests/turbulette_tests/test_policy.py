@@ -15,6 +15,10 @@ from .queries import (
     query_comics,
 )
 
+import debugpy
+debugpy.listen(5678)
+debugpy.wait_for_client()
+
 pytestmark = pytest.mark.asyncio
 
 

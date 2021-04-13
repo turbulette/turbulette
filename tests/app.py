@@ -2,8 +2,8 @@
 
 from os import environ
 
-from turbulette import turbulette
+from turbulette import get_app
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 
 environ.setdefault(PROJECT_SETTINGS_MODULE, "tests.settings")
-app = turbulette()
+app = get_app()

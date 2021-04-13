@@ -1,26 +1,10 @@
 from turbulette.utils import LazyInitMixin
 from typing import Any
 from types import ModuleType
-from starlette.applications import Starlette
 
-from turbulette import conf
 from turbulette.conf.constants import SETTINGS_DATABASE_SETTINGS, SETTINGS_DB_DSN
 from turbulette.conf.exceptions import ImproperlyConfigured
 from turbulette.types import DatabaseConnectionParams, DatabaseSettings
-
-
-class LazyDatabase(LazyInitMixin):
-    """Lazy init the GINO instance."""
-
-    def __init__(self):
-        super().__init__("Database")
-
-
-db: LazyDatabase = LazyDatabase()
-"""`LazyGino` instance.
-
-This is the main access point to interact with the database.
-"""
 
 
 class DatabaseBackend:
@@ -54,12 +38,17 @@ class DatabaseBackend:
                 f"You did not set {error.args[0]} in {SETTINGS_DATABASE_SETTINGS}"
             ) from error
         db.__setup__(self.database)
+        db_backend.__setup__(self)
         return self.database
 
     def create_db(self) -> Any:
         raise NotImplementedError()
 
-    def on_startup(self, app: Starlette) -> None:
+
+    def startup(self):
+        pass
+
+    def shutdown(self):
         pass
 
     @classmethod
@@ -71,3 +60,27 @@ class DatabaseBackend:
         **kwargs
     ) -> Any:
         raise NotImplementedError()
+
+
+class LazyDatabase(LazyInitMixin):
+    """Lazy init the GINO instance."""
+
+    def __init__(self):
+        super().__init__("Database")
+
+
+db: LazyDatabase = LazyDatabase()
+"""`LazyGino` instance.
+
+This is the main access point to interact with the database.
+"""
+
+class LazyBackend(LazyInitMixin, DatabaseBackend):
+    """Lazy init the GINO instance."""
+
+    def __init__(self):
+        super().__init__("Backend")
+
+db_backend: LazyBackend = LazyBackend()
+"""`LazyBackend` instance.
+"""

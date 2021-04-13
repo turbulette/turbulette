@@ -1,7 +1,7 @@
 import contextlib
 import sys
 from datetime import datetime
-from importlib import import_module
+from importlib import import_module, reload
 from os import chdir, environ
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -13,8 +13,8 @@ from gino_starlette import Gino
 
 from turbulette.conf.constants import PROJECT_SETTINGS_MODULE
 from turbulette.management.cli import cli
+from uuid import uuid4
 
-PROJECT = "__test_project"
 APP_1 = "__test_app_1"
 APP_2 = "__test_app_2"
 APP_3 = "__test_app_3"
@@ -39,14 +39,16 @@ def working_directory(path):
 
 
 @pytest.fixture()
-def create_project():
+def create_project(blank_conf):
+    project = str(uuid4())
     tmp_dir = TemporaryDirectory()
     with working_directory(tmp_dir.name):
         runner = CliRunner()
-        res = runner.invoke(cli, ["project", "--name", PROJECT])
+        res = runner.invoke(cli, ["project", "--name", project])
         assert res.exit_code == 0
-    environ[PROJECT_SETTINGS_MODULE] = f"{PROJECT}.settings"
-    yield Path(tmp_dir.name) / PROJECT
+
+    environ[PROJECT_SETTINGS_MODULE] = f"{project}.settings"
+    yield Path(tmp_dir.name) / project
     environ.pop(PROJECT_SETTINGS_MODULE)
     tmp_dir.cleanup()
 
@@ -66,7 +68,7 @@ def auth_app(create_project, create_apps):
     # AUTH_USER_MODEL setting
     settings_file = (create_project / "settings.py").read_text()
     auth_user_model = (
-        settings_file + f"\nAUTH_USER_MODEL='{PROJECT}.{APP_1}.models.User'"
+        settings_file + f"\nAUTH_USER_MODEL='{create_project.name}.{APP_1}.models.User'"
     )
 
     # Add a blank user model subclassing `AbstractUser`
@@ -76,7 +78,7 @@ def auth_app(create_project, create_apps):
     # Add auth to INSTALLED_APPS
     env_file = (create_project / ".env").read_text()
     add_auth_app = env_file.replace(
-        "INSTALLED_APPS=", f"INSTALLED_APPS=turbulette.apps.auth,{PROJECT}.{APP_1},"
+        "INSTALLED_APPS=", f"INSTALLED_APPS=turbulette.apps.auth,{create_project.name}.{APP_1},"
     )
     (create_project / ".env").write_text(add_auth_app)
 
@@ -97,7 +99,7 @@ def db_name_cli():
 def project_settings_cli(create_env, create_project):
     sys.path.insert(1, create_project.parent.as_posix())
     with working_directory(create_project.parent.as_posix()):
-        return import_module(f"{PROJECT}.settings")
+        return import_module(f"{create_project.name}.settings")
 
 
 @pytest.fixture()

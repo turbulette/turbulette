@@ -1,12 +1,15 @@
 """Turbulette's command line tool."""
 
+from importlib import import_module, reload
 import sys
 from os import chdir, environ, remove
 from pathlib import Path
 from pprint import pprint
 from shutil import copytree
+from typing import Optional
 
 import click
+from click.core import Group
 import cloup
 from click.exceptions import ClickException
 from jwcrypto import jwk
@@ -170,32 +173,41 @@ def app_(name):
             remove(gitkeep)
 
 
+def find_app_commands(cli: Group, settings_path: str = None) -> None:
+    try:
+        settings_module = reload(
+            import_module(get_project_settings(settings_path, guess=True))
+        )
+        registry = Registry(settings_module=settings_module)
+
+        for app, cmds in registry.load_cmds().items():
+            cli.section(app, *cmds)  # type: ignore
+    except ImproperlyConfigured:
+        pass
+
+
+def parse_settings() -> Optional[str]:
+    """Parse --settings option manually"""
+    if sys.argv[1] in ["--settings", "-s"]:
+        settings_arg: Optional[str] = sys.argv[2]
+        sys.argv.pop(1)
+        sys.argv.pop(1)
+    elif sys.argv[1].startswith("--settings="):
+        settings_arg = sys.argv[1].split("--settings=")[1]
+        sys.argv.pop(1)
+    else:
+        settings_dotted_path, settings_arg = None, None
+
+    if settings_arg:
+        settings_path = Path(settings_arg).resolve()
+        if not settings_path.is_file():
+            raise click.ClickException("The provided settings module does not exist")
+        settings_dotted_path = to_dotted_path(settings_path.relative_to(Path.cwd()))
+        environ.setdefault(PROJECT_SETTINGS_MODULE, settings_dotted_path)
+
+    return settings_dotted_path
+
+
+settings_path = parse_settings()
 cli.section("Turbulette", project, app_, jwk_)
-
-# Parse --settings option manually
-# as it's needed to get the registry
-settings_path_str, settings_path, settings_module = None, None, None
-
-if sys.argv[1] in ["--settings", "-s"]:
-    settings_path_str = sys.argv[2]
-    sys.argv.pop(1)
-    sys.argv.pop(1)
-elif sys.argv[1].startswith("--settings="):
-    settings_path_str = sys.argv[1].split("--settings=")[1]
-    sys.argv.pop(1)
-
-if settings_path_str:
-    settings_path = Path(settings_path_str).resolve()
-    if not settings_path.is_file():
-        raise click.ClickException("The provided settings module does not exist")
-    settings_module = to_dotted_path(settings_path.relative_to(Path.cwd()))
-
-try:
-    settings_module = get_project_settings(settings_module, guess=True)
-    environ.setdefault(PROJECT_SETTINGS_MODULE, settings_module)
-    registry = Registry(settings_path=settings_module)
-
-    for app, cmds in registry.load_cmds().items():
-        cli.section(app, *cmds)
-except ImproperlyConfigured:
-    pass
+find_app_commands(cli, settings_path)

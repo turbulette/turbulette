@@ -1,13 +1,18 @@
 import pytest
 from async_asgi_testclient import TestClient
 
-from turbulette import turbulette
+from turbulette import get_app
 from turbulette.conf.exceptions import ImproperlyConfigured
 
 
+# import debugpy
+# debugpy.listen(5678)
+# debugpy.wait_for_client()
+
 @pytest.mark.asyncio
-async def test_csrf(blank_conf):
-    app = turbulette("tests.settings_csrf")
+@pytest.mark.usefixtures("reload_resources")
+async def test_csrf():
+    app = get_app("tests.settings_csrf")
     from turbulette.cache import cache
     from turbulette.conf import settings
     from turbulette.conf.utils import settings_stub

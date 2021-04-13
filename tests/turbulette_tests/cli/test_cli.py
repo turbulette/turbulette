@@ -10,10 +10,6 @@ from turbulette.management.cli import cli
 
 from .conftest import APP_1, APP_2, APP_3, working_directory
 
-import debugpy
-debugpy.listen(5678)
-debugpy.wait_for_client()
-
 def test_create_project():
     runner = CliRunner()
     with TemporaryDirectory() as tmp_dir:
@@ -83,13 +79,9 @@ def test_secret_key(create_project):
 
 
 def test_create_user(create_project, create_db_cli, auth_app):
-    # monkeypatch.setenv(TEST_MODE, "1")
     with working_directory(create_project):
         cli_module = reload(turbulette.management.cli)
         runner = CliRunner()
-
-        # Update `INSTALLED_APPS` setting
-        # reload(import_module(f"{create_project.name}.settings"))
 
         res = runner.invoke(cli_module.cli, ["initrevision", auth_app])
         assert res.exit_code == 0

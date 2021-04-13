@@ -24,7 +24,6 @@ class GinoBackend(DatabaseBackend):
             The GINO instance
         """
         return Gino(
-            app,
             dsn=URL(
                 drivername=self.conn_params["DB_DRIVER"],
                 username=self.conn_params["DB_USER"],
@@ -42,8 +41,7 @@ class GinoBackend(DatabaseBackend):
             retry_interval=self.settings["DB_RETRY_INTERVAL"],
         )
 
-    @classmethod
-    def on_startup(cls) -> None:
+    def startup(self) -> None:
         db.init_app(app)
 
     def create_test_db(

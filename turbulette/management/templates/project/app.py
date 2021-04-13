@@ -2,7 +2,7 @@
 
 from os import environ
 
-from turbulette import turbulette
+from turbulette import get_app
 
 environ.setdefault("TURBULETTE_SETTINGS_MODULE", "{{ settings }}")
-app = turbulette()
+app = get_app()

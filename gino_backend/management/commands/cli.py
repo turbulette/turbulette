@@ -10,7 +10,7 @@ from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config
 
 from gino_backend import GinoBackend
-from turbulette import turbulette
+from turbulette import setup
 from turbulette import db_backend
 from turbulette.conf.constants import FILE_ALEMBIC_INI, PROJECT_SETTINGS_MODULE, FOLDER_MIGRATIONS
 from turbulette.utils import get_project_settings
@@ -25,7 +25,7 @@ def db(func: FunctionType):
         def _load():
             """Wrapper to load a Turbulette instance."""
             try:
-                turbulette(settings_path)
+                setup(settings_path)
             except ModuleNotFoundError as error:  # pragma: no cover
                 raise click.ClickException(
                     "Project settings module not found,"
