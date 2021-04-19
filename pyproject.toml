@@ -50,7 +50,7 @@ argon2-cffi = { version = "^20.1.0", optional = true }
 # Test extras
 pytest = { version = "^6.2.1", optional = true }
 pytest-cov = { version = "^2.11.1", optional = true }
-pytest-asyncio = { version = "^0.14.0", optional = true }
+pytest-asyncio = { version = ">=0.14,<0.16", optional = true }
 async-asgi-testclient = { version = "^1.4.5", optional = true }
 python-multipart = { version = "^0.0.5", optional = true }
 coverage = { version = "^5.3", extras = ["toml"], optional = true }
