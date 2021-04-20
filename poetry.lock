@@ -1051,7 +1051,7 @@ pylint = ">=1.7"
 
 [[package]]
 name = "pylint-pytest"
-version = "1.0.3"
+version = "1.1.2"
 description = "A Pylint plugin to suppress pytest-related false positives."
 category = "main"
 optional = true
@@ -1440,7 +1440,7 @@ dev_test = ["pytest", "pytest-cov", "pytest-asyncio", "async-asgi-testclient", "
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "20064db9d9027c440a30b85d9ef1da64e91c2afdc610e74bcfce42e74efea951"
+content-hash = "4c03f20782512be25acee85cccebb2bf8be66c6a55f246b2932df8a1aeb47726"
 
 [metadata.files]
 aioredis = [
@@ -2202,7 +2202,7 @@ pylint-plugin-utils = [
     {file = "pylint_plugin_utils-0.6-py3-none-any.whl", hash = "sha256:2f30510e1c46edf268d3a195b2849bd98a1b9433229bb2ba63b8d776e1fc4d0a"},
 ]
 pylint-pytest = [
-    {file = "pylint_pytest-1.0.3-py2.py3-none-any.whl", hash = "sha256:7d6934ac297068934102949343075f52b2ef7e31a76240abd720d91ed975f63c"},
+    {file = "pylint_pytest-1.1.2-py2.py3-none-any.whl", hash = "sha256:fb20ef318081cee3d5febc631a7b9c40fa356b05e4f769d6e60a337e58c8879b"},
 ]
 pymdown-extensions = [
     {file = "pymdown-extensions-8.1.1.tar.gz", hash = "sha256:632371fa3bf1b21a0e3f4063010da59b41db049f261f4c0b0872069a9b6d1735"},
