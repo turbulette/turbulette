@@ -51,15 +51,15 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest"]
 
 [[package]]
 name = "ariadne"
-version = "0.12.0"
+version = "0.13.0"
 description = "Ariadne is a Python library for implementing GraphQL servers."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-graphql-core = ">=3.0.0,<3.1.0"
-starlette = "<0.14"
+graphql-core = ">=3.1.0"
+starlette = "<0.15"
 typing-extensions = ">=3.6.0"
 
 [package.extras]
@@ -439,7 +439,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "graphql-core"
-version = "3.0.5"
+version = "3.1.4"
 description = "GraphQL implementation for Python, a port of GraphQL.js, the JavaScript reference implementation for GraphQL."
 category = "main"
 optional = false
@@ -1440,7 +1440,7 @@ dev_test = ["pytest", "pytest-cov", "pytest-asyncio", "async-asgi-testclient", "
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "4c03f20782512be25acee85cccebb2bf8be66c6a55f246b2932df8a1aeb47726"
+content-hash = "cba60ac4bd2a649baabdf8e380e964155a017da3491ed54de8cc7b0b80409b49"
 
 [metadata.files]
 aioredis = [
@@ -1476,8 +1476,8 @@ argon2-cffi = [
     {file = "argon2_cffi-20.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:8a84934bd818e14a17943de8099d41160da4a336bcc699bb4c394bbb9b94bd32"},
 ]
 ariadne = [
-    {file = "ariadne-0.12.0-py3-none-any.whl", hash = "sha256:e88b574d13c155f934d5e57431e5f9ab3a266a7064a6e397e7c662241276e2e3"},
-    {file = "ariadne-0.12.0.tar.gz", hash = "sha256:00a21584eb5ca8751380f9870d560db0a486ff69747884674caaee811a2ae64b"},
+    {file = "ariadne-0.13.0-py3-none-any.whl", hash = "sha256:56bc3609a0512920f06e9312f8ea6db3c8e4a7cd77f31fbed388f5dba6d589c0"},
+    {file = "ariadne-0.13.0.tar.gz", hash = "sha256:e00abd7eb5869b59a638f1e3a7743445bf387236048cf1b0eb9d7c506dcd37c5"},
 ]
 astroid = [
     {file = "astroid-2.4.1-py3-none-any.whl", hash = "sha256:d8506842a3faf734b81599c8b98dcc423de863adcc1999248480b18bd31a0f38"},
@@ -1764,8 +1764,8 @@ gitpython = [
     {file = "GitPython-3.1.14.tar.gz", hash = "sha256:be27633e7509e58391f10207cd32b2a6cf5b908f92d9cd30da2e514e1137af61"},
 ]
 graphql-core = [
-    {file = "graphql-core-3.0.5.tar.gz", hash = "sha256:51f7dab06b5035515b23984f6fcb677ed909b56c672152699cca32e03624992e"},
-    {file = "graphql_core-3.0.5-py3-none-any.whl", hash = "sha256:dfc374d3426677727772d8da9dd010e92d10305ddd9c2f7f0fc388f07cee94c4"},
+    {file = "graphql-core-3.1.4.tar.gz", hash = "sha256:972eff18416ad90815c95914b754486270f13fbe1a24e010c7eedbaa903b9386"},
+    {file = "graphql_core-3.1.4-py3-none-any.whl", hash = "sha256:2ae62ed27eb5c629fdfd06f89bec36a427bef97d37aef41e8f195c5352f22bea"},
 ]
 h11 = [
     {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},
