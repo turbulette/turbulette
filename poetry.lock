@@ -1356,7 +1356,7 @@ telegram = ["requests"]
 
 [[package]]
 name = "tuna"
-version = "0.5.5"
+version = "0.5.6"
 description = "Visualize Python performance profiles"
 category = "main"
 optional = true
@@ -2446,8 +2446,8 @@ tqdm = [
     {file = "tqdm-4.59.0.tar.gz", hash = "sha256:d666ae29164da3e517fcf125e41d4fe96e5bb375cd87ff9763f6b38b5592fe33"},
 ]
 tuna = [
-    {file = "tuna-0.5.5-py3-none-any.whl", hash = "sha256:e6273685fb19d99368f09b2a215f02fec0b0a18f07ae147735c206f0e2d48573"},
-    {file = "tuna-0.5.5.tar.gz", hash = "sha256:6b1edea03ff17420ab253dd224f1f3dd11d0be5734382a8e1a036bfeaf7650a0"},
+    {file = "tuna-0.5.6-py3-none-any.whl", hash = "sha256:1b502fce55e8e51e9b359db743b9983d8e5f5f61031dcab95cd2c1e8ee5cd66e"},
+    {file = "tuna-0.5.6.tar.gz", hash = "sha256:1ff8b426be4bc389f35e4d23feedd886ddd9ff7e4579704beff492b304287533"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7703620125e4fb79b64aa52427ec192822e9f45d37d4b6625ab37ef403e1df70"},
