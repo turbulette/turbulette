@@ -57,7 +57,7 @@ jobs:
           path: ./docs.zip
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.1
+        uses: nwtgck/actions-netlify@v1.2.2
         with:
           publish-dir: './site'
           production-branch: main
