@@ -24,7 +24,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: virtualenv cache
-        uses: syphar/restore-virtualenv@v1.1
+        uses: syphar/restore-virtualenv@v1.2
         id: cache-virtualenv-tests
         with:
           custom_cache_key_element: tests
@@ -65,7 +65,7 @@ jobs:
           architecture: x64
 
       - name: Restore virtualenv cache
-        uses: syphar/restore-virtualenv@v1.1
+        uses: syphar/restore-virtualenv@v1.2
         id: cache-virtualenv-tests
         with:
           custom_cache_key_element: tests
@@ -104,7 +104,7 @@ jobs:
           architecture: x64
 
       - name: Restore virtualenv cache
-        uses: syphar/restore-virtualenv@v1.1
+        uses: syphar/restore-virtualenv@v1.2
         id: cache-virtualenv-tests
         with:
           custom_cache_key_element: tests
