@@ -22,7 +22,7 @@ jobs:
           architecture: x64
 
       - name: Virtualenv cache
-        uses: syphar/restore-virtualenv@v1.1
+        uses: syphar/restore-virtualenv@v1.3
         id: cache-virtualenv-docs
         with:
           custom_cache_key_element: docs
